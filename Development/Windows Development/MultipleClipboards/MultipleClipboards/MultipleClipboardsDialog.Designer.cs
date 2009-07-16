@@ -1,0 +1,314 @@
+﻿namespace MultipleClipboards
+{
+    partial class MultipleClipboardsDialog
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MultipleClipboardsDialog));
+			this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+			this.trayRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.editMultipleClipboardOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.errorLogMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnSave = new System.Windows.Forms.Button();
+			this.btnExit = new System.Windows.Forms.Button();
+			this.btnHide = new System.Windows.Forms.Button();
+			this.tabControl = new System.Windows.Forms.TabControl();
+			this.tabSettings = new System.Windows.Forms.TabPage();
+			this.txtNumClipboards = new System.Windows.Forms.NumericUpDown();
+			this.dgClipboards = new System.Windows.Forms.DataGridView();
+			this.lblNumClipboards = new System.Windows.Forms.Label();
+			this.tabAbout = new System.Windows.Forms.TabPage();
+			this.txtAbout = new System.Windows.Forms.RichTextBox();
+			this.tabErrorLog = new System.Windows.Forms.TabPage();
+			this.txtErrorLog = new System.Windows.Forms.TextBox();
+			this.trayRightClickMenu.SuspendLayout();
+			this.tabControl.SuspendLayout();
+			this.tabSettings.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumClipboards)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.dgClipboards)).BeginInit();
+			this.tabAbout.SuspendLayout();
+			this.tabErrorLog.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// trayIcon
+			// 
+			this.trayIcon.ContextMenuStrip = this.trayRightClickMenu;
+			this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+			this.trayIcon.Text = "Multiple Clipboards";
+			this.trayIcon.Visible = true;
+			this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.trayIcon_MouseDoubleClick);
+			// 
+			// trayRightClickMenu
+			// 
+			this.trayRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editMultipleClipboardOptionsToolStripMenuItem,
+            this.aboutMenuItem,
+            this.errorLogMenuItem,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
+			this.trayRightClickMenu.Name = "trayRightClickMenu";
+			this.trayRightClickMenu.Size = new System.Drawing.Size(242, 98);
+			// 
+			// editMultipleClipboardOptionsToolStripMenuItem
+			// 
+			this.editMultipleClipboardOptionsToolStripMenuItem.Name = "editMultipleClipboardOptionsToolStripMenuItem";
+			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.editMultipleClipboardOptionsToolStripMenuItem.Text = "Edit Multiple Clipboard Options";
+			this.editMultipleClipboardOptionsToolStripMenuItem.Click += new System.EventHandler(this.editMultipleClipboardOptionsToolStripMenuItem_Click);
+			// 
+			// aboutMenuItem
+			// 
+			this.aboutMenuItem.Name = "aboutMenuItem";
+			this.aboutMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.aboutMenuItem.Text = "About Multiple Clipboards";
+			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+			// 
+			// errorLogMenuItem
+			// 
+			this.errorLogMenuItem.Name = "errorLogMenuItem";
+			this.errorLogMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.errorLogMenuItem.Text = "Open Error Log";
+			this.errorLogMenuItem.Click += new System.EventHandler(this.errorLogMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(238, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.exitToolStripMenuItem.Text = "Exit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
+			// btnSave
+			// 
+			this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnSave.Location = new System.Drawing.Point(400, 9);
+			this.btnSave.Name = "btnSave";
+			this.btnSave.Size = new System.Drawing.Size(100, 23);
+			this.btnSave.TabIndex = 2;
+			this.btnSave.Text = "Save Settings";
+			this.btnSave.UseVisualStyleBackColor = true;
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+			// 
+			// btnExit
+			// 
+			this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnExit.Location = new System.Drawing.Point(272, 343);
+			this.btnExit.Name = "btnExit";
+			this.btnExit.Size = new System.Drawing.Size(100, 23);
+			this.btnExit.TabIndex = 3;
+			this.btnExit.Text = "Exit Application";
+			this.btnExit.UseVisualStyleBackColor = true;
+			this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+			// 
+			// btnHide
+			// 
+			this.btnHide.Location = new System.Drawing.Point(166, 343);
+			this.btnHide.Name = "btnHide";
+			this.btnHide.Size = new System.Drawing.Size(100, 23);
+			this.btnHide.TabIndex = 7;
+			this.btnHide.Text = "Hide Dialog";
+			this.btnHide.UseVisualStyleBackColor = true;
+			this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
+			// 
+			// tabControl
+			// 
+			this.tabControl.Controls.Add(this.tabSettings);
+			this.tabControl.Controls.Add(this.tabAbout);
+			this.tabControl.Controls.Add(this.tabErrorLog);
+			this.tabControl.Location = new System.Drawing.Point(12, 13);
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(514, 324);
+			this.tabControl.TabIndex = 8;
+			this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
+			// 
+			// tabSettings
+			// 
+			this.tabSettings.Controls.Add(this.txtNumClipboards);
+			this.tabSettings.Controls.Add(this.dgClipboards);
+			this.tabSettings.Controls.Add(this.btnSave);
+			this.tabSettings.Controls.Add(this.lblNumClipboards);
+			this.tabSettings.Location = new System.Drawing.Point(4, 22);
+			this.tabSettings.Name = "tabSettings";
+			this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
+			this.tabSettings.Size = new System.Drawing.Size(506, 298);
+			this.tabSettings.TabIndex = 0;
+			this.tabSettings.Text = "Settings";
+			this.tabSettings.UseVisualStyleBackColor = true;
+			// 
+			// txtNumClipboards
+			// 
+			this.txtNumClipboards.BackColor = System.Drawing.SystemColors.Window;
+			this.txtNumClipboards.Location = new System.Drawing.Point(172, 12);
+			this.txtNumClipboards.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.txtNumClipboards.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.txtNumClipboards.Name = "txtNumClipboards";
+			this.txtNumClipboards.ReadOnly = true;
+			this.txtNumClipboards.Size = new System.Drawing.Size(50, 20);
+			this.txtNumClipboards.TabIndex = 7;
+			this.txtNumClipboards.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.txtNumClipboards.ValueChanged += new System.EventHandler(this.txtNumClipboards_ValueChanged);
+			// 
+			// dgClipboards
+			// 
+			this.dgClipboards.AllowUserToAddRows = false;
+			this.dgClipboards.AllowUserToDeleteRows = false;
+			this.dgClipboards.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dgClipboards.Location = new System.Drawing.Point(6, 40);
+			this.dgClipboards.Name = "dgClipboards";
+			this.dgClipboards.Size = new System.Drawing.Size(494, 252);
+			this.dgClipboards.TabIndex = 9;
+			// 
+			// lblNumClipboards
+			// 
+			this.lblNumClipboards.AutoSize = true;
+			this.lblNumClipboards.Location = new System.Drawing.Point(6, 14);
+			this.lblNumClipboards.Name = "lblNumClipboards";
+			this.lblNumClipboards.Size = new System.Drawing.Size(160, 13);
+			this.lblNumClipboards.TabIndex = 8;
+			this.lblNumClipboards.Text = "Number of Additional Clipboards:";
+			// 
+			// tabAbout
+			// 
+			this.tabAbout.Controls.Add(this.txtAbout);
+			this.tabAbout.Location = new System.Drawing.Point(4, 22);
+			this.tabAbout.Name = "tabAbout";
+			this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
+			this.tabAbout.Size = new System.Drawing.Size(506, 298);
+			this.tabAbout.TabIndex = 1;
+			this.tabAbout.Text = "About";
+			this.tabAbout.UseVisualStyleBackColor = true;
+			// 
+			// txtAbout
+			// 
+			this.txtAbout.BackColor = System.Drawing.SystemColors.Window;
+			this.txtAbout.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.txtAbout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtAbout.Location = new System.Drawing.Point(3, 3);
+			this.txtAbout.Name = "txtAbout";
+			this.txtAbout.ReadOnly = true;
+			this.txtAbout.Size = new System.Drawing.Size(500, 292);
+			this.txtAbout.TabIndex = 0;
+			this.txtAbout.Text = "";
+			// 
+			// tabErrorLog
+			// 
+			this.tabErrorLog.Controls.Add(this.txtErrorLog);
+			this.tabErrorLog.Location = new System.Drawing.Point(4, 22);
+			this.tabErrorLog.Name = "tabErrorLog";
+			this.tabErrorLog.Size = new System.Drawing.Size(506, 298);
+			this.tabErrorLog.TabIndex = 2;
+			this.tabErrorLog.Text = "Error Log";
+			this.tabErrorLog.UseVisualStyleBackColor = true;
+			// 
+			// txtErrorLog
+			// 
+			this.txtErrorLog.BackColor = System.Drawing.SystemColors.Window;
+			this.txtErrorLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.txtErrorLog.Location = new System.Drawing.Point(4, 4);
+			this.txtErrorLog.Multiline = true;
+			this.txtErrorLog.Name = "txtErrorLog";
+			this.txtErrorLog.ReadOnly = true;
+			this.txtErrorLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.txtErrorLog.Size = new System.Drawing.Size(500, 292);
+			this.txtErrorLog.TabIndex = 0;
+			// 
+			// MultipleClipboardsDialog
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(538, 378);
+			this.Controls.Add(this.tabControl);
+			this.Controls.Add(this.btnHide);
+			this.Controls.Add(this.btnExit);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MaximizeBox = false;
+			this.MaximumSize = new System.Drawing.Size(550, 410);
+			this.MinimumSize = new System.Drawing.Size(550, 410);
+			this.Name = "MultipleClipboardsDialog";
+			this.Text = "Multiple Clipboards";
+			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+			this.Load += new System.EventHandler(this.MultipleClipboardsDialog_Load);
+			this.SizeChanged += new System.EventHandler(this.MultipleClipboardsDialog_SizeChanged);
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MultipleClipboardsDialog_FormClosed);
+			this.trayRightClickMenu.ResumeLayout(false);
+			this.tabControl.ResumeLayout(false);
+			this.tabSettings.ResumeLayout(false);
+			this.tabSettings.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumClipboards)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.dgClipboards)).EndInit();
+			this.tabAbout.ResumeLayout(false);
+			this.tabErrorLog.ResumeLayout(false);
+			this.tabErrorLog.PerformLayout();
+			this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ContextMenuStrip trayRightClickMenu;
+        private System.Windows.Forms.ToolStripMenuItem editMultipleClipboardOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Button btnSave;
+		private System.Windows.Forms.Button btnExit;
+		private System.Windows.Forms.Button btnHide;
+		private System.Windows.Forms.ToolStripMenuItem aboutMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem errorLogMenuItem;
+		private System.Windows.Forms.TabControl tabControl;
+		private System.Windows.Forms.TabPage tabSettings;
+		private System.Windows.Forms.NumericUpDown txtNumClipboards;
+		private System.Windows.Forms.DataGridView dgClipboards;
+		private System.Windows.Forms.Label lblNumClipboards;
+		private System.Windows.Forms.TabPage tabAbout;
+		private System.Windows.Forms.TabPage tabErrorLog;
+		private System.Windows.Forms.RichTextBox txtAbout;
+		private System.Windows.Forms.TextBox txtErrorLog;
+    }
+}
+

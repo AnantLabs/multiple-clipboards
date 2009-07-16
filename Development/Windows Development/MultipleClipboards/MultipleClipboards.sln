@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards", "MultipleClipboards\MultipleClipboards.csproj", "{2BB5D2DB-F52C-47CC-846F-0A12DAA24E52}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Multiple Clipboards Installer", "Multiple Clipboards Installer\Multiple Clipboards Installer.vdproj", "{BCFE4E9A-C34D-460C-94B7-B568B768AD5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BB5D2DB-F52C-47CC-846F-0A12DAA24E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB5D2DB-F52C-47CC-846F-0A12DAA24E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB5D2DB-F52C-47CC-846F-0A12DAA24E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB5D2DB-F52C-47CC-846F-0A12DAA24E52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCFE4E9A-C34D-460C-94B7-B568B768AD5D}.Debug|Any CPU.ActiveCfg = Debug
+		{BCFE4E9A-C34D-460C-94B7-B568B768AD5D}.Debug|Any CPU.Build.0 = Debug
+		{BCFE4E9A-C34D-460C-94B7-B568B768AD5D}.Release|Any CPU.ActiveCfg = Release
+		{BCFE4E9A-C34D-460C-94B7-B568B768AD5D}.Release|Any CPU.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
