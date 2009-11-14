@@ -65,8 +65,8 @@ namespace MultipleClipboards
 			clipboardManager = new ClipboardManager(threadDelayTime);
 			trayIcon.Visible = true;
 			txtNumClipboards.Value = settingsManager.NumberOfClipboards;
-			errorLogFile = string.Format("{0}\\errorLog.txt", Environment.CurrentDirectory);
-			aboutFile = string.Format("{0}\\aboutText.rtf", Environment.CurrentDirectory);
+            errorLogFile = settingsManager.ErrorLogFilePath;
+            aboutFile = settingsManager.AboutTextFilePath;
 			lastMessageProcessed = new HotkeyMessage();
 			currentMessage = new HotkeyMessage();
 

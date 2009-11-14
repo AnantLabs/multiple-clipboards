@@ -55,6 +55,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -71,6 +92,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5.SP1"
+                    {
+                    "Name" = "8:.NET Framework 3.5 SP1"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5.SP1"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -125,7 +167,7 @@
             "SourcePath" = "8:..\\MultipleClipboards\\aboutText.rtf"
             "TargetName" = "8:aboutText.rtf"
             "Tag" = "8:"
-            "Folder" = "8:_4C3F54B93D604E84936A21EF20EBF2E2"
+            "Folder" = "8:_A82CE78FC3A1489B92BB0612E3CC056E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -180,6 +222,18 @@
                     }
                 }
             }
+            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_A82CE78FC3A1489B92BB0612E3CC056E"
+            {
+            "DefaultLocation" = "8:[CommonAppDataFolder]\\MultipleClipboards"
+            "Name" = "8:CommonAppDataFolder"
+            "AlwaysCreate" = "11:TRUE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:COMMONAPPDATAFOLDER"
+                "Folders"
+                {
+                }
+            }
             "{1525181F-901A-416C-8A58-119130FE478E}:_ACDB9784B88745088E3F29D402293DD3"
             {
             "Name" = "8:#1916"
@@ -208,7 +262,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Multiple Clipboards"
         "ProductCode" = "8:{459FE5D7-2ECA-4F3A-AA24-45987E7907DF}"
-        "PackageCode" = "8:{817119A2-488D-4D94-9209-B8F9F90C412F}"
+        "PackageCode" = "8:{21AE6499-6DBD-4504-AE22-870DBBC30A5B}"
         "UpgradeCode" = "8:{D31D2399-2F78-406F-8C92-0A7B29804937}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
@@ -742,7 +796,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_B4A1E74FE3A74ABB96B493E9A2BA1560"
             {
-            "SourcePath" = "8:..\\MultipleClipboards\\obj\\Release\\MultipleClipboards.exe"
+            "SourcePath" = "8:..\\MultipleClipboards\\obj\\Debug\\MultipleClipboards.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4C3F54B93D604E84936A21EF20EBF2E2"

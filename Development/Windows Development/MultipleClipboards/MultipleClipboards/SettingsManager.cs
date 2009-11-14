@@ -10,13 +10,14 @@ namespace MultipleClipboards
     class SettingsManager
     {
         private const string SETTINGS_FILE_NAME = "multipleClipboardsSettings.xml";
+        private const string ERROR_LOG_FILE_NAME = "errorLog.txt";
+        private const string ABOUT_TEXT_FILE_NAME = "aboutText.rtf";
 
+        private int _numberOfClipboards;
         private XmlDataDocument _settingsDoc;
-        private string _settingsFilePath;
 
 		public clipboardDS ClipboardDS { get; set; }
 
-		private int _numberOfClipboards;
 		public int NumberOfClipboards
 		{
 			get
@@ -41,9 +42,45 @@ namespace MultipleClipboards
 			}
 		}
 
+        public string AppDataPath
+        {
+            get
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\MultipleClipboards";
+            }
+        }
+
+        public string SettingsFilePath
+        {
+            get
+            {
+                return AppDataPath + "\\" + SETTINGS_FILE_NAME;
+            }
+        }
+
+        public string ErrorLogFilePath
+        {
+            get
+            {
+                return AppDataPath + "\\" + ERROR_LOG_FILE_NAME;
+            }
+        }
+
+        public string AboutTextFilePath
+        {
+            get
+            {
+                return AppDataPath + "\\" + ABOUT_TEXT_FILE_NAME;
+            }
+        }
+
         public SettingsManager()
         {
-            _settingsFilePath = string.Format("{0}\\Settings\\{1}", Environment.CurrentDirectory, SETTINGS_FILE_NAME);
+            if (!Directory.Exists(AppDataPath))
+            {
+                Directory.CreateDirectory(AppDataPath);
+            }
+
 			ClipboardDS = new clipboardDS();
 			_settingsDoc = new XmlDataDocument(ClipboardDS);
 			LoadSettings();
@@ -51,11 +88,11 @@ namespace MultipleClipboards
 
         public void LoadSettings()
         {
-			FileInfo settingsFileInfo = new FileInfo(_settingsFilePath);
+			FileInfo settingsFileInfo = new FileInfo(SettingsFilePath);
 
 			if (settingsFileInfo.Exists)
 			{
-				ClipboardDS.ReadXml(_settingsFilePath);
+                ClipboardDS.ReadXml(SettingsFilePath);
 			}
 			else
 			{
@@ -95,14 +132,7 @@ namespace MultipleClipboards
 
 		public void SaveSettings()
         {
-			FileInfo settingsFileInfo = new FileInfo(_settingsFilePath);
-
-			if (!settingsFileInfo.Directory.Exists)
-			{
-				settingsFileInfo.Directory.Create();
-			}
-
-            _settingsDoc.Save(_settingsFilePath);
+            _settingsDoc.Save(SettingsFilePath);
         }
 
 		public void AddNewClipboard()
