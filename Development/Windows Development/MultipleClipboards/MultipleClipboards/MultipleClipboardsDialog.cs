@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace MultipleClipboards
 {
-    public partial class MultipleClipboardsDialog : Form
-    {
+	public partial class MultipleClipboardsDialog : Form
+	{
 		// Private members
 		private SettingsManager settingsManager;
 		private ClipboardManager clipboardManager;
@@ -44,13 +44,13 @@ namespace MultipleClipboards
 		[DllImport("kernel32", SetLastError = true)]
 		private static extern short GlobalDeleteAtom(short nAtom);
 
-	#region Constructor and Initialization
+		#region Constructor and Initialization
 
 		public MultipleClipboardsDialog()
-        {
-            InitializeComponent();
+		{
+			InitializeComponent();
 			Init();
-        }
+		}
 
 		private void Init()
 		{
@@ -65,8 +65,8 @@ namespace MultipleClipboards
 			clipboardManager = new ClipboardManager(threadDelayTime);
 			trayIcon.Visible = true;
 			txtNumClipboards.Value = settingsManager.NumberOfClipboards;
-            errorLogFile = settingsManager.ErrorLogFilePath;
-            aboutFile = settingsManager.AboutTextFilePath;
+			errorLogFile = settingsManager.ErrorLogFilePath;
+			aboutFile = settingsManager.AboutTextFilePath;
 			lastMessageProcessed = new HotkeyMessage();
 			currentMessage = new HotkeyMessage();
 
@@ -157,7 +157,7 @@ namespace MultipleClipboards
 			cutKeyColumn.Resizable = DataGridViewTriState.False;
 			cutKeyColumn.ValueMember = "key_code";
 			cutKeyColumn.Width = 85;
-			
+
 			// paste column
 			pasteKeyColumn.DataPropertyName = "paste_key";
 			pasteKeyColumn.DataSource = operationKeyBindingSource;
@@ -180,9 +180,9 @@ namespace MultipleClipboards
 			}
 		}
 
-	#endregion
+		#endregion
 
-	#region Events
+		#region Events
 
 		// Called before the form is first rendered
 		private void MultipleClipboardsDialog_Load(object sender, EventArgs e)
@@ -291,24 +291,36 @@ namespace MultipleClipboards
 			}
 		}
 
-	#endregion
+		#endregion
 
-	#region Private Helper Functions
+		#region Private Helper Functions
 
 		// Show the edit dialog
-        private void ShowMainDialog()
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-            Focus();
+		private void ShowMainDialog()
+		{
+			Show();
+			WindowState = FormWindowState.Normal;
+			Focus();
 		}
 
 		// Save settings to file
 		private void SaveSettings()
 		{
-			settingsManager.SaveSettings();
-			UnregisterAllGlobalHotKeys();
-			RegisterAllHotkeys();
+			try
+			{
+				settingsManager.SaveSettings();
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show("There was an error saving the settings.  Check the log.", "Error");
+				LogError(e.Message);
+			}
+			finally
+			{
+				UnregisterAllGlobalHotKeys();
+				RegisterAllHotkeys();
+				MessageBox.Show("Settings saved successfully.", "Save Complete");
+			}
 		}
 
 		// Log error to file
@@ -328,9 +340,9 @@ namespace MultipleClipboards
 		}
 
 
-	#endregion
+		#endregion
 
-	#region Hotkey Functions
+		#region Hotkey Functions
 
 		// Register all the hotkeys
 		private void RegisterAllHotkeys()
@@ -457,7 +469,8 @@ namespace MultipleClipboards
 
 					// wait while there are any modifier keys held down
 					// this causes unpredictable results when the user has setup a combination of different hotkeys
-					while (ModifierKeysPressed()) ;
+					while (ModifierKeysPressed())
+						;
 
 					try
 					{
@@ -471,7 +484,7 @@ namespace MultipleClipboards
 			}
 		}
 
-	#endregion
+		#endregion
 
 	}
 }

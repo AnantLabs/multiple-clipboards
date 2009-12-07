@@ -7,16 +7,20 @@ using System.IO;
 
 namespace MultipleClipboards
 {
-    class SettingsManager
-    {
-        private const string SETTINGS_FILE_NAME = "multipleClipboardsSettings.xml";
-        private const string ERROR_LOG_FILE_NAME = "errorLog.txt";
-        private const string ABOUT_TEXT_FILE_NAME = "aboutText.rtf";
+	class SettingsManager
+	{
+		private const string SETTINGS_FILE_NAME = "multipleClipboardsSettings.xml";
+		private const string ERROR_LOG_FILE_NAME = "errorLog.txt";
+		private const string ABOUT_TEXT_FILE_NAME = "aboutText.rtf";
 
-        private int _numberOfClipboards;
-        private XmlDataDocument _settingsDoc;
+		private int _numberOfClipboards;
+		private XmlDataDocument _settingsDoc;
 
-		public clipboardDS ClipboardDS { get; set; }
+		public clipboardDS ClipboardDS
+		{
+			get;
+			set;
+		}
 
 		public int NumberOfClipboards
 		{
@@ -42,57 +46,57 @@ namespace MultipleClipboards
 			}
 		}
 
-        public string AppDataPath
-        {
-            get
-            {
-                return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\MultipleClipboards";
-            }
-        }
+		public string AppDataPath
+		{
+			get
+			{
+				return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\MultipleClipboards";
+			}
+		}
 
-        public string SettingsFilePath
-        {
-            get
-            {
-                return AppDataPath + "\\" + SETTINGS_FILE_NAME;
-            }
-        }
+		public string SettingsFilePath
+		{
+			get
+			{
+				return AppDataPath + "\\" + SETTINGS_FILE_NAME;
+			}
+		}
 
-        public string ErrorLogFilePath
-        {
-            get
-            {
-                return AppDataPath + "\\" + ERROR_LOG_FILE_NAME;
-            }
-        }
+		public string ErrorLogFilePath
+		{
+			get
+			{
+				return AppDataPath + "\\" + ERROR_LOG_FILE_NAME;
+			}
+		}
 
-        public string AboutTextFilePath
-        {
-            get
-            {
-                return AppDataPath + "\\" + ABOUT_TEXT_FILE_NAME;
-            }
-        }
+		public string AboutTextFilePath
+		{
+			get
+			{
+				return AppDataPath + "\\" + ABOUT_TEXT_FILE_NAME;
+			}
+		}
 
-        public SettingsManager()
-        {
-            if (!Directory.Exists(AppDataPath))
-            {
-                Directory.CreateDirectory(AppDataPath);
-            }
+		public SettingsManager()
+		{
+			if (!Directory.Exists(AppDataPath))
+			{
+				Directory.CreateDirectory(AppDataPath);
+			}
 
 			ClipboardDS = new clipboardDS();
 			_settingsDoc = new XmlDataDocument(ClipboardDS);
 			LoadSettings();
-        }
+		}
 
-        public void LoadSettings()
-        {
+		public void LoadSettings()
+		{
 			FileInfo settingsFileInfo = new FileInfo(SettingsFilePath);
 
 			if (settingsFileInfo.Exists)
 			{
-                ClipboardDS.ReadXml(SettingsFilePath);
+				ClipboardDS.ReadXml(SettingsFilePath);
 			}
 			else
 			{
@@ -128,12 +132,12 @@ namespace MultipleClipboards
 				row.paste_key = (int)System.Windows.Forms.Keys.V;
 				ClipboardDS.clipboard.AddclipboardRow(row);
 			}
-        }
+		}
 
 		public void SaveSettings()
-        {
-            _settingsDoc.Save(SettingsFilePath);
-        }
+		{
+			_settingsDoc.Save(SettingsFilePath);
+		}
 
 		public void AddNewClipboard()
 		{
@@ -148,5 +152,5 @@ namespace MultipleClipboards
 			NumberOfClipboards--;
 			ClipboardDS.clipboard[NumberOfClipboards].Delete();
 		}
-    }
+	}
 }
