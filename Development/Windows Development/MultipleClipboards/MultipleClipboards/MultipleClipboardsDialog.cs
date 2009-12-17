@@ -17,6 +17,7 @@ namespace MultipleClipboards
 		private HotkeyMessage currentMessage;
 		private string errorLogFile;
 		private string aboutFile;
+		private IntPtr nextClipboardViewer;
 
 		// Grid elements
 		private BindingSource dgClipboardbindingSource;
@@ -32,15 +33,30 @@ namespace MultipleClipboards
 		// Windows API functions and constants
 		private const int CP_NOCLOSE_BUTTON = 0x200;
 		private const int WM_HOTKEY = 0x312;
+		private const int WM_DRAWCLIPBOARD = 0x308;
+		private const int WM_CHANGECBCHAIN = 0x30D;
 
 		[DllImport("user32", SetLastError = true)]
 		private static extern int RegisterHotKey(IntPtr hwnd, int id, int fsModifiers, int vk);
+
 		[DllImport("user32", SetLastError = true)]
 		private static extern int UnregisterHotKey(IntPtr hwnd, int id);
+
 		[DllImport("user32", SetLastError = true)]
 		private static extern short GetAsyncKeyState(int vKey);
+
+		[DllImport("user32", CharSet = CharSet.Auto)]
+		private static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
+
+		[DllImport("user32", CharSet = CharSet.Auto)]
+		private static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
+
+		[DllImport("user32", CharSet = CharSet.Auto)]
+		private static extern int SendMessage(IntPtr hwnd, int wMsg, IntPtr wParam, IntPtr lParam);
+
 		[DllImport("kernel32", SetLastError = true)]
 		private static extern short GlobalAddAtom(string lpString);
+
 		[DllImport("kernel32", SetLastError = true)]
 		private static extern short GlobalDeleteAtom(short nAtom);
 
@@ -82,6 +98,9 @@ namespace MultipleClipboards
 			{
 				txtAbout.Text = "The file containing information about this program cannot be found.\r\n\r\nPerhaps you deleted it?\r\n\r\nRe-installing should fix this problem.";
 			}
+
+			// Bind this app to the clipboard chain
+			nextClipboardViewer = SetClipboardViewer(this.Handle);
 		}
 
 		private void InitGrid()
@@ -291,6 +310,12 @@ namespace MultipleClipboards
 			}
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			ChangeClipboardChain(this.Handle, nextClipboardViewer);
+		}
+
 		#endregion
 
 		#region Private Helper Functions
@@ -450,37 +475,59 @@ namespace MultipleClipboards
 		// Called when a hotkey combination has been pressed
 		protected override void WndProc(ref Message m)
 		{
-			// let the base class process the message
-			base.WndProc(ref m);
-
-			// if this is a WM_HOTKEY message then figure out what key was pressed and send it along to the clipboard manager
-			if (m.Msg == WM_HOTKEY)
+			switch (m.Msg)
 			{
-				currentMessage.MessageString = m.ToString();
-				currentMessage.MessageTime = DateTime.Now;
+				case WM_HOTKEY:
+					// figure out what key was pressed and send it along to the clipboard manager
+					currentMessage.MessageString = m.ToString();
+					currentMessage.MessageTime = DateTime.Now;
 
-				// make sure that the message we just got is not the same one that was just processed
-				// this happens when the user holds down the hotkey combination for a few seconds
-				if (currentMessage != lastMessageProcessed)
-				{
-					int key = (int)(((uint)m.LParam & 0xFFFF0000) >> 16);
-					int modifiers = (int)((uint)m.LParam & 0x0000FFFF);
-					HotKey hotKey = new HotKey(modifiers, key);
-
-					// wait while there are any modifier keys held down
-					// this causes unpredictable results when the user has setup a combination of different hotkeys
-					while (ModifierKeysPressed())
-						;
-
-					try
+					// make sure that the message we just got is not the same one that was just processed
+					// this happens when the user holds down the hotkey combination for a few seconds
+					if (currentMessage != lastMessageProcessed)
 					{
-						clipboardManager.ProcessHotKey(hotKey);
+						int key = (int)(((uint)m.LParam & 0xFFFF0000) >> 16);
+						int modifiers = (int)((uint)m.LParam & 0x0000FFFF);
+						HotKey hotKey = new HotKey(modifiers, key);
+
+						// wait while there are any modifier keys held down
+						// this causes unpredictable results when the user has setup a combination of different hotkeys
+						while (ModifierKeysPressed())
+							;
+
+						try
+						{
+							clipboardManager.ProcessHotKey(hotKey);
+						}
+						catch (Exception e)
+						{
+							LogError("Error processing the hotkey:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
+						}
 					}
-					catch (Exception e)
+					break;
+
+				case WM_DRAWCLIPBOARD:
+					// the data on the clipboard has changed
+					// Handle it here
+					// send the message to the next app in the clipboard chain
+					SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					break;
+
+				case WM_CHANGECBCHAIN:
+					if (m.WParam == nextClipboardViewer)
 					{
-						LogError("Error processing the hotkey:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
+						nextClipboardViewer = m.LParam;
 					}
-				}
+					else
+					{
+						SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					}
+					break;
+
+				default:
+					// let the base class process the message
+					base.WndProc(ref m);
+					break;
 			}
 		}
 
