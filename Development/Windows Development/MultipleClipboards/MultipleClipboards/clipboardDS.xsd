@@ -15,36 +15,36 @@
         <xs:element name="general_settings" msprop:Generator_UserTableName="general_settings" msprop:Generator_RowDeletedName="general_settingsRowDeleted" msprop:Generator_RowChangedName="general_settingsRowChanged" msprop:Generator_RowClassName="general_settingsRow" msprop:Generator_RowChangingName="general_settingsRowChanging" msprop:Generator_RowEvArgName="general_settingsRowChangeEvent" msprop:Generator_RowEvHandlerName="general_settingsRowChangeEventHandler" msprop:Generator_TableClassName="general_settingsDataTable" msprop:Generator_TableVarName="tablegeneral_settings" msprop:Generator_RowDeletingName="general_settingsRowDeleting" msprop:Generator_TablePropName="general_settings">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="number_of_clipboards" msprop:Generator_UserColumnName="number_of_clipboards" msprop:Generator_ColumnVarNameInTable="columnnumber_of_clipboards" msprop:Generator_ColumnPropNameInRow="number_of_clipboards" msprop:Generator_ColumnPropNameInTable="number_of_clipboardsColumn" type="xs:int" default="0" />
-              <xs:element name="number_of_historical_entries" msprop:Generator_UserColumnName="number_of_historical_entries" msprop:Generator_ColumnVarNameInTable="columnnumber_of_historical_entries" msprop:Generator_ColumnPropNameInRow="number_of_historical_entries" msprop:Generator_ColumnPropNameInTable="number_of_historical_entriesColumn" type="xs:int" default="20" />
+              <xs:element name="number_of_clipboards" msprop:Generator_UserColumnName="number_of_clipboards" msprop:Generator_ColumnPropNameInRow="number_of_clipboards" msprop:Generator_ColumnVarNameInTable="columnnumber_of_clipboards" msprop:Generator_ColumnPropNameInTable="number_of_clipboardsColumn" type="xs:int" default="0" />
+              <xs:element name="number_of_clipboard_manager_records" msprop:Generator_UserColumnName="number_of_clipboard_manager_records" msprop:Generator_ColumnPropNameInRow="number_of_clipboard_manager_records" msprop:Generator_ColumnVarNameInTable="columnnumber_of_clipboard_manager_records" msprop:Generator_ColumnPropNameInTable="number_of_clipboard_manager_recordsColumn" type="xs:int" default="20" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="clipboard" msprop:Generator_UserTableName="clipboard" msprop:Generator_RowDeletedName="clipboardRowDeleted" msprop:Generator_RowChangedName="clipboardRowChanged" msprop:Generator_RowClassName="clipboardRow" msprop:Generator_RowChangingName="clipboardRowChanging" msprop:Generator_RowEvArgName="clipboardRowChangeEvent" msprop:Generator_RowEvHandlerName="clipboardRowChangeEventHandler" msprop:Generator_TableClassName="clipboardDataTable" msprop:Generator_TableVarName="tableclipboard" msprop:Generator_RowDeletingName="clipboardRowDeleting" msprop:Generator_TablePropName="clipboard">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="number" msprop:Generator_UserColumnName="number" msprop:Generator_ColumnVarNameInTable="columnnumber" msprop:Generator_ColumnPropNameInRow="number" msprop:Generator_ColumnPropNameInTable="numberColumn" type="xs:int" default="0" />
-              <xs:element name="modifier_key_1" msprop:Generator_UserColumnName="modifier_key_1" msprop:Generator_ColumnVarNameInTable="columnmodifier_key_1" msprop:Generator_ColumnPropNameInRow="modifier_key_1" msprop:Generator_ColumnPropNameInTable="modifier_key_1Column" type="xs:int" default="0" />
-              <xs:element name="modifier_key_2" msprop:Generator_UserColumnName="modifier_key_2" msprop:Generator_ColumnPropNameInRow="modifier_key_2" msprop:Generator_ColumnVarNameInTable="columnmodifier_key_2" msprop:Generator_ColumnPropNameInTable="modifier_key_2Column" type="xs:int" default="0" />
-              <xs:element name="copy_key" msprop:Generator_UserColumnName="copy_key" msprop:Generator_ColumnVarNameInTable="columncopy_key" msprop:Generator_ColumnPropNameInRow="copy_key" msprop:Generator_ColumnPropNameInTable="copy_keyColumn" type="xs:int" default="0" />
-              <xs:element name="cut_key" msprop:Generator_UserColumnName="cut_key" msprop:Generator_ColumnVarNameInTable="columncut_key" msprop:Generator_ColumnPropNameInRow="cut_key" msprop:Generator_ColumnPropNameInTable="cut_keyColumn" type="xs:int" default="0" />
-              <xs:element name="paste_key" msprop:Generator_UserColumnName="paste_key" msprop:Generator_ColumnVarNameInTable="columnpaste_key" msprop:Generator_ColumnPropNameInRow="paste_key" msprop:Generator_ColumnPropNameInTable="paste_keyColumn" type="xs:int" default="0" />
+              <xs:element name="number" msprop:Generator_UserColumnName="number" msprop:Generator_ColumnPropNameInRow="number" msprop:Generator_ColumnVarNameInTable="columnnumber" msprop:Generator_ColumnPropNameInTable="numberColumn" type="xs:int" default="0" />
+              <xs:element name="modifier_key_1" msprop:Generator_UserColumnName="modifier_key_1" msprop:Generator_ColumnPropNameInRow="modifier_key_1" msprop:Generator_ColumnVarNameInTable="columnmodifier_key_1" msprop:Generator_ColumnPropNameInTable="modifier_key_1Column" type="xs:int" default="0" />
+              <xs:element name="modifier_key_2" msprop:Generator_UserColumnName="modifier_key_2" msprop:Generator_ColumnVarNameInTable="columnmodifier_key_2" msprop:Generator_ColumnPropNameInRow="modifier_key_2" msprop:Generator_ColumnPropNameInTable="modifier_key_2Column" type="xs:int" default="0" />
+              <xs:element name="copy_key" msprop:Generator_UserColumnName="copy_key" msprop:Generator_ColumnPropNameInRow="copy_key" msprop:Generator_ColumnVarNameInTable="columncopy_key" msprop:Generator_ColumnPropNameInTable="copy_keyColumn" type="xs:int" default="0" />
+              <xs:element name="cut_key" msprop:Generator_UserColumnName="cut_key" msprop:Generator_ColumnPropNameInRow="cut_key" msprop:Generator_ColumnVarNameInTable="columncut_key" msprop:Generator_ColumnPropNameInTable="cut_keyColumn" type="xs:int" default="0" />
+              <xs:element name="paste_key" msprop:Generator_UserColumnName="paste_key" msprop:Generator_ColumnPropNameInRow="paste_key" msprop:Generator_ColumnVarNameInTable="columnpaste_key" msprop:Generator_ColumnPropNameInTable="paste_keyColumn" type="xs:int" default="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="modifier_key_codes" msprop:Generator_UserTableName="modifier_key_codes" msprop:Generator_RowDeletedName="modifier_key_codesRowDeleted" msprop:Generator_RowChangedName="modifier_key_codesRowChanged" msprop:Generator_RowClassName="modifier_key_codesRow" msprop:Generator_RowChangingName="modifier_key_codesRowChanging" msprop:Generator_RowEvArgName="modifier_key_codesRowChangeEvent" msprop:Generator_RowEvHandlerName="modifier_key_codesRowChangeEventHandler" msprop:Generator_TableClassName="modifier_key_codesDataTable" msprop:Generator_TableVarName="tablemodifier_key_codes" msprop:Generator_RowDeletingName="modifier_key_codesRowDeleting" msprop:Generator_TablePropName="modifier_key_codes">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="key_code" msprop:Generator_UserColumnName="key_code" msprop:Generator_ColumnVarNameInTable="columnkey_code" msprop:Generator_ColumnPropNameInRow="key_code" msprop:Generator_ColumnPropNameInTable="key_codeColumn" type="xs:int" default="0" />
-              <xs:element name="display_text" msprop:Generator_UserColumnName="display_text" msprop:Generator_ColumnVarNameInTable="columndisplay_text" msprop:Generator_ColumnPropNameInRow="display_text" msprop:Generator_ColumnPropNameInTable="display_textColumn" type="xs:string" default="" />
+              <xs:element name="key_code" msprop:Generator_UserColumnName="key_code" msprop:Generator_ColumnPropNameInRow="key_code" msprop:Generator_ColumnVarNameInTable="columnkey_code" msprop:Generator_ColumnPropNameInTable="key_codeColumn" type="xs:int" default="0" />
+              <xs:element name="display_text" msprop:Generator_UserColumnName="display_text" msprop:Generator_ColumnPropNameInRow="display_text" msprop:Generator_ColumnVarNameInTable="columndisplay_text" msprop:Generator_ColumnPropNameInTable="display_textColumn" type="xs:string" default="" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="operation_key_codes" msprop:Generator_UserTableName="operation_key_codes" msprop:Generator_RowDeletedName="operation_key_codesRowDeleted" msprop:Generator_RowChangedName="operation_key_codesRowChanged" msprop:Generator_RowClassName="operation_key_codesRow" msprop:Generator_RowChangingName="operation_key_codesRowChanging" msprop:Generator_RowEvArgName="operation_key_codesRowChangeEvent" msprop:Generator_RowEvHandlerName="operation_key_codesRowChangeEventHandler" msprop:Generator_TableClassName="operation_key_codesDataTable" msprop:Generator_TableVarName="tableoperation_key_codes" msprop:Generator_RowDeletingName="operation_key_codesRowDeleting" msprop:Generator_TablePropName="operation_key_codes">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="key_code" msprop:Generator_UserColumnName="key_code" msprop:Generator_ColumnVarNameInTable="columnkey_code" msprop:Generator_ColumnPropNameInRow="key_code" msprop:Generator_ColumnPropNameInTable="key_codeColumn" type="xs:int" default="0" />
-              <xs:element name="display_text" msprop:Generator_UserColumnName="display_text" msprop:Generator_ColumnVarNameInTable="columndisplay_text" msprop:Generator_ColumnPropNameInRow="display_text" msprop:Generator_ColumnPropNameInTable="display_textColumn" type="xs:string" default="" />
+              <xs:element name="key_code" msprop:Generator_UserColumnName="key_code" msprop:Generator_ColumnPropNameInRow="key_code" msprop:Generator_ColumnVarNameInTable="columnkey_code" msprop:Generator_ColumnPropNameInTable="key_codeColumn" type="xs:int" default="0" />
+              <xs:element name="display_text" msprop:Generator_UserColumnName="display_text" msprop:Generator_ColumnPropNameInRow="display_text" msprop:Generator_ColumnVarNameInTable="columndisplay_text" msprop:Generator_ColumnPropNameInTable="display_textColumn" type="xs:string" default="" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -66,25 +66,25 @@
       <xs:selector xpath=".//mstns:operation_key_codes" />
       <xs:field xpath="mstns:key_code" />
     </xs:unique>
-    <xs:keyref name="FK_accessor_key_codes_clipboard1" refer="modifier_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="FK_accessor_key_codes_clipboard1" msprop:rel_Generator_RelationVarName="relationFK_accessor_key_codes_clipboard1" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="modifier_key_codes" msprop:rel_Generator_ParentPropName="modifier_key_codesRowByFK_accessor_key_codes_clipboard1" msprop:rel_Generator_ChildPropName="GetclipboardRowsByFK_accessor_key_codes_clipboard1">
+    <xs:keyref name="operation_key_codes_clipboard_paste" refer="operation_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="operation_key_codes_clipboard_paste" msprop:rel_Generator_RelationVarName="relationoperation_key_codes_clipboard_paste" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="operation_key_codes" msprop:rel_Generator_ParentPropName="operation_key_codesRowByoperation_key_codes_clipboard_paste" msprop:rel_Generator_ChildPropName="GetclipboardRowsByoperation_key_codes_clipboard_paste">
       <xs:selector xpath=".//mstns:clipboard" />
-      <xs:field xpath="mstns:modifier_key_2" />
-    </xs:keyref>
-    <xs:keyref name="FK_accessor_key_codes_clipboard" refer="modifier_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="FK_accessor_key_codes_clipboard" msprop:rel_Generator_RelationVarName="relationFK_accessor_key_codes_clipboard" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="modifier_key_codes" msprop:rel_Generator_ParentPropName="modifier_key_codesRowByFK_accessor_key_codes_clipboard" msprop:rel_Generator_ChildPropName="GetclipboardRows">
-      <xs:selector xpath=".//mstns:clipboard" />
-      <xs:field xpath="mstns:modifier_key_1" />
-    </xs:keyref>
-    <xs:keyref name="operation_key_codes_clipboard_copy" refer="operation_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="operation_key_codes_clipboard_copy" msprop:rel_Generator_RelationVarName="relationoperation_key_codes_clipboard_copy" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="operation_key_codes" msprop:rel_Generator_ParentPropName="operation_key_codesRowByoperation_key_codes_clipboard_copy" msprop:rel_Generator_ChildPropName="GetclipboardRowsByoperation_key_codes_clipboard_copy">
-      <xs:selector xpath=".//mstns:clipboard" />
-      <xs:field xpath="mstns:copy_key" />
+      <xs:field xpath="mstns:paste_key" />
     </xs:keyref>
     <xs:keyref name="operation_key_codes_clipboard_cut" refer="operation_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="operation_key_codes_clipboard_cut" msprop:rel_Generator_RelationVarName="relationoperation_key_codes_clipboard_cut" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="operation_key_codes" msprop:rel_Generator_ParentPropName="operation_key_codesRowByoperation_key_codes_clipboard_cut" msprop:rel_Generator_ChildPropName="GetclipboardRowsByoperation_key_codes_clipboard_cut">
       <xs:selector xpath=".//mstns:clipboard" />
       <xs:field xpath="mstns:cut_key" />
     </xs:keyref>
-    <xs:keyref name="operation_key_codes_clipboard_paste" refer="operation_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="operation_key_codes_clipboard_paste" msprop:rel_Generator_RelationVarName="relationoperation_key_codes_clipboard_paste" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="operation_key_codes" msprop:rel_Generator_ParentPropName="operation_key_codesRowByoperation_key_codes_clipboard_paste" msprop:rel_Generator_ChildPropName="GetclipboardRowsByoperation_key_codes_clipboard_paste">
+    <xs:keyref name="operation_key_codes_clipboard_copy" refer="operation_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="operation_key_codes_clipboard_copy" msprop:rel_Generator_RelationVarName="relationoperation_key_codes_clipboard_copy" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="operation_key_codes" msprop:rel_Generator_ParentPropName="operation_key_codesRowByoperation_key_codes_clipboard_copy" msprop:rel_Generator_ChildPropName="GetclipboardRowsByoperation_key_codes_clipboard_copy">
       <xs:selector xpath=".//mstns:clipboard" />
-      <xs:field xpath="mstns:paste_key" />
+      <xs:field xpath="mstns:copy_key" />
+    </xs:keyref>
+    <xs:keyref name="FK_accessor_key_codes_clipboard" refer="modifier_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="FK_accessor_key_codes_clipboard" msprop:rel_Generator_RelationVarName="relationFK_accessor_key_codes_clipboard" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="modifier_key_codes" msprop:rel_Generator_ParentPropName="modifier_key_codesRowByFK_accessor_key_codes_clipboard" msprop:rel_Generator_ChildPropName="GetclipboardRows">
+      <xs:selector xpath=".//mstns:clipboard" />
+      <xs:field xpath="mstns:modifier_key_1" />
+    </xs:keyref>
+    <xs:keyref name="FK_accessor_key_codes_clipboard1" refer="modifier_key_codes_Constraint1" msprop:rel_Generator_UserRelationName="FK_accessor_key_codes_clipboard1" msprop:rel_Generator_RelationVarName="relationFK_accessor_key_codes_clipboard1" msprop:rel_Generator_UserChildTable="clipboard" msprop:rel_Generator_UserParentTable="modifier_key_codes" msprop:rel_Generator_ParentPropName="modifier_key_codesRowByFK_accessor_key_codes_clipboard1" msprop:rel_Generator_ChildPropName="GetclipboardRowsByFK_accessor_key_codes_clipboard1">
+      <xs:selector xpath=".//mstns:clipboard" />
+      <xs:field xpath="mstns:modifier_key_2" />
     </xs:keyref>
   </xs:element>
 </xs:schema>

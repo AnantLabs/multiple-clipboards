@@ -78,7 +78,7 @@ namespace MultipleClipboards
 
 			hotkeyIDs = new List<short>();
 			settingsManager = new SettingsManager();
-			clipboardManager = new ClipboardManager(threadDelayTime);
+			clipboardManager = new ClipboardManager(threadDelayTime, settingsManager.NumberOfClipboardManagerRecords);
 			trayIcon.Visible = true;
 			txtNumClipboards.Value = settingsManager.NumberOfClipboards;
 			errorLogFile = settingsManager.ErrorLogFilePath;
