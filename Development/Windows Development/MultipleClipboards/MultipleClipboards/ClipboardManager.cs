@@ -12,6 +12,7 @@ namespace MultipleClipboards
 		private Dictionary<int, ClipboardEntry> clipboards;
 		private ClipboardEntry existingData;
 		private int threadDelayTime;
+		private bool isProcessingClipboardAction = false;
 
 		private enum ClipboardDataType
 		{
@@ -34,7 +35,7 @@ namespace MultipleClipboards
 				this.data = data;
 			}
 		}
-	
+
 		public ClipboardManager()
 		{
 			Init(100);
@@ -52,6 +53,14 @@ namespace MultipleClipboards
 			existingData = new ClipboardEntry(ClipboardDataType.NO_DATA, null);
 			this.threadDelayTime = threadDelayTime;
 			PreserveClipboardData();
+		}
+
+		public bool IsProcessingClipboardAction
+		{
+			get
+			{
+				return this.isProcessingClipboardAction;
+			}
 		}
 
 		public void AddClipboard(int clipboardID, HotKey cutKey, HotKey copyKey, HotKey pasteKey)
@@ -79,6 +88,8 @@ namespace MultipleClipboards
 		// 2) Switch on the operation for this specific key
 		public void ProcessHotKey(HotKey systemHotKey)
 		{
+			this.isProcessingClipboardAction = true;
+
 			HotKey hotKey = hotKeys.Find(h => h == systemHotKey);
 
 			switch (hotKey.Operation)
@@ -95,8 +106,11 @@ namespace MultipleClipboards
 					Paste(hotKey.ClipboardID);
 					break;
 
-				default: break;
+				default:
+					break;
 			}
+
+			this.isProcessingClipboardAction = false;
 		}
 
 		/************************************************************************************************************
@@ -128,7 +142,7 @@ namespace MultipleClipboards
 			// just to be safe, have the program sleep for a fraction of a second before trying to retrieve the new clipboard data
 			// this shouldn't yield any noticable delay
 			System.Threading.Thread.Sleep(threadDelayTime);
-			
+
 			// store the new data in the correct clipboard
 			if (Clipboard.ContainsText())
 			{
@@ -223,7 +237,7 @@ namespace MultipleClipboards
 			else
 			{
 				existingData.dataType = ClipboardDataType.NO_DATA;
-				existingData.data = null ;
+				existingData.data = null;
 			}
 		}
 

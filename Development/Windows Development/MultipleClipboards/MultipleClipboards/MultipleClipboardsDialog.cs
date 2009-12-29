@@ -101,6 +101,9 @@ namespace MultipleClipboards
 
 			// Bind this app to the clipboard chain
 			nextClipboardViewer = SetClipboardViewer(this.Handle);
+
+			// handle the dispose event of the window
+			this.Disposed += new EventHandler(this.MultipleClipboardsDialog_Disposed);
 		}
 
 		private void InitGrid()
@@ -202,6 +205,12 @@ namespace MultipleClipboards
 		#endregion
 
 		#region Events
+
+		// Called when the window is destroyed
+		private void MultipleClipboardsDialog_Disposed(object sender, EventArgs e)
+		{
+			ChangeClipboardChain(this.Handle, nextClipboardViewer);
+		}
 
 		// Called before the form is first rendered
 		private void MultipleClipboardsDialog_Load(object sender, EventArgs e)
@@ -308,12 +317,6 @@ namespace MultipleClipboards
 					txtErrorLog.Text = "The error file does not exist.\r\n\r\nThat's a good thing!  There have not been any errors.";
 				}
 			}
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-			ChangeClipboardChain(this.Handle, nextClipboardViewer);
 		}
 
 		#endregion
@@ -507,8 +510,14 @@ namespace MultipleClipboards
 					break;
 
 				case WM_DRAWCLIPBOARD:
-					// the data on the clipboard has changed
-					// Handle it here
+					if (!clipboardManager.IsProcessingClipboardAction)
+					{
+						// the data on the clipboard has changed
+						// this means the user used the regular windows clipboard
+						// track the data on the clipboard for the history viewer
+						// data coppied using any additional clipboards will be tracked internally
+						LogError(string.Format("Data on Clipboard: {0}", Clipboard.GetText()));
+					}
 					// send the message to the next app in the clipboard chain
 					SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
 					break;

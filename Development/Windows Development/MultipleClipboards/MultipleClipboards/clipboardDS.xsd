@@ -16,6 +16,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="number_of_clipboards" msprop:Generator_UserColumnName="number_of_clipboards" msprop:Generator_ColumnVarNameInTable="columnnumber_of_clipboards" msprop:Generator_ColumnPropNameInRow="number_of_clipboards" msprop:Generator_ColumnPropNameInTable="number_of_clipboardsColumn" type="xs:int" default="0" />
+              <xs:element name="number_of_historical_entries" msprop:Generator_UserColumnName="number_of_historical_entries" msprop:Generator_ColumnVarNameInTable="columnnumber_of_historical_entries" msprop:Generator_ColumnPropNameInRow="number_of_historical_entries" msprop:Generator_ColumnPropNameInTable="number_of_historical_entriesColumn" type="xs:int" default="20" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

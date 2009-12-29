@@ -102,7 +102,7 @@ namespace MultipleClipboards
 			{
 				// load default values
 
-				// 1 additional clipboard
+				// 1 additional clipboard, 20 historical entries
 				ClipboardDS.general_settings.Addgeneral_settingsRow(1);
 
 				// the accessor key options
