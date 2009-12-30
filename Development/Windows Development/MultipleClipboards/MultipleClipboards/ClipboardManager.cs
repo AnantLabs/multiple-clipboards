@@ -142,7 +142,21 @@ namespace MultipleClipboards
 
 		public void PlaceHistoricalEntryOnClipboard(int clipboardHistoryIndex, int clipboardIndex)
 		{
-
+			if (clipboardIndex == 0)
+			{
+				// put data on the windows clipboard
+				existingData.data = clipboardHistory[clipboardHistoryIndex].data;
+				existingData.dataType = clipboardHistory[clipboardHistoryIndex].dataType;
+				existingData.timestamp = clipboardHistory[clipboardHistoryIndex].timestamp;
+				RestoreClipboardData();
+			}
+			else
+			{
+				// put the data on the specified clipboard
+				clipboards[clipboardIndex].data = clipboardHistory[clipboardHistoryIndex].data;
+				clipboards[clipboardIndex].dataType = clipboardHistory[clipboardHistoryIndex].dataType;
+				clipboards[clipboardIndex].timestamp = clipboardHistory[clipboardHistoryIndex].timestamp;
+			}
 		}
 
 		public void Reset()

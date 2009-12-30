@@ -1,38 +1,39 @@
 ﻿namespace MultipleClipboards
 {
-    partial class MultipleClipboardsDialog
-    {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+	partial class MultipleClipboardsDialog
+	{
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
 
-        #region Windows Form Designer generated code
+		#region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MultipleClipboardsDialog));
 			this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.trayRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.editMultipleClipboardOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.clipboardHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.errorLogMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -42,33 +43,35 @@
 			this.btnHide = new System.Windows.Forms.Button();
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.tabSettings = new System.Windows.Forms.TabPage();
+			this.txtNumberOfHistoricalRecords = new System.Windows.Forms.NumericUpDown();
+			this.lblNumHistoricalRecords = new System.Windows.Forms.Label();
 			this.txtNumClipboards = new System.Windows.Forms.NumericUpDown();
 			this.dgClipboards = new System.Windows.Forms.DataGridView();
 			this.lblNumClipboards = new System.Windows.Forms.Label();
-			this.tabAbout = new System.Windows.Forms.TabPage();
-			this.txtAbout = new System.Windows.Forms.RichTextBox();
-			this.tabErrorLog = new System.Windows.Forms.TabPage();
-			this.txtErrorLog = new System.Windows.Forms.TextBox();
-			this.lblNumHistoricalRecords = new System.Windows.Forms.Label();
-			this.txtNumberOfHistoricalRecords = new System.Windows.Forms.NumericUpDown();
 			this.tabHistory = new System.Windows.Forms.TabPage();
-			this.ddlClipboardSelect = new System.Windows.Forms.ComboBox();
-			this.lblClipboardSelect = new System.Windows.Forms.Label();
-			this.btnPlaceRowOnClipboard = new System.Windows.Forms.Button();
 			this.dgClipboardHistory = new System.Windows.Forms.DataGridView();
 			this.colNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colData = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.btnPlaceRowOnClipboard = new System.Windows.Forms.Button();
+			this.lblClipboardSelect = new System.Windows.Forms.Label();
+			this.ddlClipboardSelect = new System.Windows.Forms.ComboBox();
+			this.tabAbout = new System.Windows.Forms.TabPage();
+			this.txtAbout = new System.Windows.Forms.RichTextBox();
+			this.tabErrorLog = new System.Windows.Forms.TabPage();
+			this.txtErrorLog = new System.Windows.Forms.TextBox();
+			this.viewDetailedHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.trayRightClickMenu.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tabSettings.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.txtNumClipboards)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgClipboards)).BeginInit();
-			this.tabAbout.SuspendLayout();
-			this.tabErrorLog.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).BeginInit();
 			this.tabHistory.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgClipboardHistory)).BeginInit();
+			this.tabAbout.SuspendLayout();
+			this.tabErrorLog.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// trayIcon
@@ -83,43 +86,54 @@
 			// 
 			this.trayRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editMultipleClipboardOptionsToolStripMenuItem,
+            this.clipboardHistoryMenuItem,
             this.aboutMenuItem,
             this.errorLogMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.trayRightClickMenu.Name = "trayRightClickMenu";
-			this.trayRightClickMenu.Size = new System.Drawing.Size(242, 98);
+			this.trayRightClickMenu.Size = new System.Drawing.Size(231, 142);
 			// 
 			// editMultipleClipboardOptionsToolStripMenuItem
 			// 
 			this.editMultipleClipboardOptionsToolStripMenuItem.Name = "editMultipleClipboardOptionsToolStripMenuItem";
-			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.editMultipleClipboardOptionsToolStripMenuItem.Text = "Edit Multiple Clipboard Options";
 			this.editMultipleClipboardOptionsToolStripMenuItem.Click += new System.EventHandler(this.editMultipleClipboardOptionsToolStripMenuItem_Click);
+			// 
+			// clipboardHistoryMenuItem
+			// 
+			this.clipboardHistoryMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparator2,
+            this.viewDetailedHistoryToolStripMenuItem});
+			this.clipboardHistoryMenuItem.Name = "clipboardHistoryMenuItem";
+			this.clipboardHistoryMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.clipboardHistoryMenuItem.Text = "Clipboard History";
+			this.clipboardHistoryMenuItem.DropDownOpening += new System.EventHandler(this.clipboardHistoryMenuItem_DropDownOpening);
 			// 
 			// aboutMenuItem
 			// 
 			this.aboutMenuItem.Name = "aboutMenuItem";
-			this.aboutMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.aboutMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.aboutMenuItem.Text = "About Multiple Clipboards";
 			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
 			// 
 			// errorLogMenuItem
 			// 
 			this.errorLogMenuItem.Name = "errorLogMenuItem";
-			this.errorLogMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.errorLogMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.errorLogMenuItem.Text = "Open Error Log";
 			this.errorLogMenuItem.Click += new System.EventHandler(this.errorLogMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(238, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(227, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -184,6 +198,32 @@
 			this.tabSettings.Text = "Settings";
 			this.tabSettings.UseVisualStyleBackColor = true;
 			// 
+			// txtNumberOfHistoricalRecords
+			// 
+			this.txtNumberOfHistoricalRecords.Location = new System.Drawing.Point(172, 39);
+			this.txtNumberOfHistoricalRecords.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.txtNumberOfHistoricalRecords.Name = "txtNumberOfHistoricalRecords";
+			this.txtNumberOfHistoricalRecords.Size = new System.Drawing.Size(50, 20);
+			this.txtNumberOfHistoricalRecords.TabIndex = 11;
+			this.txtNumberOfHistoricalRecords.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+			// 
+			// lblNumHistoricalRecords
+			// 
+			this.lblNumHistoricalRecords.AutoSize = true;
+			this.lblNumHistoricalRecords.Location = new System.Drawing.Point(54, 41);
+			this.lblNumHistoricalRecords.Name = "lblNumHistoricalRecords";
+			this.lblNumHistoricalRecords.Size = new System.Drawing.Size(112, 13);
+			this.lblNumHistoricalRecords.TabIndex = 10;
+			this.lblNumHistoricalRecords.Text = "Clipboard History Size:";
+			// 
 			// txtNumClipboards
 			// 
 			this.txtNumClipboards.BackColor = System.Drawing.SystemColors.Window;
@@ -227,6 +267,89 @@
 			this.lblNumClipboards.Size = new System.Drawing.Size(160, 13);
 			this.lblNumClipboards.TabIndex = 8;
 			this.lblNumClipboards.Text = "Number of Additional Clipboards:";
+			// 
+			// tabHistory
+			// 
+			this.tabHistory.Controls.Add(this.dgClipboardHistory);
+			this.tabHistory.Controls.Add(this.btnPlaceRowOnClipboard);
+			this.tabHistory.Controls.Add(this.lblClipboardSelect);
+			this.tabHistory.Controls.Add(this.ddlClipboardSelect);
+			this.tabHistory.Location = new System.Drawing.Point(4, 22);
+			this.tabHistory.Name = "tabHistory";
+			this.tabHistory.Padding = new System.Windows.Forms.Padding(3);
+			this.tabHistory.Size = new System.Drawing.Size(506, 333);
+			this.tabHistory.TabIndex = 3;
+			this.tabHistory.Text = "Clipboard History";
+			this.tabHistory.UseVisualStyleBackColor = true;
+			// 
+			// dgClipboardHistory
+			// 
+			this.dgClipboardHistory.AllowUserToAddRows = false;
+			this.dgClipboardHistory.AllowUserToDeleteRows = false;
+			this.dgClipboardHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dgClipboardHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colNumber,
+            this.colData,
+            this.colTime});
+			this.dgClipboardHistory.Location = new System.Drawing.Point(3, 46);
+			this.dgClipboardHistory.Name = "dgClipboardHistory";
+			this.dgClipboardHistory.ReadOnly = true;
+			this.dgClipboardHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dgClipboardHistory.Size = new System.Drawing.Size(497, 281);
+			this.dgClipboardHistory.TabIndex = 3;
+			// 
+			// colNumber
+			// 
+			this.colNumber.HeaderText = "#";
+			this.colNumber.Name = "colNumber";
+			this.colNumber.ReadOnly = true;
+			this.colNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.colNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.colNumber.Width = 30;
+			// 
+			// colData
+			// 
+			this.colData.HeaderText = "Data";
+			this.colData.MinimumWidth = 300;
+			this.colData.Name = "colData";
+			this.colData.ReadOnly = true;
+			this.colData.Width = 300;
+			// 
+			// colTime
+			// 
+			this.colTime.HeaderText = "Timestamp";
+			this.colTime.Name = "colTime";
+			this.colTime.ReadOnly = true;
+			// 
+			// btnPlaceRowOnClipboard
+			// 
+			this.btnPlaceRowOnClipboard.Location = new System.Drawing.Point(256, 6);
+			this.btnPlaceRowOnClipboard.Name = "btnPlaceRowOnClipboard";
+			this.btnPlaceRowOnClipboard.Size = new System.Drawing.Size(244, 23);
+			this.btnPlaceRowOnClipboard.TabIndex = 2;
+			this.btnPlaceRowOnClipboard.Text = "Place Selected Row on Selected Clipboard";
+			this.btnPlaceRowOnClipboard.UseVisualStyleBackColor = true;
+			this.btnPlaceRowOnClipboard.Click += new System.EventHandler(this.btnPlaceRowOnClipboard_Click);
+			// 
+			// lblClipboardSelect
+			// 
+			this.lblClipboardSelect.AutoSize = true;
+			this.lblClipboardSelect.Location = new System.Drawing.Point(6, 9);
+			this.lblClipboardSelect.Name = "lblClipboardSelect";
+			this.lblClipboardSelect.Size = new System.Drawing.Size(87, 13);
+			this.lblClipboardSelect.TabIndex = 1;
+			this.lblClipboardSelect.Text = "Select Clipboard:";
+			// 
+			// ddlClipboardSelect
+			// 
+			this.ddlClipboardSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.ddlClipboardSelect.FormattingEnabled = true;
+			this.ddlClipboardSelect.Items.AddRange(new object[] {
+            "Windows Clipboard"});
+			this.ddlClipboardSelect.Location = new System.Drawing.Point(99, 6);
+			this.ddlClipboardSelect.Name = "ddlClipboardSelect";
+			this.ddlClipboardSelect.Size = new System.Drawing.Size(151, 21);
+			this.ddlClipboardSelect.TabIndex = 0;
 			// 
 			// tabAbout
 			// 
@@ -273,120 +396,23 @@
 			this.txtErrorLog.Size = new System.Drawing.Size(500, 326);
 			this.txtErrorLog.TabIndex = 0;
 			// 
-			// lblNumHistoricalRecords
+			// viewDetailedHistoryToolStripMenuItem
 			// 
-			this.lblNumHistoricalRecords.AutoSize = true;
-			this.lblNumHistoricalRecords.Location = new System.Drawing.Point(54, 41);
-			this.lblNumHistoricalRecords.Name = "lblNumHistoricalRecords";
-			this.lblNumHistoricalRecords.Size = new System.Drawing.Size(112, 13);
-			this.lblNumHistoricalRecords.TabIndex = 10;
-			this.lblNumHistoricalRecords.Text = "Clipboard History Size:";
+			this.viewDetailedHistoryToolStripMenuItem.Name = "viewDetailedHistoryToolStripMenuItem";
+			this.viewDetailedHistoryToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+			this.viewDetailedHistoryToolStripMenuItem.Text = "View Detailed History";
+			this.viewDetailedHistoryToolStripMenuItem.Click += new System.EventHandler(this.viewDetailedHistoryToolStripMenuItem_Click);
 			// 
-			// txtNumberOfHistoricalRecords
+			// toolStripSeparator2
 			// 
-			this.txtNumberOfHistoricalRecords.Location = new System.Drawing.Point(172, 39);
-			this.txtNumberOfHistoricalRecords.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.txtNumberOfHistoricalRecords.Name = "txtNumberOfHistoricalRecords";
-			this.txtNumberOfHistoricalRecords.Size = new System.Drawing.Size(50, 20);
-			this.txtNumberOfHistoricalRecords.TabIndex = 11;
-			this.txtNumberOfHistoricalRecords.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-			// 
-			// tabHistory
-			// 
-			this.tabHistory.Controls.Add(this.dgClipboardHistory);
-			this.tabHistory.Controls.Add(this.btnPlaceRowOnClipboard);
-			this.tabHistory.Controls.Add(this.lblClipboardSelect);
-			this.tabHistory.Controls.Add(this.ddlClipboardSelect);
-			this.tabHistory.Location = new System.Drawing.Point(4, 22);
-			this.tabHistory.Name = "tabHistory";
-			this.tabHistory.Padding = new System.Windows.Forms.Padding(3);
-			this.tabHistory.Size = new System.Drawing.Size(506, 333);
-			this.tabHistory.TabIndex = 3;
-			this.tabHistory.Text = "Clipboard History";
-			this.tabHistory.UseVisualStyleBackColor = true;
-			// 
-			// ddlClipboardSelect
-			// 
-			this.ddlClipboardSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.ddlClipboardSelect.FormattingEnabled = true;
-			this.ddlClipboardSelect.Items.AddRange(new object[] {
-            "Windows Clipboard"});
-			this.ddlClipboardSelect.Location = new System.Drawing.Point(99, 6);
-			this.ddlClipboardSelect.Name = "ddlClipboardSelect";
-			this.ddlClipboardSelect.Size = new System.Drawing.Size(151, 21);
-			this.ddlClipboardSelect.TabIndex = 0;
-			// 
-			// lblClipboardSelect
-			// 
-			this.lblClipboardSelect.AutoSize = true;
-			this.lblClipboardSelect.Location = new System.Drawing.Point(6, 9);
-			this.lblClipboardSelect.Name = "lblClipboardSelect";
-			this.lblClipboardSelect.Size = new System.Drawing.Size(87, 13);
-			this.lblClipboardSelect.TabIndex = 1;
-			this.lblClipboardSelect.Text = "Select Clipboard:";
-			// 
-			// btnPlaceRowOnClipboard
-			// 
-			this.btnPlaceRowOnClipboard.Location = new System.Drawing.Point(256, 6);
-			this.btnPlaceRowOnClipboard.Name = "btnPlaceRowOnClipboard";
-			this.btnPlaceRowOnClipboard.Size = new System.Drawing.Size(244, 23);
-			this.btnPlaceRowOnClipboard.TabIndex = 2;
-			this.btnPlaceRowOnClipboard.Text = "Place Selected Row on Selected Clipboard";
-			this.btnPlaceRowOnClipboard.UseVisualStyleBackColor = true;
-			this.btnPlaceRowOnClipboard.Click += new System.EventHandler(this.btnPlaceRowOnClipboard_Click);
-			// 
-			// dgClipboardHistory
-			// 
-			this.dgClipboardHistory.AllowUserToAddRows = false;
-			this.dgClipboardHistory.AllowUserToDeleteRows = false;
-			this.dgClipboardHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dgClipboardHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colNumber,
-            this.colData,
-            this.colTime});
-			this.dgClipboardHistory.Location = new System.Drawing.Point(3, 46);
-			this.dgClipboardHistory.Name = "dgClipboardHistory";
-			this.dgClipboardHistory.ReadOnly = true;
-			this.dgClipboardHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgClipboardHistory.Size = new System.Drawing.Size(497, 281);
-			this.dgClipboardHistory.TabIndex = 3;
-			// 
-			// colNumber
-			// 
-			this.colNumber.HeaderText = "#";
-			this.colNumber.Name = "colNumber";
-			this.colNumber.ReadOnly = true;
-			this.colNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.colNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			this.colNumber.Width = 30;
-			// 
-			// colData
-			// 
-			this.colData.HeaderText = "Data";
-			this.colData.MinimumWidth = 300;
-			this.colData.Name = "colData";
-			this.colData.ReadOnly = true;
-			this.colData.Width = 300;
-			// 
-			// colTime
-			// 
-			this.colTime.HeaderText = "Timestamp";
-			this.colTime.Name = "colTime";
-			this.colTime.ReadOnly = true;
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
 			// 
 			// MultipleClipboardsDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(534, 407);
+			this.ClientSize = new System.Drawing.Size(542, 411);
 			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.btnHide);
@@ -404,27 +430,27 @@
 			this.tabControl.ResumeLayout(false);
 			this.tabSettings.ResumeLayout(false);
 			this.tabSettings.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.txtNumClipboards)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dgClipboards)).EndInit();
-			this.tabAbout.ResumeLayout(false);
-			this.tabErrorLog.ResumeLayout(false);
-			this.tabErrorLog.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).EndInit();
 			this.tabHistory.ResumeLayout(false);
 			this.tabHistory.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgClipboardHistory)).EndInit();
+			this.tabAbout.ResumeLayout(false);
+			this.tabErrorLog.ResumeLayout(false);
+			this.tabErrorLog.PerformLayout();
 			this.ResumeLayout(false);
 
-        }
+		}
 
-        #endregion
+		#endregion
 
-        private System.Windows.Forms.NotifyIcon trayIcon;
-        private System.Windows.Forms.ContextMenuStrip trayRightClickMenu;
-        private System.Windows.Forms.ToolStripMenuItem editMultipleClipboardOptionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.Button btnSave;
+		private System.Windows.Forms.NotifyIcon trayIcon;
+		private System.Windows.Forms.ContextMenuStrip trayRightClickMenu;
+		private System.Windows.Forms.ToolStripMenuItem editMultipleClipboardOptionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+		private System.Windows.Forms.Button btnSave;
 		private System.Windows.Forms.Button btnExit;
 		private System.Windows.Forms.Button btnHide;
 		private System.Windows.Forms.ToolStripMenuItem aboutMenuItem;
@@ -448,6 +474,9 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn colNumber;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colData;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
-    }
+		private System.Windows.Forms.ToolStripMenuItem clipboardHistoryMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem viewDetailedHistoryToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+	}
 }
 

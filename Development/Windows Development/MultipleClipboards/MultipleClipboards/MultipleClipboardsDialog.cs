@@ -117,9 +117,13 @@ namespace MultipleClipboards
 				string itemText = string.Format("#{0} - {1}{2} + {3}", row.number, row.modifier_key_codesRowByFK_accessor_key_codes_clipboard.display_text,
 					(row.modifier_key_2 == 0) ? string.Empty : " + " + row.modifier_key_codesRowByFK_accessor_key_codes_clipboard1.display_text,
 					row.operation_key_codesRowByoperation_key_codes_clipboard_copy.display_text);
-				
+
 				this.ddlClipboardSelect.Items.Add(itemText);
 			}
+
+			// select the windows clipboard by default
+			// TODO: find a way to remove the empty item from this dropdown
+			this.ddlClipboardSelect.SelectedIndex = 0;
 		}
 
 		private void InitGrid()
@@ -293,7 +297,10 @@ namespace MultipleClipboards
 		// Called when the place selected row on selected clipboard button is clicked from the history tab
 		private void btnPlaceRowOnClipboard_Click(object sender, EventArgs e)
 		{
-			clipboardManager.PlaceHistoricalEntryOnClipboard(0, 0);
+			if (dgClipboardHistory.SelectedRows.Count > 0)
+			{
+				clipboardManager.PlaceHistoricalEntryOnClipboard(dgClipboardHistory.SelectedRows[0].Index, ddlClipboardSelect.SelectedIndex);
+			}
 		}
 
 		// Called when the user clicks the show error log menu item
@@ -301,6 +308,45 @@ namespace MultipleClipboards
 		{
 			ShowMainDialog();
 			tabControl.SelectedTab = tabErrorLog;
+		}
+
+		// Called when the user hovers over the history menu item
+		private void clipboardHistoryMenuItem_DropDownOpening(object sender, EventArgs e)
+		{
+			// first clear out all the items except the last 2
+			while (clipboardHistoryMenuItem.DropDownItems.Count > 2)
+			{
+				clipboardHistoryMenuItem.DropDownItems.RemoveAt(0);
+			}
+
+			// now add the clipboard history items
+			if (clipboardManager.ClipboardHistory.Count > 0)
+			{
+				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
+				{
+					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory[i]), null, new EventHandler(clipboardHistoryMenuItem_Click));
+					clipboardHistoryMenuItem.DropDownItems.Insert(0 + i, item);
+				}
+			}
+			else
+			{
+				ToolStripMenuItem item = new ToolStripMenuItem("No Clipboard History Exists");
+				item.Enabled = false;
+				clipboardHistoryMenuItem.DropDownItems.Insert(0, item);
+			}
+		}
+
+		private void clipboardHistoryMenuItem_Click(object sender, EventArgs e)
+		{
+			// the index will be:
+			// this.clipboardHistoryMenuItem.DropDownItems.IndexOf((ToolStripDropDownItem)sender)
+		}
+
+		// Called when the user clicks the view detailed history menu item
+		private void viewDetailedHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowMainDialog();
+			tabControl.SelectedTab = tabHistory;
 		}
 
 		// Called when the user clicks the about menu item
@@ -347,20 +393,11 @@ namespace MultipleClipboards
 				dgClipboardHistory.Rows.Clear();
 
 				// fill the history grid will the clipboard history
-				string data = string.Empty;
 				ClipboardManager.ClipboardEntry clipboardEntry = null;
 				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
 				{
 					clipboardEntry = clipboardManager.ClipboardHistory[i];
-					if (clipboardEntry.dataType == ClipboardManager.ClipboardDataType.TEXT)
-					{
-						data = clipboardEntry.data.ToString();
-					}
-					else
-					{
-						data = clipboardEntry.dataType.ToString();
-					}
-					dgClipboardHistory.Rows.Add(new object[] { (i++).ToString(), data, clipboardEntry.timestamp.ToShortTimeString() });
+					dgClipboardHistory.Rows.Add(new object[] { (i++).ToString(), GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp.ToShortTimeString() });
 				}
 			}
 		}
@@ -375,6 +412,19 @@ namespace MultipleClipboards
 			Show();
 			WindowState = FormWindowState.Normal;
 			Focus();
+		}
+
+		// Gets the data to display for the given clipboard entry
+		private string GetClipboardHistoryDataString(ClipboardManager.ClipboardEntry clipboardEntry)
+		{
+			if (clipboardEntry.dataType == ClipboardManager.ClipboardDataType.TEXT)
+			{
+				return clipboardEntry.data.ToString();
+			}
+			else
+			{
+				return clipboardEntry.dataType.ToString();
+			}
 		}
 
 		// Save settings to file
