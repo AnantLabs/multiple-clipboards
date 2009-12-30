@@ -86,6 +86,9 @@ namespace MultipleClipboards
 			lastMessageProcessed = new HotkeyMessage();
 			currentMessage = new HotkeyMessage();
 
+			// History tab
+			FillClipboardSelectDropdown();
+
 			// Grid tab
 			InitGrid();
 
@@ -104,6 +107,19 @@ namespace MultipleClipboards
 
 			// handle the dispose event of the window
 			this.Disposed += new EventHandler(this.MultipleClipboardsDialog_Disposed);
+		}
+
+		private void FillClipboardSelectDropdown()
+		{
+			// now add an option for each additional clipboard
+			foreach (clipboardDS.clipboardRow row in settingsManager.ClipboardDS.clipboard)
+			{
+				string itemText = string.Format("#{0} - {1}{2} + {3}", row.number, row.modifier_key_codesRowByFK_accessor_key_codes_clipboard.display_text,
+					(row.modifier_key_2 == 0) ? string.Empty : " + " + row.modifier_key_codesRowByFK_accessor_key_codes_clipboard1.display_text,
+					row.operation_key_codesRowByoperation_key_codes_clipboard_copy.display_text);
+				
+				this.ddlClipboardSelect.Items.Add(itemText);
+			}
 		}
 
 		private void InitGrid()
@@ -274,6 +290,12 @@ namespace MultipleClipboards
 			Hide();
 		}
 
+		// Called when the place selected row on selected clipboard button is clicked from the history tab
+		private void btnPlaceRowOnClipboard_Click(object sender, EventArgs e)
+		{
+			clipboardManager.PlaceHistoricalEntryOnClipboard(0, 0);
+		}
+
 		// Called when the user clicks the show error log menu item
 		private void errorLogMenuItem_Click(object sender, EventArgs e)
 		{
@@ -305,16 +327,40 @@ namespace MultipleClipboards
 		// Called when the selected tab in the tab control changes
 		private void tabControl_Selected(object sender, TabControlEventArgs e)
 		{
-			// if the user clicked the error tab then load the most recent contents of the error file and place it into the text control
 			if (e.TabPage == tabErrorLog)
 			{
+				// if the user clicked the error tab then load the most recent contents of the error file and place it into the text control
 				if (File.Exists(errorLogFile))
 				{
 					txtErrorLog.Text = File.ReadAllText(errorLogFile);
+					txtErrorLog.SelectionStart = 0;
+					txtErrorLog.SelectionLength = 0;
 				}
 				else
 				{
 					txtErrorLog.Text = "The error file does not exist.\r\n\r\nThat's a good thing!  There have not been any errors.";
+				}
+			}
+			else if (e.TabPage == tabHistory)
+			{
+				// clear the history grid
+				dgClipboardHistory.Rows.Clear();
+
+				// fill the history grid will the clipboard history
+				string data = string.Empty;
+				ClipboardManager.ClipboardEntry clipboardEntry = null;
+				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
+				{
+					clipboardEntry = clipboardManager.ClipboardHistory[i];
+					if (clipboardEntry.dataType == ClipboardManager.ClipboardDataType.TEXT)
+					{
+						data = clipboardEntry.data.ToString();
+					}
+					else
+					{
+						data = clipboardEntry.dataType.ToString();
+					}
+					dgClipboardHistory.Rows.Add(new object[] { (i++).ToString(), data, clipboardEntry.timestamp.ToShortTimeString() });
 				}
 			}
 		}
@@ -516,7 +562,7 @@ namespace MultipleClipboards
 						// this means the user used the regular windows clipboard
 						// track the data on the clipboard for the history viewer
 						// data coppied using any additional clipboards will be tracked internally
-						LogError(string.Format("Data on Clipboard: {0}", Clipboard.GetText()));
+						clipboardManager.StoreClipboardContents();
 					}
 					// send the message to the next app in the clipboard chain
 					SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);

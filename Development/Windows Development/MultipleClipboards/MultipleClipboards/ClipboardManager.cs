@@ -9,7 +9,7 @@ namespace MultipleClipboards
 	class ClipboardManager
 	{
 		private List<HotKey> hotKeys;
-		private Queue<ClipboardEntry> clipboardHistory;
+		private List<ClipboardEntry> clipboardHistory;
 		private Dictionary<int, ClipboardEntry> clipboards;
 		private ClipboardEntry existingData;
 		private int threadDelayTime;
@@ -30,11 +30,19 @@ namespace MultipleClipboards
 		{
 			public ClipboardDataType dataType;
 			public object data;
+			public DateTime timestamp;
 
 			public ClipboardEntry(ClipboardDataType dataType, object data)
 			{
 				this.dataType = dataType;
 				this.data = data;
+			}
+
+			public ClipboardEntry(ClipboardDataType dataType, object data, DateTime timestamp)
+			{
+				this.dataType = dataType;
+				this.data = data;
+				this.timestamp = timestamp;
 			}
 		}
 
@@ -52,7 +60,7 @@ namespace MultipleClipboards
 		{
 			NumberOfHistoricalRecords = numberOfHistoricalRecords;
 			hotKeys = new List<HotKey>();
-			clipboardHistory = new Queue<ClipboardEntry>(NumberOfHistoricalRecords);
+			clipboardHistory = new List<ClipboardEntry>(NumberOfHistoricalRecords);
 			clipboards = new Dictionary<int, ClipboardEntry>();
 			existingData = new ClipboardEntry(ClipboardDataType.NO_DATA, null);
 			this.threadDelayTime = threadDelayTime;
@@ -71,7 +79,7 @@ namespace MultipleClipboards
 			}
 		}
 
-		public Queue<ClipboardEntry> ClipboardHistory
+		public List<ClipboardEntry> ClipboardHistory
 		{
 			get
 			{
@@ -101,7 +109,7 @@ namespace MultipleClipboards
 
 		public void StoreClipboardContents()
 		{
-			ClipboardEntry entry = new ClipboardEntry(ClipboardDataType.NO_DATA, null);
+			ClipboardEntry entry = new ClipboardEntry(ClipboardDataType.NO_DATA, null, DateTime.Now);
 
 			if (Clipboard.ContainsText())
 			{
@@ -129,14 +137,19 @@ namespace MultipleClipboards
 				entry.data = null;
 			}
 
-			clipboardHistory.Enqueue(entry);
+			clipboardHistory.Add(entry);
+		}
+
+		public void PlaceHistoricalEntryOnClipboard(int clipboardHistoryIndex, int clipboardIndex)
+		{
+
 		}
 
 		public void Reset()
 		{
 			hotKeys.Clear();
 			clipboards.Clear();
-			clipboardHistory = new Queue<ClipboardEntry>(NumberOfHistoricalRecords);
+			clipboardHistory = new List<ClipboardEntry>(NumberOfHistoricalRecords);
 		}
 
 		// This is called from the form when a registered hotkey is pressed
@@ -228,8 +241,8 @@ namespace MultipleClipboards
 				clipboards[clipboardID].data = null;
 			}
 
-			// store this in the clipboard history queue
-			clipboardHistory.Enqueue(new ClipboardEntry(clipboards[clipboardID].dataType, clipboards[clipboardID].data));
+			// store this in the clipboard history list
+			clipboardHistory.Add(new ClipboardEntry(clipboards[clipboardID].dataType, clipboards[clipboardID].data, DateTime.Now));
 
 			RestoreClipboardData();
 		}

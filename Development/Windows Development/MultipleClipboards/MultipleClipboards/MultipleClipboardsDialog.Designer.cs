@@ -49,6 +49,16 @@
 			this.txtAbout = new System.Windows.Forms.RichTextBox();
 			this.tabErrorLog = new System.Windows.Forms.TabPage();
 			this.txtErrorLog = new System.Windows.Forms.TextBox();
+			this.lblNumHistoricalRecords = new System.Windows.Forms.Label();
+			this.txtNumberOfHistoricalRecords = new System.Windows.Forms.NumericUpDown();
+			this.tabHistory = new System.Windows.Forms.TabPage();
+			this.ddlClipboardSelect = new System.Windows.Forms.ComboBox();
+			this.lblClipboardSelect = new System.Windows.Forms.Label();
+			this.btnPlaceRowOnClipboard = new System.Windows.Forms.Button();
+			this.dgClipboardHistory = new System.Windows.Forms.DataGridView();
+			this.colNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.trayRightClickMenu.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tabSettings.SuspendLayout();
@@ -56,6 +66,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgClipboards)).BeginInit();
 			this.tabAbout.SuspendLayout();
 			this.tabErrorLog.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).BeginInit();
+			this.tabHistory.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dgClipboardHistory)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// trayIcon
@@ -113,7 +126,7 @@
 			// btnSave
 			// 
 			this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnSave.Location = new System.Drawing.Point(400, 9);
+			this.btnSave.Location = new System.Drawing.Point(397, 14);
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(100, 23);
 			this.btnSave.TabIndex = 2;
@@ -124,7 +137,7 @@
 			// btnExit
 			// 
 			this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnExit.Location = new System.Drawing.Point(272, 343);
+			this.btnExit.Location = new System.Drawing.Point(272, 378);
 			this.btnExit.Name = "btnExit";
 			this.btnExit.Size = new System.Drawing.Size(100, 23);
 			this.btnExit.TabIndex = 3;
@@ -134,7 +147,7 @@
 			// 
 			// btnHide
 			// 
-			this.btnHide.Location = new System.Drawing.Point(166, 343);
+			this.btnHide.Location = new System.Drawing.Point(166, 378);
 			this.btnHide.Name = "btnHide";
 			this.btnHide.Size = new System.Drawing.Size(100, 23);
 			this.btnHide.TabIndex = 7;
@@ -145,17 +158,20 @@
 			// tabControl
 			// 
 			this.tabControl.Controls.Add(this.tabSettings);
+			this.tabControl.Controls.Add(this.tabHistory);
 			this.tabControl.Controls.Add(this.tabAbout);
 			this.tabControl.Controls.Add(this.tabErrorLog);
 			this.tabControl.Location = new System.Drawing.Point(12, 13);
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
-			this.tabControl.Size = new System.Drawing.Size(514, 324);
+			this.tabControl.Size = new System.Drawing.Size(514, 359);
 			this.tabControl.TabIndex = 8;
 			this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
 			// 
 			// tabSettings
 			// 
+			this.tabSettings.Controls.Add(this.txtNumberOfHistoricalRecords);
+			this.tabSettings.Controls.Add(this.lblNumHistoricalRecords);
 			this.tabSettings.Controls.Add(this.txtNumClipboards);
 			this.tabSettings.Controls.Add(this.dgClipboards);
 			this.tabSettings.Controls.Add(this.btnSave);
@@ -163,7 +179,7 @@
 			this.tabSettings.Location = new System.Drawing.Point(4, 22);
 			this.tabSettings.Name = "tabSettings";
 			this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-			this.tabSettings.Size = new System.Drawing.Size(506, 298);
+			this.tabSettings.Size = new System.Drawing.Size(506, 333);
 			this.tabSettings.TabIndex = 0;
 			this.tabSettings.Text = "Settings";
 			this.tabSettings.UseVisualStyleBackColor = true;
@@ -198,7 +214,7 @@
 			this.dgClipboards.AllowUserToAddRows = false;
 			this.dgClipboards.AllowUserToDeleteRows = false;
 			this.dgClipboards.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dgClipboards.Location = new System.Drawing.Point(6, 40);
+			this.dgClipboards.Location = new System.Drawing.Point(3, 75);
 			this.dgClipboards.Name = "dgClipboards";
 			this.dgClipboards.Size = new System.Drawing.Size(494, 252);
 			this.dgClipboards.TabIndex = 9;
@@ -218,7 +234,7 @@
 			this.tabAbout.Location = new System.Drawing.Point(4, 22);
 			this.tabAbout.Name = "tabAbout";
 			this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
-			this.tabAbout.Size = new System.Drawing.Size(506, 298);
+			this.tabAbout.Size = new System.Drawing.Size(506, 333);
 			this.tabAbout.TabIndex = 1;
 			this.tabAbout.Text = "About";
 			this.tabAbout.UseVisualStyleBackColor = true;
@@ -231,7 +247,7 @@
 			this.txtAbout.Location = new System.Drawing.Point(3, 3);
 			this.txtAbout.Name = "txtAbout";
 			this.txtAbout.ReadOnly = true;
-			this.txtAbout.Size = new System.Drawing.Size(500, 292);
+			this.txtAbout.Size = new System.Drawing.Size(500, 327);
 			this.txtAbout.TabIndex = 0;
 			this.txtAbout.Text = "";
 			// 
@@ -240,7 +256,7 @@
 			this.tabErrorLog.Controls.Add(this.txtErrorLog);
 			this.tabErrorLog.Location = new System.Drawing.Point(4, 22);
 			this.tabErrorLog.Name = "tabErrorLog";
-			this.tabErrorLog.Size = new System.Drawing.Size(506, 298);
+			this.tabErrorLog.Size = new System.Drawing.Size(506, 333);
 			this.tabErrorLog.TabIndex = 2;
 			this.tabErrorLog.Text = "Error Log";
 			this.tabErrorLog.UseVisualStyleBackColor = true;
@@ -254,21 +270,130 @@
 			this.txtErrorLog.Name = "txtErrorLog";
 			this.txtErrorLog.ReadOnly = true;
 			this.txtErrorLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.txtErrorLog.Size = new System.Drawing.Size(500, 292);
+			this.txtErrorLog.Size = new System.Drawing.Size(500, 326);
 			this.txtErrorLog.TabIndex = 0;
+			// 
+			// lblNumHistoricalRecords
+			// 
+			this.lblNumHistoricalRecords.AutoSize = true;
+			this.lblNumHistoricalRecords.Location = new System.Drawing.Point(54, 41);
+			this.lblNumHistoricalRecords.Name = "lblNumHistoricalRecords";
+			this.lblNumHistoricalRecords.Size = new System.Drawing.Size(112, 13);
+			this.lblNumHistoricalRecords.TabIndex = 10;
+			this.lblNumHistoricalRecords.Text = "Clipboard History Size:";
+			// 
+			// txtNumberOfHistoricalRecords
+			// 
+			this.txtNumberOfHistoricalRecords.Location = new System.Drawing.Point(172, 39);
+			this.txtNumberOfHistoricalRecords.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.txtNumberOfHistoricalRecords.Name = "txtNumberOfHistoricalRecords";
+			this.txtNumberOfHistoricalRecords.Size = new System.Drawing.Size(50, 20);
+			this.txtNumberOfHistoricalRecords.TabIndex = 11;
+			this.txtNumberOfHistoricalRecords.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+			// 
+			// tabHistory
+			// 
+			this.tabHistory.Controls.Add(this.dgClipboardHistory);
+			this.tabHistory.Controls.Add(this.btnPlaceRowOnClipboard);
+			this.tabHistory.Controls.Add(this.lblClipboardSelect);
+			this.tabHistory.Controls.Add(this.ddlClipboardSelect);
+			this.tabHistory.Location = new System.Drawing.Point(4, 22);
+			this.tabHistory.Name = "tabHistory";
+			this.tabHistory.Padding = new System.Windows.Forms.Padding(3);
+			this.tabHistory.Size = new System.Drawing.Size(506, 333);
+			this.tabHistory.TabIndex = 3;
+			this.tabHistory.Text = "Clipboard History";
+			this.tabHistory.UseVisualStyleBackColor = true;
+			// 
+			// ddlClipboardSelect
+			// 
+			this.ddlClipboardSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.ddlClipboardSelect.FormattingEnabled = true;
+			this.ddlClipboardSelect.Items.AddRange(new object[] {
+            "Windows Clipboard"});
+			this.ddlClipboardSelect.Location = new System.Drawing.Point(99, 6);
+			this.ddlClipboardSelect.Name = "ddlClipboardSelect";
+			this.ddlClipboardSelect.Size = new System.Drawing.Size(151, 21);
+			this.ddlClipboardSelect.TabIndex = 0;
+			// 
+			// lblClipboardSelect
+			// 
+			this.lblClipboardSelect.AutoSize = true;
+			this.lblClipboardSelect.Location = new System.Drawing.Point(6, 9);
+			this.lblClipboardSelect.Name = "lblClipboardSelect";
+			this.lblClipboardSelect.Size = new System.Drawing.Size(87, 13);
+			this.lblClipboardSelect.TabIndex = 1;
+			this.lblClipboardSelect.Text = "Select Clipboard:";
+			// 
+			// btnPlaceRowOnClipboard
+			// 
+			this.btnPlaceRowOnClipboard.Location = new System.Drawing.Point(256, 6);
+			this.btnPlaceRowOnClipboard.Name = "btnPlaceRowOnClipboard";
+			this.btnPlaceRowOnClipboard.Size = new System.Drawing.Size(244, 23);
+			this.btnPlaceRowOnClipboard.TabIndex = 2;
+			this.btnPlaceRowOnClipboard.Text = "Place Selected Row on Selected Clipboard";
+			this.btnPlaceRowOnClipboard.UseVisualStyleBackColor = true;
+			this.btnPlaceRowOnClipboard.Click += new System.EventHandler(this.btnPlaceRowOnClipboard_Click);
+			// 
+			// dgClipboardHistory
+			// 
+			this.dgClipboardHistory.AllowUserToAddRows = false;
+			this.dgClipboardHistory.AllowUserToDeleteRows = false;
+			this.dgClipboardHistory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dgClipboardHistory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colNumber,
+            this.colData,
+            this.colTime});
+			this.dgClipboardHistory.Location = new System.Drawing.Point(3, 46);
+			this.dgClipboardHistory.Name = "dgClipboardHistory";
+			this.dgClipboardHistory.ReadOnly = true;
+			this.dgClipboardHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dgClipboardHistory.Size = new System.Drawing.Size(497, 281);
+			this.dgClipboardHistory.TabIndex = 3;
+			// 
+			// colNumber
+			// 
+			this.colNumber.HeaderText = "#";
+			this.colNumber.Name = "colNumber";
+			this.colNumber.ReadOnly = true;
+			this.colNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.colNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.colNumber.Width = 30;
+			// 
+			// colData
+			// 
+			this.colData.HeaderText = "Data";
+			this.colData.MinimumWidth = 300;
+			this.colData.Name = "colData";
+			this.colData.ReadOnly = true;
+			this.colData.Width = 300;
+			// 
+			// colTime
+			// 
+			this.colTime.HeaderText = "Timestamp";
+			this.colTime.Name = "colTime";
+			this.colTime.ReadOnly = true;
 			// 
 			// MultipleClipboardsDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(538, 378);
+			this.ClientSize = new System.Drawing.Size(534, 407);
+			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.btnHide);
-			this.Controls.Add(this.btnExit);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
-			this.MaximumSize = new System.Drawing.Size(550, 410);
-			this.MinimumSize = new System.Drawing.Size(550, 410);
+			this.MaximumSize = new System.Drawing.Size(550, 445);
+			this.MinimumSize = new System.Drawing.Size(550, 445);
 			this.Name = "MultipleClipboardsDialog";
 			this.Text = "Multiple Clipboards";
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
@@ -284,6 +409,10 @@
 			this.tabAbout.ResumeLayout(false);
 			this.tabErrorLog.ResumeLayout(false);
 			this.tabErrorLog.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.txtNumberOfHistoricalRecords)).EndInit();
+			this.tabHistory.ResumeLayout(false);
+			this.tabHistory.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dgClipboardHistory)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -309,6 +438,16 @@
 		private System.Windows.Forms.TabPage tabErrorLog;
 		private System.Windows.Forms.RichTextBox txtAbout;
 		private System.Windows.Forms.TextBox txtErrorLog;
+		private System.Windows.Forms.Label lblNumHistoricalRecords;
+		private System.Windows.Forms.NumericUpDown txtNumberOfHistoricalRecords;
+		private System.Windows.Forms.TabPage tabHistory;
+		private System.Windows.Forms.ComboBox ddlClipboardSelect;
+		private System.Windows.Forms.DataGridView dgClipboardHistory;
+		private System.Windows.Forms.Button btnPlaceRowOnClipboard;
+		private System.Windows.Forms.Label lblClipboardSelect;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colNumber;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colData;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
     }
 }
 
