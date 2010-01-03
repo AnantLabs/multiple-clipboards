@@ -34,6 +34,8 @@
 			this.trayRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.editMultipleClipboardOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.clipboardHistoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.viewDetailedHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.errorLogMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -60,8 +62,6 @@
 			this.txtAbout = new System.Windows.Forms.RichTextBox();
 			this.tabErrorLog = new System.Windows.Forms.TabPage();
 			this.txtErrorLog = new System.Windows.Forms.TextBox();
-			this.viewDetailedHistoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.trayRightClickMenu.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tabSettings.SuspendLayout();
@@ -92,12 +92,12 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.trayRightClickMenu.Name = "trayRightClickMenu";
-			this.trayRightClickMenu.Size = new System.Drawing.Size(231, 142);
+			this.trayRightClickMenu.Size = new System.Drawing.Size(272, 130);
 			// 
 			// editMultipleClipboardOptionsToolStripMenuItem
 			// 
 			this.editMultipleClipboardOptionsToolStripMenuItem.Name = "editMultipleClipboardOptionsToolStripMenuItem";
-			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
 			this.editMultipleClipboardOptionsToolStripMenuItem.Text = "Edit Multiple Clipboard Options";
 			this.editMultipleClipboardOptionsToolStripMenuItem.Click += new System.EventHandler(this.editMultipleClipboardOptionsToolStripMenuItem_Click);
 			// 
@@ -107,33 +107,45 @@
             this.toolStripSeparator2,
             this.viewDetailedHistoryToolStripMenuItem});
 			this.clipboardHistoryMenuItem.Name = "clipboardHistoryMenuItem";
-			this.clipboardHistoryMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.clipboardHistoryMenuItem.Size = new System.Drawing.Size(271, 24);
 			this.clipboardHistoryMenuItem.Text = "Clipboard History";
 			this.clipboardHistoryMenuItem.DropDownOpening += new System.EventHandler(this.clipboardHistoryMenuItem_DropDownOpening);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(206, 6);
+			// 
+			// viewDetailedHistoryToolStripMenuItem
+			// 
+			this.viewDetailedHistoryToolStripMenuItem.Name = "viewDetailedHistoryToolStripMenuItem";
+			this.viewDetailedHistoryToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
+			this.viewDetailedHistoryToolStripMenuItem.Text = "View Detailed History";
+			this.viewDetailedHistoryToolStripMenuItem.Click += new System.EventHandler(this.viewDetailedHistoryToolStripMenuItem_Click);
 			// 
 			// aboutMenuItem
 			// 
 			this.aboutMenuItem.Name = "aboutMenuItem";
-			this.aboutMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.aboutMenuItem.Size = new System.Drawing.Size(271, 24);
 			this.aboutMenuItem.Text = "About Multiple Clipboards";
 			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
 			// 
 			// errorLogMenuItem
 			// 
 			this.errorLogMenuItem.Name = "errorLogMenuItem";
-			this.errorLogMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.errorLogMenuItem.Size = new System.Drawing.Size(271, 24);
 			this.errorLogMenuItem.Text = "Open Error Log";
 			this.errorLogMenuItem.Click += new System.EventHandler(this.errorLogMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(227, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(268, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -396,30 +408,18 @@
 			this.txtErrorLog.Size = new System.Drawing.Size(500, 326);
 			this.txtErrorLog.TabIndex = 0;
 			// 
-			// viewDetailedHistoryToolStripMenuItem
-			// 
-			this.viewDetailedHistoryToolStripMenuItem.Name = "viewDetailedHistoryToolStripMenuItem";
-			this.viewDetailedHistoryToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-			this.viewDetailedHistoryToolStripMenuItem.Text = "View Detailed History";
-			this.viewDetailedHistoryToolStripMenuItem.Click += new System.EventHandler(this.viewDetailedHistoryToolStripMenuItem_Click);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
-			// 
 			// MultipleClipboardsDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(542, 411);
-			this.Controls.Add(this.btnExit);
+			this.ClientSize = new System.Drawing.Size(532, 407);
 			this.Controls.Add(this.tabControl);
+			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.btnHide);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
-			this.MaximumSize = new System.Drawing.Size(550, 445);
-			this.MinimumSize = new System.Drawing.Size(550, 445);
+			this.MaximumSize = new System.Drawing.Size(550, 450);
+			this.MinimumSize = new System.Drawing.Size(550, 450);
 			this.Name = "MultipleClipboardsDialog";
 			this.Text = "Multiple Clipboards";
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;

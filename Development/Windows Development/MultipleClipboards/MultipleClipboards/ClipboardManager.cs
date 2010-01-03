@@ -142,6 +142,8 @@ namespace MultipleClipboards
 
 		public void PlaceHistoricalEntryOnClipboard(int clipboardHistoryIndex, int clipboardIndex)
 		{
+			this.isProcessingClipboardAction = true;
+
 			if (clipboardIndex == 0)
 			{
 				// put data on the windows clipboard
@@ -157,6 +159,8 @@ namespace MultipleClipboards
 				clipboards[clipboardIndex].dataType = clipboardHistory[clipboardHistoryIndex].dataType;
 				clipboards[clipboardIndex].timestamp = clipboardHistory[clipboardHistoryIndex].timestamp;
 			}
+
+			this.isProcessingClipboardAction = false;
 		}
 
 		public void Reset()

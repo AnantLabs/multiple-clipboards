@@ -324,7 +324,7 @@ namespace MultipleClipboards
 			{
 				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
 				{
-					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory[i]), null, new EventHandler(clipboardHistoryMenuItem_Click));
+					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory[i], true), null, new EventHandler(clipboardHistoryMenuItem_Click));
 					clipboardHistoryMenuItem.DropDownItems.Insert(0 + i, item);
 				}
 			}
@@ -336,10 +336,10 @@ namespace MultipleClipboards
 			}
 		}
 
+		// Called when the user clicks a clipboard entry from the History right click menu
 		private void clipboardHistoryMenuItem_Click(object sender, EventArgs e)
 		{
-			// the index will be:
-			// this.clipboardHistoryMenuItem.DropDownItems.IndexOf((ToolStripDropDownItem)sender)
+			clipboardManager.PlaceHistoricalEntryOnClipboard(this.clipboardHistoryMenuItem.DropDownItems.IndexOf((ToolStripDropDownItem)sender), 0);
 		}
 
 		// Called when the user clicks the view detailed history menu item
@@ -397,7 +397,7 @@ namespace MultipleClipboards
 				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
 				{
 					clipboardEntry = clipboardManager.ClipboardHistory[i];
-					dgClipboardHistory.Rows.Add(new object[] { (i++).ToString(), GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp.ToShortTimeString() });
+					dgClipboardHistory.Rows.Add(new object[] { (i + 1).ToString(), GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp.ToShortTimeString() });
 				}
 			}
 		}
@@ -417,14 +417,32 @@ namespace MultipleClipboards
 		// Gets the data to display for the given clipboard entry
 		private string GetClipboardHistoryDataString(ClipboardManager.ClipboardEntry clipboardEntry)
 		{
+			return GetClipboardHistoryDataString(clipboardEntry, false);
+		}
+
+		// Gets the data to display for the given clipboard entry
+		private string GetClipboardHistoryDataString(ClipboardManager.ClipboardEntry clipboardEntry, bool addTimeStamp)
+		{
+			string data;
 			if (clipboardEntry.dataType == ClipboardManager.ClipboardDataType.TEXT)
 			{
-				return clipboardEntry.data.ToString();
+				data = clipboardEntry.data.ToString().Replace("\r\n", " ");
+				if (data.Length > 60)
+				{
+					data = data.Substring(0, 60) + "...";
+				}
 			}
 			else
 			{
-				return clipboardEntry.dataType.ToString();
+				data = clipboardEntry.dataType.ToString();
 			}
+
+			if (addTimeStamp)
+			{
+				data += "  -  " + clipboardEntry.timestamp.ToShortTimeString();
+			}
+
+			return data;
 		}
 
 		// Save settings to file
@@ -443,6 +461,8 @@ namespace MultipleClipboards
 			{
 				UnregisterAllGlobalHotKeys();
 				RegisterAllHotkeys();
+				clipboardManager.NumberOfHistoricalRecords = settingsManager.NumberOfClipboardManagerRecords;
+				clipboardManager.Reset();
 				MessageBox.Show("Settings saved successfully.", "Save Complete");
 			}
 		}
