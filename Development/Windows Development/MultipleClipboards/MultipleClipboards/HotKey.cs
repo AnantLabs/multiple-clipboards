@@ -4,28 +4,40 @@ using System.Windows.Forms;
 
 namespace MultipleClipboards
 {
-	class HotKey
+	public enum ModifierKeys
 	{
-		public enum ModifierKeys
-		{
-			NONE = 0,
-			ALT = 1,
-			CONTROL = 2,
-			SHIFT = 4,
-			WINDOWS = 8
-		}
+		NONE = 0,
+		ALT = 1,
+		CONTROL = 2,
+		SHIFT = 4,
+		WINDOWS = 8
+	}
 
-		public enum HotKeyType
-		{
-			UNDEFINED = 0,
-			CUT = 1,
-			COPY = 2,
-			PASTE = 3
-		}
+	public enum HotKeyType
+	{
+		UNDEFINED = 0,
+		CUT = 1,
+		COPY = 2,
+		PASTE = 3
+	}
 
-		public Keys Key { get; set; }
-		public HotKeyType Operation { get; set; }
-		public int ClipboardID { get; set; }
+	public class HotKey
+	{
+		public Keys Key
+		{
+			get;
+			set;
+		}
+		public HotKeyType Operation
+		{
+			get;
+			set;
+		}
+		public int ClipboardID
+		{
+			get;
+			set;
+		}
 
 		List<string> modifierKeyCollection;
 		private int _modifiers;

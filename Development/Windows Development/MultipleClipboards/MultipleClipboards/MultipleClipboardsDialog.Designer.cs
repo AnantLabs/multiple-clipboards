@@ -52,9 +52,6 @@
 			this.lblNumClipboards = new System.Windows.Forms.Label();
 			this.tabHistory = new System.Windows.Forms.TabPage();
 			this.dgClipboardHistory = new System.Windows.Forms.DataGridView();
-			this.colNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colData = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.btnPlaceRowOnClipboard = new System.Windows.Forms.Button();
 			this.lblClipboardSelect = new System.Windows.Forms.Label();
 			this.ddlClipboardSelect = new System.Windows.Forms.ComboBox();
@@ -62,6 +59,9 @@
 			this.txtAbout = new System.Windows.Forms.RichTextBox();
 			this.tabErrorLog = new System.Windows.Forms.TabPage();
 			this.txtErrorLog = new System.Windows.Forms.TextBox();
+			this.colNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.colTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.trayRightClickMenu.SuspendLayout();
 			this.tabControl.SuspendLayout();
 			this.tabSettings.SuspendLayout();
@@ -92,12 +92,12 @@
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
 			this.trayRightClickMenu.Name = "trayRightClickMenu";
-			this.trayRightClickMenu.Size = new System.Drawing.Size(272, 130);
+			this.trayRightClickMenu.Size = new System.Drawing.Size(231, 120);
 			// 
 			// editMultipleClipboardOptionsToolStripMenuItem
 			// 
 			this.editMultipleClipboardOptionsToolStripMenuItem.Name = "editMultipleClipboardOptionsToolStripMenuItem";
-			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
+			this.editMultipleClipboardOptionsToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.editMultipleClipboardOptionsToolStripMenuItem.Text = "Edit Multiple Clipboard Options";
 			this.editMultipleClipboardOptionsToolStripMenuItem.Click += new System.EventHandler(this.editMultipleClipboardOptionsToolStripMenuItem_Click);
 			// 
@@ -107,45 +107,45 @@
             this.toolStripSeparator2,
             this.viewDetailedHistoryToolStripMenuItem});
 			this.clipboardHistoryMenuItem.Name = "clipboardHistoryMenuItem";
-			this.clipboardHistoryMenuItem.Size = new System.Drawing.Size(271, 24);
+			this.clipboardHistoryMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.clipboardHistoryMenuItem.Text = "Clipboard History";
 			this.clipboardHistoryMenuItem.DropDownOpening += new System.EventHandler(this.clipboardHistoryMenuItem_DropDownOpening);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(206, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
 			// 
 			// viewDetailedHistoryToolStripMenuItem
 			// 
 			this.viewDetailedHistoryToolStripMenuItem.Name = "viewDetailedHistoryToolStripMenuItem";
-			this.viewDetailedHistoryToolStripMenuItem.Size = new System.Drawing.Size(209, 24);
+			this.viewDetailedHistoryToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
 			this.viewDetailedHistoryToolStripMenuItem.Text = "View Detailed History";
 			this.viewDetailedHistoryToolStripMenuItem.Click += new System.EventHandler(this.viewDetailedHistoryToolStripMenuItem_Click);
 			// 
 			// aboutMenuItem
 			// 
 			this.aboutMenuItem.Name = "aboutMenuItem";
-			this.aboutMenuItem.Size = new System.Drawing.Size(271, 24);
+			this.aboutMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.aboutMenuItem.Text = "About Multiple Clipboards";
 			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
 			// 
 			// errorLogMenuItem
 			// 
 			this.errorLogMenuItem.Name = "errorLogMenuItem";
-			this.errorLogMenuItem.Size = new System.Drawing.Size(271, 24);
+			this.errorLogMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.errorLogMenuItem.Text = "Open Error Log";
 			this.errorLogMenuItem.Click += new System.EventHandler(this.errorLogMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(268, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(227, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(271, 24);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -304,34 +304,12 @@
             this.colData,
             this.colTime});
 			this.dgClipboardHistory.Location = new System.Drawing.Point(3, 46);
+			this.dgClipboardHistory.MultiSelect = false;
 			this.dgClipboardHistory.Name = "dgClipboardHistory";
 			this.dgClipboardHistory.ReadOnly = true;
 			this.dgClipboardHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dgClipboardHistory.Size = new System.Drawing.Size(497, 281);
 			this.dgClipboardHistory.TabIndex = 3;
-			// 
-			// colNumber
-			// 
-			this.colNumber.HeaderText = "#";
-			this.colNumber.Name = "colNumber";
-			this.colNumber.ReadOnly = true;
-			this.colNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.colNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-			this.colNumber.Width = 30;
-			// 
-			// colData
-			// 
-			this.colData.HeaderText = "Data";
-			this.colData.MinimumWidth = 300;
-			this.colData.Name = "colData";
-			this.colData.ReadOnly = true;
-			this.colData.Width = 300;
-			// 
-			// colTime
-			// 
-			this.colTime.HeaderText = "Timestamp";
-			this.colTime.Name = "colTime";
-			this.colTime.ReadOnly = true;
 			// 
 			// btnPlaceRowOnClipboard
 			// 
@@ -408,11 +386,36 @@
 			this.txtErrorLog.Size = new System.Drawing.Size(500, 326);
 			this.txtErrorLog.TabIndex = 0;
 			// 
+			// colNumber
+			// 
+			this.colNumber.HeaderText = "#";
+			this.colNumber.Name = "colNumber";
+			this.colNumber.ReadOnly = true;
+			this.colNumber.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.colNumber.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.colNumber.Width = 30;
+			// 
+			// colData
+			// 
+			this.colData.HeaderText = "Data";
+			this.colData.MinimumWidth = 300;
+			this.colData.Name = "colData";
+			this.colData.ReadOnly = true;
+			this.colData.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			this.colData.Width = 300;
+			// 
+			// colTime
+			// 
+			this.colTime.HeaderText = "Timestamp";
+			this.colTime.Name = "colTime";
+			this.colTime.ReadOnly = true;
+			this.colTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+			// 
 			// MultipleClipboardsDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(532, 407);
+			this.ClientSize = new System.Drawing.Size(542, 416);
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.btnExit);
 			this.Controls.Add(this.btnHide);
@@ -471,12 +474,12 @@
 		private System.Windows.Forms.DataGridView dgClipboardHistory;
 		private System.Windows.Forms.Button btnPlaceRowOnClipboard;
 		private System.Windows.Forms.Label lblClipboardSelect;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colNumber;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colData;
-		private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
 		private System.Windows.Forms.ToolStripMenuItem clipboardHistoryMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewDetailedHistoryToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colNumber;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colData;
+		private System.Windows.Forms.DataGridViewTextBoxColumn colTime;
 	}
 }
 

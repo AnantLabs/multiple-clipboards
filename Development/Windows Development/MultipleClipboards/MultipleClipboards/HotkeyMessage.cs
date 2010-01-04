@@ -2,10 +2,18 @@
 
 namespace MultipleClipboards
 {
-	class HotkeyMessage
+	public class HotkeyMessage
 	{
-		public string MessageString { get; set; }
-		public DateTime MessageTime { get; set; }
+		public string MessageString
+		{
+			get;
+			set;
+		}
+		public DateTime MessageTime
+		{
+			get;
+			set;
+		}
 
 		public HotkeyMessage()
 		{

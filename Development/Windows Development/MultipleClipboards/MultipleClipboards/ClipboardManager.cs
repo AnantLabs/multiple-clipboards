@@ -6,45 +6,45 @@ using System.Windows.Forms;
 
 namespace MultipleClipboards
 {
-	class ClipboardManager
+	public enum ClipboardDataType
+	{
+		NO_DATA = 0,
+		AUDIO = 1,
+		FILE_LIST = 2,
+		IMAGE = 3,
+		TEXT = 4
+	}
+
+	// class to hold clipboard data in memory
+	public class ClipboardEntry
+	{
+		public ClipboardDataType dataType;
+		public object data;
+		public DateTime timestamp;
+
+		public ClipboardEntry(ClipboardDataType dataType, object data)
+		{
+			this.dataType = dataType;
+			this.data = data;
+		}
+
+		public ClipboardEntry(ClipboardDataType dataType, object data, DateTime timestamp)
+		{
+			this.dataType = dataType;
+			this.data = data;
+			this.timestamp = timestamp;
+		}
+	}
+
+	public class ClipboardManager
 	{
 		private List<HotKey> hotKeys;
-		private List<ClipboardEntry> clipboardHistory;
+		private Queue<ClipboardEntry> clipboardHistory;
 		private Dictionary<int, ClipboardEntry> clipboards;
 		private ClipboardEntry existingData;
 		private int threadDelayTime;
 		private int _numberOfHistoricalRecords;
 		private bool isProcessingClipboardAction = false;
-
-		public enum ClipboardDataType
-		{
-			NO_DATA = 0,
-			AUDIO = 1,
-			FILE_LIST = 2,
-			IMAGE = 3,
-			TEXT = 4
-		}
-
-		// class to hold clipboard data in memory
-		public class ClipboardEntry
-		{
-			public ClipboardDataType dataType;
-			public object data;
-			public DateTime timestamp;
-
-			public ClipboardEntry(ClipboardDataType dataType, object data)
-			{
-				this.dataType = dataType;
-				this.data = data;
-			}
-
-			public ClipboardEntry(ClipboardDataType dataType, object data, DateTime timestamp)
-			{
-				this.dataType = dataType;
-				this.data = data;
-				this.timestamp = timestamp;
-			}
-		}
 
 		public ClipboardManager()
 		{
@@ -60,7 +60,7 @@ namespace MultipleClipboards
 		{
 			NumberOfHistoricalRecords = numberOfHistoricalRecords;
 			hotKeys = new List<HotKey>();
-			clipboardHistory = new List<ClipboardEntry>(NumberOfHistoricalRecords);
+			clipboardHistory = new Queue<ClipboardEntry>(NumberOfHistoricalRecords);
 			clipboards = new Dictionary<int, ClipboardEntry>();
 			existingData = new ClipboardEntry(ClipboardDataType.NO_DATA, null);
 			this.threadDelayTime = threadDelayTime;
@@ -79,7 +79,7 @@ namespace MultipleClipboards
 			}
 		}
 
-		public List<ClipboardEntry> ClipboardHistory
+		public Queue<ClipboardEntry> ClipboardHistory
 		{
 			get
 			{
@@ -137,7 +137,7 @@ namespace MultipleClipboards
 				entry.data = null;
 			}
 
-			clipboardHistory.Add(entry);
+			EnqueueHistoricalEntry(entry);
 		}
 
 		public void PlaceHistoricalEntryOnClipboard(int clipboardHistoryIndex, int clipboardIndex)
@@ -147,17 +147,17 @@ namespace MultipleClipboards
 			if (clipboardIndex == 0)
 			{
 				// put data on the windows clipboard
-				existingData.data = clipboardHistory[clipboardHistoryIndex].data;
-				existingData.dataType = clipboardHistory[clipboardHistoryIndex].dataType;
-				existingData.timestamp = clipboardHistory[clipboardHistoryIndex].timestamp;
+				existingData.data = clipboardHistory.ElementAt(clipboardHistoryIndex).data;
+				existingData.dataType = clipboardHistory.ElementAt(clipboardHistoryIndex).dataType;
+				existingData.timestamp = clipboardHistory.ElementAt(clipboardHistoryIndex).timestamp;
 				RestoreClipboardData();
 			}
 			else
 			{
 				// put the data on the specified clipboard
-				clipboards[clipboardIndex].data = clipboardHistory[clipboardHistoryIndex].data;
-				clipboards[clipboardIndex].dataType = clipboardHistory[clipboardHistoryIndex].dataType;
-				clipboards[clipboardIndex].timestamp = clipboardHistory[clipboardHistoryIndex].timestamp;
+				clipboards[clipboardIndex].data = clipboardHistory.ElementAt(clipboardHistoryIndex).data;
+				clipboards[clipboardIndex].dataType = clipboardHistory.ElementAt(clipboardHistoryIndex).dataType;
+				clipboards[clipboardIndex].timestamp = clipboardHistory.ElementAt(clipboardHistoryIndex).timestamp;
 			}
 
 			this.isProcessingClipboardAction = false;
@@ -167,7 +167,7 @@ namespace MultipleClipboards
 		{
 			hotKeys.Clear();
 			clipboards.Clear();
-			clipboardHistory = new List<ClipboardEntry>(NumberOfHistoricalRecords);
+			clipboardHistory = new Queue<ClipboardEntry>(NumberOfHistoricalRecords);
 		}
 
 		// This is called from the form when a registered hotkey is pressed
@@ -183,15 +183,15 @@ namespace MultipleClipboards
 
 			switch (hotKey.Operation)
 			{
-				case HotKey.HotKeyType.CUT:
-					CutCopy(hotKey.ClipboardID, HotKey.HotKeyType.CUT);
+				case HotKeyType.CUT:
+					CutCopy(hotKey.ClipboardID, HotKeyType.CUT);
 					break;
 
-				case HotKey.HotKeyType.COPY:
-					CutCopy(hotKey.ClipboardID, HotKey.HotKeyType.COPY);
+				case HotKeyType.COPY:
+					CutCopy(hotKey.ClipboardID, HotKeyType.COPY);
 					break;
 
-				case HotKey.HotKeyType.PASTE:
+				case HotKeyType.PASTE:
 					Paste(hotKey.ClipboardID);
 					break;
 
@@ -200,6 +200,15 @@ namespace MultipleClipboards
 			}
 
 			this.isProcessingClipboardAction = false;
+		}
+
+		private void EnqueueHistoricalEntry(ClipboardEntry entry)
+		{
+			if (clipboardHistory.Count == NumberOfHistoricalRecords)
+			{
+				clipboardHistory.Dequeue();
+			}
+			clipboardHistory.Enqueue(entry);
 		}
 
 		/************************************************************************************************************
@@ -215,12 +224,12 @@ namespace MultipleClipboards
 		//		 Figure out if there's a way to make CUT actually cut, and not just copy
 
 		// handles the cut and copy operation
-		private void CutCopy(int clipboardID, HotKey.HotKeyType operation)
+		private void CutCopy(int clipboardID, HotKeyType operation)
 		{
 			PreserveClipboardData();
 
 			// send the system cut or copy command to get the new data on the clipboard
-			if (operation == HotKey.HotKeyType.CUT)
+			if (operation == HotKeyType.CUT)
 				SendKeys.SendWait("^(x)");
 			else
 				SendKeys.SendWait("^(c)");
@@ -260,7 +269,7 @@ namespace MultipleClipboards
 			}
 
 			// store this in the clipboard history list
-			clipboardHistory.Add(new ClipboardEntry(clipboards[clipboardID].dataType, clipboards[clipboardID].data, DateTime.Now));
+			EnqueueHistoricalEntry(new ClipboardEntry(clipboards[clipboardID].dataType, clipboards[clipboardID].data, DateTime.Now));
 
 			RestoreClipboardData();
 		}

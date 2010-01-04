@@ -14,7 +14,7 @@ namespace MultipleClipboards
 		private const string ABOUT_TEXT_FILE_NAME = "aboutText.rtf";
 
 		private int _numberOfClipboards;
-        private int _numberOfClipboardManagerRecords;
+		private int _numberOfClipboardManagerRecords;
 		private XmlDataDocument _settingsDoc;
 
 		public clipboardDS ClipboardDS
@@ -47,29 +47,29 @@ namespace MultipleClipboards
 			}
 		}
 
-        public int NumberOfClipboardManagerRecords
-        {
-            get
-            {
-                if (ClipboardDS.general_settings.Rows.Count > 0)
-                {
-                    _numberOfClipboardManagerRecords = ClipboardDS.general_settings[0].number_of_clipboard_manager_records;
-                }
-                return _numberOfClipboardManagerRecords;
-            }
-            set
-            {
-                if (ClipboardDS.general_settings.Rows.Count > 0)
-                {
-                    ClipboardDS.general_settings[0].number_of_clipboard_manager_records = value;
-                }
-                else
-                {
-                    ClipboardDS.general_settings.Addgeneral_settingsRow(1, value);
-                }
-                _numberOfClipboardManagerRecords = value;
-            }
-        }
+		public int NumberOfClipboardManagerRecords
+		{
+			get
+			{
+				if (ClipboardDS.general_settings.Rows.Count > 0)
+				{
+					_numberOfClipboardManagerRecords = ClipboardDS.general_settings[0].number_of_clipboard_manager_records;
+				}
+				return _numberOfClipboardManagerRecords;
+			}
+			set
+			{
+				if (ClipboardDS.general_settings.Rows.Count > 0)
+				{
+					ClipboardDS.general_settings[0].number_of_clipboard_manager_records = value;
+				}
+				else
+				{
+					ClipboardDS.general_settings.Addgeneral_settingsRow(1, value);
+				}
+				_numberOfClipboardManagerRecords = value;
+			}
+		}
 
 		public string AppDataPath
 		{
@@ -131,11 +131,11 @@ namespace MultipleClipboards
 				ClipboardDS.general_settings.Addgeneral_settingsRow(1, 20);
 
 				// the accessor key options
-				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)HotKey.ModifierKeys.NONE, "--SELECT--");
-				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)HotKey.ModifierKeys.CONTROL, "CTRL");
-				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)HotKey.ModifierKeys.ALT, "ALT");
-				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)HotKey.ModifierKeys.SHIFT, "SHIFT");
-				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)HotKey.ModifierKeys.WINDOWS, "WINDOWS");
+				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)ModifierKeys.NONE, "--SELECT--");
+				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)ModifierKeys.CONTROL, "CTRL");
+				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)ModifierKeys.ALT, "ALT");
+				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)ModifierKeys.SHIFT, "SHIFT");
+				ClipboardDS.modifier_key_codes.Addmodifier_key_codesRow((int)ModifierKeys.WINDOWS, "WINDOWS");
 
 				// the operation key options
 				ClipboardDS.operation_key_codes.Addoperation_key_codesRow((int)System.Windows.Forms.Keys.None, "--SELECT--");
@@ -150,8 +150,8 @@ namespace MultipleClipboards
 				// default cliipboard row
 				clipboardDS.clipboardRow row = ClipboardDS.clipboard.NewclipboardRow();
 				row.number = 1;
-				row.modifier_key_1 = (int)HotKey.ModifierKeys.WINDOWS;
-				row.modifier_key_2 = (int)HotKey.ModifierKeys.NONE;
+				row.modifier_key_1 = (int)ModifierKeys.WINDOWS;
+				row.modifier_key_2 = (int)ModifierKeys.NONE;
 				row.copy_key = (int)System.Windows.Forms.Keys.C;
 				row.cut_key = (int)System.Windows.Forms.Keys.X;
 				row.paste_key = (int)System.Windows.Forms.Keys.V;

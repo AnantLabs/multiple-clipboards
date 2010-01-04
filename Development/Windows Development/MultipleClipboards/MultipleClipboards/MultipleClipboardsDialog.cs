@@ -3,6 +3,7 @@ using System.IO;
 using System.Configuration;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace MultipleClipboards
@@ -324,7 +325,8 @@ namespace MultipleClipboards
 			{
 				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
 				{
-					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory[i], true), null, new EventHandler(clipboardHistoryMenuItem_Click));
+					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory.ElementAt(i), true), null, new EventHandler(clipboardHistoryMenuItem_Click));
+					item.Alignment = ToolStripItemAlignment.Right;
 					clipboardHistoryMenuItem.DropDownItems.Insert(0 + i, item);
 				}
 			}
@@ -393,10 +395,10 @@ namespace MultipleClipboards
 				dgClipboardHistory.Rows.Clear();
 
 				// fill the history grid will the clipboard history
-				ClipboardManager.ClipboardEntry clipboardEntry = null;
+				ClipboardEntry clipboardEntry = null;
 				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
 				{
-					clipboardEntry = clipboardManager.ClipboardHistory[i];
+					clipboardEntry = clipboardManager.ClipboardHistory.ElementAt(i);
 					dgClipboardHistory.Rows.Add(new object[] { (i + 1).ToString(), GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp.ToShortTimeString() });
 				}
 			}
@@ -415,16 +417,16 @@ namespace MultipleClipboards
 		}
 
 		// Gets the data to display for the given clipboard entry
-		private string GetClipboardHistoryDataString(ClipboardManager.ClipboardEntry clipboardEntry)
+		private string GetClipboardHistoryDataString(ClipboardEntry clipboardEntry)
 		{
 			return GetClipboardHistoryDataString(clipboardEntry, false);
 		}
 
 		// Gets the data to display for the given clipboard entry
-		private string GetClipboardHistoryDataString(ClipboardManager.ClipboardEntry clipboardEntry, bool addTimeStamp)
+		private string GetClipboardHistoryDataString(ClipboardEntry clipboardEntry, bool addTimeStamp)
 		{
 			string data;
-			if (clipboardEntry.dataType == ClipboardManager.ClipboardDataType.TEXT)
+			if (clipboardEntry.dataType == ClipboardDataType.TEXT)
 			{
 				data = clipboardEntry.data.ToString().Replace("\r\n", " ");
 				if (data.Length > 60)
@@ -500,15 +502,15 @@ namespace MultipleClipboards
 				foreach (clipboardDS.clipboardRow row in settingsManager.ClipboardDS.clipboard)
 				{
 					// cut
-					cutHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.cut_key, HotKey.HotKeyType.CUT, row.number);
+					cutHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.cut_key, HotKeyType.CUT, row.number);
 					RegisterGlobalHotKey(cutHotKey);
 
 					// copy
-					copyHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.copy_key, HotKey.HotKeyType.COPY, row.number);
+					copyHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.copy_key, HotKeyType.COPY, row.number);
 					RegisterGlobalHotKey(copyHotKey);
 
 					// paste
-					pasteHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.paste_key, HotKey.HotKeyType.PASTE, row.number);
+					pasteHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.paste_key, HotKeyType.PASTE, row.number);
 					RegisterGlobalHotKey(pasteHotKey);
 
 					// create a new clipboard entry for this set of hotkeys
