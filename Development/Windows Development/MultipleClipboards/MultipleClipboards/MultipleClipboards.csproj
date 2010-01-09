@@ -77,6 +77,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>clipboardDS.xsd</DependentUpon>
     </Compile>
+    <Compile Include="ClipboardHistoryDataGridViewRow.cs" />
+    <Compile Include="ClipboardHistoryToolStripMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ClipboardManager.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="HotkeyMessage.cs" />

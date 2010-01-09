@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace MultipleClipboards
 {
+	/// <summary>
+	/// The main dialog class for the form.
+	/// </summary>
 	public partial class MultipleClipboardsDialog : Form
 	{
 		// Private members
@@ -16,9 +19,10 @@ namespace MultipleClipboards
 		private List<short> hotkeyIDs;
 		private HotkeyMessage lastMessageProcessed;
 		private HotkeyMessage currentMessage;
+		private IntPtr nextClipboardViewer;
 		private string errorLogFile;
 		private string aboutFile;
-		private IntPtr nextClipboardViewer;
+		private bool isFirstClipboardMessage = true;
 
 		// Grid elements
 		private BindingSource dgClipboardbindingSource;
@@ -61,14 +65,18 @@ namespace MultipleClipboards
 		[DllImport("kernel32", SetLastError = true)]
 		private static extern short GlobalDeleteAtom(short nAtom);
 
-		#region Constructor and Initialization
-
+		/// <summary>
+		/// Constructs a new MultipleClipboardsDialog object.
+		/// </summary>
 		public MultipleClipboardsDialog()
 		{
-			InitializeComponent();
-			Init();
+			this.InitializeComponent();
+			this.Init();
 		}
 
+		/// <summary>
+		/// Initializes all the variables and controls on the dialog.
+		/// </summary>
 		private void Init()
 		{
 			// this is the amount of time that the thread will sleep for between clipboard operations
@@ -77,43 +85,49 @@ namespace MultipleClipboards
 			int threadDelayTime = 100;
 			int.TryParse(ConfigurationManager.AppSettings["threadDelayTime"], out threadDelayTime);
 
-			hotkeyIDs = new List<short>();
-			settingsManager = new SettingsManager();
-			clipboardManager = new ClipboardManager(threadDelayTime, settingsManager.NumberOfClipboardManagerRecords);
-			trayIcon.Visible = true;
-			txtNumClipboards.Value = settingsManager.NumberOfClipboards;
-			errorLogFile = settingsManager.ErrorLogFilePath;
-			aboutFile = settingsManager.AboutTextFilePath;
-			lastMessageProcessed = new HotkeyMessage();
-			currentMessage = new HotkeyMessage();
+			this.hotkeyIDs = new List<short>();
+			this.settingsManager = new SettingsManager();
+			this.clipboardManager = new ClipboardManager(threadDelayTime, this.settingsManager.NumberOfClipboardManagerRecords);
+			this.trayIcon.Visible = true;
+			this.txtNumClipboards.Value = this.settingsManager.NumberOfClipboards;
+			this.errorLogFile = this.settingsManager.ErrorLogFilePath;
+			this.aboutFile = this.settingsManager.AboutTextFilePath;
+			this.lastMessageProcessed = new HotkeyMessage();
+			this.currentMessage = new HotkeyMessage();
 
 			// History tab
-			FillClipboardSelectDropdown();
+			this.FillClipboardSelectDropdown();
 
 			// Grid tab
-			InitGrid();
+			this.InitGrid();
 
 			// About tab
-			if (File.Exists(aboutFile))
+			if (File.Exists(this.aboutFile))
 			{
-				txtAbout.LoadFile(aboutFile);
+				this.txtAbout.LoadFile(aboutFile);
 			}
 			else
 			{
-				txtAbout.Text = "The file containing information about this program cannot be found.\r\n\r\nPerhaps you deleted it?\r\n\r\nRe-installing should fix this problem.";
+				this.txtAbout.Text = "The file containing information about this program cannot be found.\r\n\r\nPerhaps you deleted it?\r\n\r\nRe-installing should fix this problem.";
 			}
 
 			// Bind this app to the clipboard chain
-			nextClipboardViewer = SetClipboardViewer(this.Handle);
+			this.nextClipboardViewer = MultipleClipboardsDialog.SetClipboardViewer(this.Handle);
 
 			// handle the dispose event of the window
 			this.Disposed += new EventHandler(this.MultipleClipboardsDialog_Disposed);
 		}
 
+		/// <summary>
+		/// Fills the clipboard select dropdown on the history tab with all the clipboards that are currently setup.
+		/// </summary>
 		private void FillClipboardSelectDropdown()
 		{
+			// clear the existing items
+			this.ddlClipboardSelect.Items.Clear();
+
 			// now add an option for each additional clipboard
-			foreach (clipboardDS.clipboardRow row in settingsManager.ClipboardDS.clipboard)
+			foreach (clipboardDS.clipboardRow row in this.settingsManager.ClipboardDS.clipboard)
 			{
 				string itemText = string.Format("#{0} - {1}{2} + {3}", row.number, row.modifier_key_codesRowByFK_accessor_key_codes_clipboard.display_text,
 					(row.modifier_key_2 == 0) ? string.Empty : " + " + row.modifier_key_codesRowByFK_accessor_key_codes_clipboard1.display_text,
@@ -123,7 +137,6 @@ namespace MultipleClipboards
 			}
 
 			// select the windows clipboard by default
-			// TODO: find a way to remove the empty item from this dropdown
 			this.ddlClipboardSelect.SelectedIndex = 0;
 		}
 
@@ -223,10 +236,6 @@ namespace MultipleClipboards
 			}
 		}
 
-		#endregion
-
-		#region Events
-
 		// Called when the window is destroyed
 		private void MultipleClipboardsDialog_Disposed(object sender, EventArgs e)
 		{
@@ -295,13 +304,28 @@ namespace MultipleClipboards
 			Hide();
 		}
 
-		// Called when the place selected row on selected clipboard button is clicked from the history tab
-		private void btnPlaceRowOnClipboard_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the place selected row on selected clipboard button is clicked from the history tab.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void BtnPlaceRowOnClipboard_Click(object sender, EventArgs e)
 		{
-			if (dgClipboardHistory.SelectedRows.Count > 0)
+			if (this.dgClipboardHistory.SelectedRows.Count > 0)
 			{
-				clipboardManager.PlaceHistoricalEntryOnClipboard(dgClipboardHistory.SelectedRows[0].Index, ddlClipboardSelect.SelectedIndex);
+				int clipboardHistoryIndex = ((ClipboardHistoryDataGridViewRow)this.dgClipboardHistory.SelectedRows[0]).ClipboardHistoryIndex;
+				this.clipboardManager.PlaceHistoricalEntryOnClipboard(clipboardHistoryIndex, this.ddlClipboardSelect.SelectedIndex);
 			}
+		}
+
+		/// <summary>
+		/// Called when the user clicks the refresh history grid button.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void BtnRefreshHistory_Click(object sender, EventArgs e)
+		{
+			this.RefreshHistoryTab();
 		}
 
 		// Called when the user clicks the show error log menu item
@@ -311,44 +335,59 @@ namespace MultipleClipboards
 			tabControl.SelectedTab = tabErrorLog;
 		}
 
-		// Called when the user hovers over the history menu item
-		private void clipboardHistoryMenuItem_DropDownOpening(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user hovers over the history menu item.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ClipboardHistoryMenuItem_DropDownOpening(object sender, EventArgs e)
 		{
 			// first clear out all the items except the last 2
-			while (clipboardHistoryMenuItem.DropDownItems.Count > 2)
+			while (this.clipboardHistoryMenuItem.DropDownItems.Count > 2)
 			{
-				clipboardHistoryMenuItem.DropDownItems.RemoveAt(0);
+				this.clipboardHistoryMenuItem.DropDownItems.RemoveAt(0);
 			}
 
 			// now add the clipboard history items
-			if (clipboardManager.ClipboardHistory.Count > 0)
+			if (this.clipboardManager.ClipboardHistory.Count > 0)
 			{
-				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
+				int dropDownIndex = 0;
+				for (int i = this.clipboardManager.ClipboardHistory.Count; i > 0; i--)
 				{
-					ToolStripMenuItem item = new ToolStripMenuItem(GetClipboardHistoryDataString(clipboardManager.ClipboardHistory.ElementAt(i), true), null, new EventHandler(clipboardHistoryMenuItem_Click));
-					item.Alignment = ToolStripItemAlignment.Right;
-					clipboardHistoryMenuItem.DropDownItems.Insert(0 + i, item);
+					string text = this.GetClipboardHistoryDataString(this.clipboardManager.ClipboardHistory.ElementAt(i - 1), true);
+					ClipboardHistoryToolStripMenuItem item = new ClipboardHistoryToolStripMenuItem(text, i - 1, new EventHandler(this.ClipboardHistoryMenuItem_Click));
+					this.clipboardHistoryMenuItem.DropDownItems.Insert(dropDownIndex, item);
+					dropDownIndex++;
 				}
 			}
 			else
 			{
 				ToolStripMenuItem item = new ToolStripMenuItem("No Clipboard History Exists");
 				item.Enabled = false;
-				clipboardHistoryMenuItem.DropDownItems.Insert(0, item);
+				this.clipboardHistoryMenuItem.DropDownItems.Insert(0, item);
 			}
 		}
 
-		// Called when the user clicks a clipboard entry from the History right click menu
-		private void clipboardHistoryMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks a clipboard entry from the History right click menu.
+		/// </summary>
+		/// <param name="sender">The ClipboardHistoryToolStripMenuItem object that caused the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ClipboardHistoryMenuItem_Click(object sender, EventArgs e)
 		{
-			clipboardManager.PlaceHistoricalEntryOnClipboard(this.clipboardHistoryMenuItem.DropDownItems.IndexOf((ToolStripDropDownItem)sender), 0);
+			this.clipboardManager.PlaceHistoricalEntryOnClipboard(((ClipboardHistoryToolStripMenuItem)sender).ClipboardHistoryIndex, 0);
 		}
 
-		// Called when the user clicks the view detailed history menu item
-		private void viewDetailedHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the view detailed history menu item.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ViewDetailedHistoryToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ShowMainDialog();
-			tabControl.SelectedTab = tabHistory;
+			this.ShowMainDialog();
+			this.tabControl.SelectedTab = this.tabHistory;
+			this.RefreshHistoryTab();
 		}
 
 		// Called when the user clicks the about menu item
@@ -372,41 +411,32 @@ namespace MultipleClipboards
 			}
 		}
 
-		// Called when the selected tab in the tab control changes
-		private void tabControl_Selected(object sender, TabControlEventArgs e)
+		/// <summary>
+		/// Called when the selected tab in the tab control changes.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The tab control event args.</param>
+		private void TabControl_Selected(object sender, TabControlEventArgs e)
 		{
-			if (e.TabPage == tabErrorLog)
+			if (e.TabPage == this.tabErrorLog)
 			{
 				// if the user clicked the error tab then load the most recent contents of the error file and place it into the text control
-				if (File.Exists(errorLogFile))
+				if (File.Exists(this.errorLogFile))
 				{
-					txtErrorLog.Text = File.ReadAllText(errorLogFile);
-					txtErrorLog.SelectionStart = 0;
-					txtErrorLog.SelectionLength = 0;
+					this.txtErrorLog.Text = File.ReadAllText(this.errorLogFile);
+					this.txtErrorLog.SelectionStart = 0;
+					this.txtErrorLog.SelectionLength = 0;
 				}
 				else
 				{
-					txtErrorLog.Text = "The error file does not exist.\r\n\r\nThat's a good thing!  There have not been any errors.";
+					this.txtErrorLog.Text = "The error file does not exist.\r\n\r\nThat's a good thing!  There have not been any errors.";
 				}
 			}
-			else if (e.TabPage == tabHistory)
+			else if (e.TabPage == this.tabHistory)
 			{
-				// clear the history grid
-				dgClipboardHistory.Rows.Clear();
-
-				// fill the history grid will the clipboard history
-				ClipboardEntry clipboardEntry = null;
-				for (int i = 0; i < clipboardManager.ClipboardHistory.Count; i++)
-				{
-					clipboardEntry = clipboardManager.ClipboardHistory.ElementAt(i);
-					dgClipboardHistory.Rows.Add(new object[] { (i + 1).ToString(), GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp.ToShortTimeString() });
-				}
+				this.RefreshHistoryTab();
 			}
 		}
-
-		#endregion
-
-		#region Private Helper Functions
 
 		// Show the edit dialog
 		private void ShowMainDialog()
@@ -416,19 +446,47 @@ namespace MultipleClipboards
 			Focus();
 		}
 
-		// Gets the data to display for the given clipboard entry
-		private string GetClipboardHistoryDataString(ClipboardEntry clipboardEntry)
+		/// <summary>
+		/// Refreshes the clipboard history with the most current data.
+		/// </summary>
+		private void RefreshHistoryTab()
 		{
-			return GetClipboardHistoryDataString(clipboardEntry, false);
+			// clear the history grid
+			this.dgClipboardHistory.Rows.Clear();
+
+			// fill the history grid will the clipboard history
+			ClipboardEntry clipboardEntry = null;
+			int visibleIndex = 1;
+			for (int i = this.clipboardManager.ClipboardHistory.Count; i > 0; i--)
+			{
+				clipboardEntry = this.clipboardManager.ClipboardHistory.ElementAt(i - 1);
+				this.dgClipboardHistory.Rows.Add(new ClipboardHistoryDataGridViewRow(i - 1, this.dgClipboardHistory, visibleIndex, this.GetClipboardHistoryDataString(clipboardEntry), clipboardEntry.timestamp));
+				visibleIndex++;
+			}
 		}
 
-		// Gets the data to display for the given clipboard entry
+		/// <summary>
+		/// Gets the data to display for the given clipboard entry.
+		/// </summary>
+		/// <param name="clipboardEntry">The clipboard entry to get the data string for.</param>
+		/// <returns>The string representation of the data for this clipboard entry.</returns>
+		private string GetClipboardHistoryDataString(ClipboardEntry clipboardEntry)
+		{
+			return this.GetClipboardHistoryDataString(clipboardEntry, false);
+		}
+
+		/// <summary>
+		/// Gets the data to display for the given clipboard entry.
+		/// </summary>
+		/// <param name="clipboardEntry">The clipboard entry to get the data string for.</param>
+		/// <param name="addTimeStamp">A flag that determines whether or not to display the timestamp of the entry in the display string.</param>
+		/// <returns>The string representation of the data for this clipboard entry.</returns>
 		private string GetClipboardHistoryDataString(ClipboardEntry clipboardEntry, bool addTimeStamp)
 		{
 			string data;
 			if (clipboardEntry.dataType == ClipboardDataType.TEXT)
 			{
-				data = clipboardEntry.data.ToString().Replace("\r\n", " ");
+				data = clipboardEntry.data.ToString().Replace("\r\n", " ").Replace("\t", " ");
 				if (data.Length > 60)
 				{
 					data = data.Substring(0, 60) + "...";
@@ -453,19 +511,26 @@ namespace MultipleClipboards
 			try
 			{
 				settingsManager.SaveSettings();
+				MessageBox.Show("Settings saved successfully.", "Save Complete");
 			}
 			catch (Exception e)
 			{
 				MessageBox.Show("There was an error saving the settings.  Check the log.", "Error");
 				LogError(e.Message);
 			}
-			finally
+
+			try
 			{
 				UnregisterAllGlobalHotKeys();
 				RegisterAllHotkeys();
 				clipboardManager.NumberOfHistoricalRecords = settingsManager.NumberOfClipboardManagerRecords;
 				clipboardManager.Reset();
-				MessageBox.Show("Settings saved successfully.", "Save Complete");
+				this.FillClipboardSelectDropdown();
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show("There was an error re-initializing the application with the new settings.  This should never happen.  Try re-starting the application.", "Error");
+				LogError(e.Message);
 			}
 		}
 
@@ -484,11 +549,6 @@ namespace MultipleClipboards
 				MessageBox.Show("There was an error logging an error!\r\n\r\nBasically this application is all F'd up.\r\n\r\nYou should re-install it.", "Fatal Error");
 			}
 		}
-
-
-		#endregion
-
-		#region Hotkey Functions
 
 		// Register all the hotkeys
 		private void RegisterAllHotkeys()
@@ -628,7 +688,7 @@ namespace MultipleClipboards
 					break;
 
 				case WM_DRAWCLIPBOARD:
-					if (!clipboardManager.IsProcessingClipboardAction)
+					if (!clipboardManager.IsProcessingClipboardAction && !this.isFirstClipboardMessage)
 					{
 						// the data on the clipboard has changed
 						// this means the user used the regular windows clipboard
@@ -638,6 +698,7 @@ namespace MultipleClipboards
 					}
 					// send the message to the next app in the clipboard chain
 					SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					this.isFirstClipboardMessage = false;
 					break;
 
 				case WM_CHANGECBCHAIN:
@@ -657,8 +718,5 @@ namespace MultipleClipboards
 					break;
 			}
 		}
-
-		#endregion
-
 	}
 }
