@@ -75,6 +75,19 @@ namespace MultipleClipboards
 		}
 
 		/// <summary>
+		/// Overrides the CreateParams property to diable the close button on the dialog.
+		/// </summary>
+		protected override CreateParams CreateParams
+		{
+			get
+			{
+				CreateParams myCp = base.CreateParams;
+				myCp.ClassStyle = myCp.ClassStyle | MultipleClipboardsDialog.CP_NOCLOSE_BUTTON;
+				return myCp;
+			}
+		}
+
+		/// <summary>
 		/// Initializes all the variables and controls on the dialog.
 		/// </summary>
 		private void Init()
@@ -126,6 +139,9 @@ namespace MultipleClipboards
 			// clear the existing items
 			this.ddlClipboardSelect.Items.Clear();
 
+			// add an option of the Windows Clipboard
+			this.ddlClipboardSelect.Items.Add("Windows Clipboard");
+
 			// now add an option for each additional clipboard
 			foreach (clipboardDS.clipboardRow row in this.settingsManager.ClipboardDS.clipboard)
 			{
@@ -140,168 +156,200 @@ namespace MultipleClipboards
 			this.ddlClipboardSelect.SelectedIndex = 0;
 		}
 
+		/// <summary>
+		/// Initializes the main grid on the settings page.
+		/// </summary>
 		private void InitGrid()
 		{
 			// instantiate variables
-			dgClipboardbindingSource = new BindingSource(this.components);
-			modifierKeyBindingSource = new BindingSource(this.components);
-			operationKeyBindingSource = new BindingSource(this.components);
-			numberColumn = new DataGridViewTextBoxColumn();
-			modifierKey1Column = new DataGridViewComboBoxColumn();
-			modifierKey2Column = new DataGridViewComboBoxColumn();
-			copyKeyColumn = new DataGridViewComboBoxColumn();
-			cutKeyColumn = new DataGridViewComboBoxColumn();
-			pasteKeyColumn = new DataGridViewComboBoxColumn();
+			this.dgClipboardbindingSource = new BindingSource(this.components);
+			this.modifierKeyBindingSource = new BindingSource(this.components);
+			this.operationKeyBindingSource = new BindingSource(this.components);
+			this.numberColumn = new DataGridViewTextBoxColumn();
+			this.modifierKey1Column = new DataGridViewComboBoxColumn();
+			this.modifierKey2Column = new DataGridViewComboBoxColumn();
+			this.copyKeyColumn = new DataGridViewComboBoxColumn();
+			this.cutKeyColumn = new DataGridViewComboBoxColumn();
+			this.pasteKeyColumn = new DataGridViewComboBoxColumn();
 
 			// setup binding sources
-			dgClipboardbindingSource.DataMember = "clipboard";
-			dgClipboardbindingSource.DataSource = settingsManager.ClipboardDS;
-			modifierKeyBindingSource.DataMember = "modifier_key_codes";
-			modifierKeyBindingSource.DataSource = settingsManager.ClipboardDS;
-			operationKeyBindingSource.DataMember = "operation_key_codes";
-			operationKeyBindingSource.DataSource = settingsManager.ClipboardDS;
+			this.dgClipboardbindingSource.DataMember = "clipboard";
+			this.dgClipboardbindingSource.DataSource = this.settingsManager.ClipboardDS;
+			this.modifierKeyBindingSource.DataMember = "modifier_key_codes";
+			this.modifierKeyBindingSource.DataSource = this.settingsManager.ClipboardDS;
+			this.operationKeyBindingSource.DataMember = "operation_key_codes";
+			this.operationKeyBindingSource.DataSource = this.settingsManager.ClipboardDS;
 
 			// setup grid
-			dgClipboards.AutoGenerateColumns = false;
-			dgClipboards.Columns.AddRange(new DataGridViewColumn[] { numberColumn, modifierKey1Column, modifierKey2Column, copyKeyColumn, cutKeyColumn, pasteKeyColumn });
-			dgClipboards.DataSource = dgClipboardbindingSource;
+			this.dgClipboards.AutoGenerateColumns = false;
+			this.dgClipboards.Columns.AddRange(new DataGridViewColumn[] { this.numberColumn, this.modifierKey1Column, this.modifierKey2Column, this.copyKeyColumn, this.cutKeyColumn, this.pasteKeyColumn });
+			this.dgClipboards.DataSource = dgClipboardbindingSource;
 
 			// number column
-			numberColumn.DataPropertyName = "number";
-			numberColumn.HeaderText = "#";
-			numberColumn.Name = "numberColumn";
-			numberColumn.ReadOnly = true;
-			numberColumn.Resizable = DataGridViewTriState.False;
-			numberColumn.Width = 25;
+			this.numberColumn.DataPropertyName = "number";
+			this.numberColumn.HeaderText = "#";
+			this.numberColumn.Name = "numberColumn";
+			this.numberColumn.ReadOnly = true;
+			this.numberColumn.Resizable = DataGridViewTriState.False;
+			this.numberColumn.Width = 25;
 
 			// accessor key 1 column
-			modifierKey1Column.DataPropertyName = "modifier_key_1";
-			modifierKey1Column.DataSource = modifierKeyBindingSource;
-			modifierKey1Column.DisplayMember = "display_text";
-			modifierKey1Column.HeaderText = "Modifier Key 1";
-			modifierKey1Column.Name = "modifierKey1Column";
-			modifierKey1Column.Resizable = DataGridViewTriState.False;
-			modifierKey1Column.ValueMember = "key_code";
-			modifierKey1Column.Width = 85;
+			this.modifierKey1Column.DataPropertyName = "modifier_key_1";
+			this.modifierKey1Column.DataSource = this.modifierKeyBindingSource;
+			this.modifierKey1Column.DisplayMember = "display_text";
+			this.modifierKey1Column.HeaderText = "Modifier Key 1";
+			this.modifierKey1Column.Name = "modifierKey1Column";
+			this.modifierKey1Column.Resizable = DataGridViewTriState.False;
+			this.modifierKey1Column.ValueMember = "key_code";
+			this.modifierKey1Column.Width = 85;
 
 			// accessor key 2 column
-			modifierKey2Column.DataPropertyName = "modifier_key_2";
-			modifierKey2Column.DataSource = modifierKeyBindingSource;
-			modifierKey2Column.DisplayMember = "display_text";
-			modifierKey2Column.HeaderText = "Modifier Key 2";
-			modifierKey2Column.Name = "modifierKey2Column";
-			modifierKey2Column.Resizable = DataGridViewTriState.False;
-			modifierKey2Column.ValueMember = "key_code";
-			modifierKey2Column.Width = 85;
+			this.modifierKey2Column.DataPropertyName = "modifier_key_2";
+			this.modifierKey2Column.DataSource = this.modifierKeyBindingSource;
+			this.modifierKey2Column.DisplayMember = "display_text";
+			this.modifierKey2Column.HeaderText = "Modifier Key 2";
+			this.modifierKey2Column.Name = "modifierKey2Column";
+			this.modifierKey2Column.Resizable = DataGridViewTriState.False;
+			this.modifierKey2Column.ValueMember = "key_code";
+			this.modifierKey2Column.Width = 85;
 
 			// copy column
-			copyKeyColumn.DataPropertyName = "copy_key";
-			copyKeyColumn.DataSource = operationKeyBindingSource;
-			copyKeyColumn.DisplayMember = "display_text";
-			copyKeyColumn.HeaderText = "Copy Key";
-			copyKeyColumn.Name = "copyKeyColumn";
-			copyKeyColumn.Resizable = DataGridViewTriState.False;
-			copyKeyColumn.ValueMember = "key_code";
-			copyKeyColumn.Width = 85;
+			this.copyKeyColumn.DataPropertyName = "copy_key";
+			this.copyKeyColumn.DataSource = this.operationKeyBindingSource;
+			this.copyKeyColumn.DisplayMember = "display_text";
+			this.copyKeyColumn.HeaderText = "Copy Key";
+			this.copyKeyColumn.Name = "copyKeyColumn";
+			this.copyKeyColumn.Resizable = DataGridViewTriState.False;
+			this.copyKeyColumn.ValueMember = "key_code";
+			this.copyKeyColumn.Width = 85;
 
 			// cut column
-			cutKeyColumn.DataPropertyName = "cut_key";
-			cutKeyColumn.DataSource = operationKeyBindingSource;
-			cutKeyColumn.DisplayMember = "display_text";
-			cutKeyColumn.HeaderText = "Cut Key";
-			cutKeyColumn.Name = "cutKeyColumn";
-			cutKeyColumn.Resizable = DataGridViewTriState.False;
-			cutKeyColumn.ValueMember = "key_code";
-			cutKeyColumn.Width = 85;
+			this.cutKeyColumn.DataPropertyName = "cut_key";
+			this.cutKeyColumn.DataSource = this.operationKeyBindingSource;
+			this.cutKeyColumn.DisplayMember = "display_text";
+			this.cutKeyColumn.HeaderText = "Cut Key";
+			this.cutKeyColumn.Name = "cutKeyColumn";
+			this.cutKeyColumn.Resizable = DataGridViewTriState.False;
+			this.cutKeyColumn.ValueMember = "key_code";
+			this.cutKeyColumn.Width = 85;
 
 			// paste column
-			pasteKeyColumn.DataPropertyName = "paste_key";
-			pasteKeyColumn.DataSource = operationKeyBindingSource;
-			pasteKeyColumn.DisplayMember = "display_text";
-			pasteKeyColumn.HeaderText = "Paste Key";
-			pasteKeyColumn.Name = "pasteKeyColumn";
-			pasteKeyColumn.Resizable = DataGridViewTriState.False;
-			pasteKeyColumn.ValueMember = "key_code";
-			pasteKeyColumn.Width = 85;
+			this.pasteKeyColumn.DataPropertyName = "paste_key";
+			this.pasteKeyColumn.DataSource = this.operationKeyBindingSource;
+			this.pasteKeyColumn.DisplayMember = "display_text";
+			this.pasteKeyColumn.HeaderText = "Paste Key";
+			this.pasteKeyColumn.Name = "pasteKeyColumn";
+			this.pasteKeyColumn.Resizable = DataGridViewTriState.False;
+			this.pasteKeyColumn.ValueMember = "key_code";
+			this.pasteKeyColumn.Width = 85;
 		}
 
-		// This diables the close button on the dialog
-		protected override CreateParams CreateParams
-		{
-			get
-			{
-				CreateParams myCp = base.CreateParams;
-				myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
-				return myCp;
-			}
-		}
-
-		// Called when the window is destroyed
+		/// <summary>
+		/// Called when the window is destroyed.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
 		private void MultipleClipboardsDialog_Disposed(object sender, EventArgs e)
 		{
-			ChangeClipboardChain(this.Handle, nextClipboardViewer);
+			MultipleClipboardsDialog.ChangeClipboardChain(this.Handle, this.nextClipboardViewer);
 		}
 
-		// Called before the form is first rendered
+		/// <summary>
+		/// Called before the form is first rendered.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
 		private void MultipleClipboardsDialog_Load(object sender, EventArgs e)
 		{
-			Hide();
-			WindowState = FormWindowState.Minimized;
-			RegisterAllHotkeys();
+			this.Hide();
+			this.WindowState = FormWindowState.Minimized;
+			this.RegisterAllHotkeys();
 		}
 
-		// Called after the form is closed
+		/// <summary>
+		/// Called after the form is closed.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
 		private void MultipleClipboardsDialog_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			UnregisterAllGlobalHotKeys();
+			this.UnregisterAllGlobalHotKeys();
 		}
 
-		// Called when the form is resized / minimized
+		/// <summary>
+		/// Called when the form is resized / minimized.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
 		private void MultipleClipboardsDialog_SizeChanged(object sender, EventArgs e)
 		{
-			if (WindowState == FormWindowState.Minimized)
+			if (this.WindowState == FormWindowState.Minimized)
 			{
-				Hide();
+				this.Hide();
 			}
 		}
 
-		// Called when the user clicks the Edit menu option
-		private void editMultipleClipboardOptionsToolStripMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the Edit menu option.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void EditMultipleClipboardOptionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ShowMainDialog();
-			tabControl.SelectedTab = tabSettings;
+			this.ShowMainDialog();
+			this.tabControl.SelectedTab = this.tabSettings;
 		}
 
-		// Called when the user double clicks the tray icon
-		private void trayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+		/// <summary>
+		/// Called when the user double clicks the tray icon.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void TrayIcon_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			ShowMainDialog();
-			tabControl.SelectedTab = tabSettings;
+			this.ShowMainDialog();
+			this.tabControl.SelectedTab = this.tabSettings;
 		}
 
-		// Called when the user clicks the Exit menu option
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the Exit menu option.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Close();
+			this.Close();
 		}
 
-		// Called when the Save button is clicked
-		private void btnSave_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the Save button is clicked.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void BtnSave_Click(object sender, EventArgs e)
 		{
-			SaveSettings();
+			this.SaveSettings();
 		}
 
-		// Called when the exit button is clicked
-		private void btnExit_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the exit button is clicked.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void BtnExit_Click(object sender, EventArgs e)
 		{
-			Close();
+			this.Close();
 		}
 
-		// Called when the user clicks the hide dialog button
-		private void btnHide_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the hide dialog button.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void BtnHide_Click(object sender, EventArgs e)
 		{
-			WindowState = FormWindowState.Minimized;
-			Hide();
+			this.WindowState = FormWindowState.Minimized;
+			this.Hide();
 		}
 
 		/// <summary>
@@ -328,11 +376,15 @@ namespace MultipleClipboards
 			this.RefreshHistoryTab();
 		}
 
-		// Called when the user clicks the show error log menu item
-		private void errorLogMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the show error log menu item.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ErrorLogMenuItem_Click(object sender, EventArgs e)
 		{
-			ShowMainDialog();
-			tabControl.SelectedTab = tabErrorLog;
+			this.ShowMainDialog();
+			this.tabControl.SelectedTab = this.tabErrorLog;
 		}
 
 		/// <summary>
@@ -390,24 +442,32 @@ namespace MultipleClipboards
 			this.RefreshHistoryTab();
 		}
 
-		// Called when the user clicks the about menu item
-		private void aboutMenuItem_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user clicks the about menu item.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void AboutMenuItem_Click(object sender, EventArgs e)
 		{
-			ShowMainDialog();
-			tabControl.SelectedTab = tabAbout;
+			this.ShowMainDialog();
+			this.tabControl.SelectedTab = this.tabAbout;
 		}
 
-		// Called when the user changes the number of clipboards
-		private void txtNumClipboards_ValueChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Called when the user changes the number of clipboards.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void TxtNumClipboards_ValueChanged(object sender, EventArgs e)
 		{
 			int newNumClipboards = (int)txtNumClipboards.Value;
-			if (newNumClipboards > settingsManager.NumberOfClipboards)
+			if (newNumClipboards > this.settingsManager.NumberOfClipboards)
 			{
-				settingsManager.AddNewClipboard();
+				this.settingsManager.AddNewClipboard();
 			}
-			else if (newNumClipboards < settingsManager.NumberOfClipboards)
+			else if (newNumClipboards < this.settingsManager.NumberOfClipboards)
 			{
-				settingsManager.RemoveClipboard();
+				this.settingsManager.RemoveClipboard();
 			}
 		}
 
@@ -438,16 +498,18 @@ namespace MultipleClipboards
 			}
 		}
 
-		// Show the edit dialog
+		/// <summary>
+		/// Show the edit dialog.
+		/// </summary>
 		private void ShowMainDialog()
 		{
-			Show();
-			WindowState = FormWindowState.Normal;
-			Focus();
+			this.Show();
+			this.WindowState = FormWindowState.Normal;
+			this.Focus();
 		}
 
 		/// <summary>
-		/// Refreshes the clipboard history with the most current data.
+		/// Refreshes the clipboard history grid with the most current data.
 		/// </summary>
 		private void RefreshHistoryTab()
 		{
@@ -505,36 +567,41 @@ namespace MultipleClipboards
 			return data;
 		}
 
-		// Save settings to file
+		/// <summary>
+		/// Save settings to file and re-initialize the app with the new settings.
+		/// </summary>
 		private void SaveSettings()
 		{
 			try
 			{
-				settingsManager.SaveSettings();
+				this.settingsManager.SaveSettings();
 				MessageBox.Show("Settings saved successfully.", "Save Complete");
 			}
 			catch (Exception e)
 			{
 				MessageBox.Show("There was an error saving the settings.  Check the log.", "Error");
-				LogError(e.Message);
+				this.LogError(e.Message);
 			}
 
 			try
 			{
-				UnregisterAllGlobalHotKeys();
-				RegisterAllHotkeys();
-				clipboardManager.NumberOfHistoricalRecords = settingsManager.NumberOfClipboardManagerRecords;
-				clipboardManager.Reset();
+				this.UnregisterAllGlobalHotKeys();
+				this.RegisterAllHotkeys();
+				this.clipboardManager.NumberOfHistoricalRecords = this.settingsManager.NumberOfClipboardManagerRecords;
+				this.clipboardManager.Reset();
 				this.FillClipboardSelectDropdown();
 			}
 			catch (Exception e)
 			{
 				MessageBox.Show("There was an error re-initializing the application with the new settings.  This should never happen.  Try re-starting the application.", "Error");
-				LogError(e.Message);
+				this.LogError(e.Message);
 			}
 		}
 
-		// Log error to file
+		/// <summary>
+		/// Log error to file.
+		/// </summary>
+		/// <param name="errorMessage">The error message to write to the file.</param>
 		private void LogError(string errorMessage)
 		{
 			try
@@ -550,7 +617,9 @@ namespace MultipleClipboards
 			}
 		}
 
-		// Register all the hotkeys
+		/// <summary>
+		/// Register all the hotkeys.
+		/// </summary>
 		private void RegisterAllHotkeys()
 		{
 			HotKey cutHotKey;
@@ -559,34 +628,37 @@ namespace MultipleClipboards
 
 			try
 			{
-				foreach (clipboardDS.clipboardRow row in settingsManager.ClipboardDS.clipboard)
+				foreach (clipboardDS.clipboardRow row in this.settingsManager.ClipboardDS.clipboard)
 				{
 					// cut
 					cutHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.cut_key, HotKeyType.CUT, row.number);
-					RegisterGlobalHotKey(cutHotKey);
+					this.RegisterGlobalHotKey(cutHotKey);
 
 					// copy
 					copyHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.copy_key, HotKeyType.COPY, row.number);
-					RegisterGlobalHotKey(copyHotKey);
+					this.RegisterGlobalHotKey(copyHotKey);
 
 					// paste
 					pasteHotKey = new HotKey(row.modifier_key_1, row.modifier_key_2, row.paste_key, HotKeyType.PASTE, row.number);
-					RegisterGlobalHotKey(pasteHotKey);
+					this.RegisterGlobalHotKey(pasteHotKey);
 
 					// create a new clipboard entry for this set of hotkeys
-					clipboardManager.AddClipboard(row.number, cutHotKey, copyHotKey, pasteHotKey);
+					this.clipboardManager.AddClipboard(row.number, cutHotKey, copyHotKey, pasteHotKey);
 				}
 			}
 			catch (Exception e)
 			{
 				string errorMessage = "Error registering the hotkeys from the settings file.\r\n\r\nIf this problem persists after restarting the app you should re-install.";
 				MessageBox.Show(errorMessage + "\r\n\r\nProgram will now exit.", "Error Reading Settings File");
-				LogError(errorMessage + "\r\n" + e.ToString());
-				Close();
+				this.LogError(errorMessage + "\r\n" + e.ToString());
+				this.Close();
 			}
 		}
 
-		// register a global hot key
+		/// <summary>
+		/// Register a global hot key.
+		/// </summary>
+		/// <param name="hotKey">The hot key to register.</param>
 		private void RegisterGlobalHotKey(HotKey hotKey)
 		{
 			short hotkeyID = 0;
@@ -594,78 +666,99 @@ namespace MultipleClipboards
 			{
 				// use the GlobalAddAtom API to get a unique ID (as suggested by MSDN docs)
 				string atomName = string.Format("{0}_{1}_{2}", this.Name, hotKey.Modifiers.ToString(), hotKey.Key.ToString());
-				hotkeyID = GlobalAddAtom(atomName);
+				hotkeyID = MultipleClipboardsDialog.GlobalAddAtom(atomName);
 				if (hotkeyID == 0)
 				{
 					throw new Exception("Unable to generate unique hotkey ID. Error code: " + Marshal.GetLastWin32Error().ToString());
 				}
 
 				// register the hotkey, throw if any error
-				if (RegisterHotKey(this.Handle, hotkeyID, hotKey.Modifiers, (int)hotKey.Key) == 0)
+				if (MultipleClipboardsDialog.RegisterHotKey(this.Handle, hotkeyID, hotKey.Modifiers, (int)hotKey.Key) == 0)
 				{
 					throw new Exception("Unable to register hotkey. Error code: " + Marshal.GetLastWin32Error().ToString());
 				}
 
 				// add the hotkeyID to the list of all hotkeys
-				hotkeyIDs.Add(hotkeyID);
+				this.hotkeyIDs.Add(hotkeyID);
 			}
 			catch (Exception e)
 			{
 				// clean up if hotkey registration failed
 				MessageBox.Show("Unable to register hotkey combination:\r\n" + hotKey.ToString() + "\r\n\r\nPerhaps this key combination is already in use?", "Error Registering Hotkey");
-				LogError("Unable to register hotkey combination:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
-				UnregisterGlobalHotKey(hotkeyID);
+				this.LogError("Unable to register hotkey combination:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
+				this.UnregisterGlobalHotKey(hotkeyID);
 			}
 		}
 
-		// unregister all global hotkeys
+		/// <summary>
+		/// Unregister all global hotkeys.
+		/// </summary>
 		private void UnregisterAllGlobalHotKeys()
 		{
 			foreach (short hotkeyID in hotkeyIDs)
 			{
-				UnregisterGlobalHotKey(hotkeyID);
+				this.UnregisterGlobalHotKey(hotkeyID);
 			}
-			hotkeyIDs.Clear();
-			clipboardManager.Reset();
+			this.hotkeyIDs.Clear();
+			this.clipboardManager.Reset();
 		}
 
-		// unregister a single global hotkey
+		/// <summary>
+		/// Unregister a single global hotkey.
+		/// </summary>
+		/// <param name="hotkeyID">The ID of the hot key to unregister.</param>
 		private void UnregisterGlobalHotKey(short hotkeyID)
 		{
 			if (hotkeyID != 0)
 			{
-				UnregisterHotKey(this.Handle, hotkeyID);
+				MultipleClipboardsDialog.UnregisterHotKey(this.Handle, hotkeyID);
 				// clean up the atom list
-				GlobalDeleteAtom(hotkeyID);
+				MultipleClipboardsDialog.GlobalDeleteAtom(hotkeyID);
 				hotkeyID = 0;
 			}
 		}
 
-		// Check if a certain key is held down
+		/// <summary>
+		/// Check if a certain key is held down.
+		/// </summary>
+		/// <param name="key">The key to check.</param>
+		/// <returns>True if the key is pressed, false if it is not.</returns>
 		private bool IsKeyPressed(Keys key)
 		{
-			return ((int)GetAsyncKeyState((int)key) & 0x00008000) == 0x8000;
+			return ((int)MultipleClipboardsDialog.GetAsyncKeyState((int)key) & 0x00008000) == 0x8000;
 		}
 
-		// Checks if any of the possible modifier keys are held down
+		/// <summary>
+		/// Checks if any of the possible modifier keys are held down.
+		/// </summary>
+		/// <returns>True if any of the modifier keys are pressed, false if not.</returns>
 		private bool ModifierKeysPressed()
 		{
-			return (IsKeyPressed(Keys.LShiftKey) || IsKeyPressed(Keys.RShiftKey) || IsKeyPressed(Keys.LControlKey) || IsKeyPressed(Keys.RControlKey) || IsKeyPressed(Keys.LWin) || IsKeyPressed(Keys.RWin) || IsKeyPressed(Keys.Alt));
+			return (this.IsKeyPressed(Keys.LShiftKey) ||
+					this.IsKeyPressed(Keys.RShiftKey) ||
+					this.IsKeyPressed(Keys.LControlKey) ||
+					this.IsKeyPressed(Keys.RControlKey) ||
+					this.IsKeyPressed(Keys.LWin) ||
+					this.IsKeyPressed(Keys.RWin) ||
+					this.IsKeyPressed(Keys.Alt));
 		}
 
-		// Called when a hotkey combination has been pressed
+		/// <summary>
+		/// Overrides the Windows message loop.
+		/// </summary>
+		/// <param name="m">The current message.</param>
 		protected override void WndProc(ref Message m)
 		{
 			switch (m.Msg)
 			{
-				case WM_HOTKEY:
+				case MultipleClipboardsDialog.WM_HOTKEY:
 					// figure out what key was pressed and send it along to the clipboard manager
-					currentMessage.MessageString = m.ToString();
-					currentMessage.MessageTime = DateTime.Now;
+					this.currentMessage.MessageString = m.ToString();
+					this.currentMessage.MessageTime = DateTime.Now;
 
 					// make sure that the message we just got is not the same one that was just processed
 					// this happens when the user holds down the hotkey combination for a few seconds
-					if (currentMessage != lastMessageProcessed)
+					if (this.currentMessage != this.lastMessageProcessed)
 					{
 						int key = (int)(((uint)m.LParam & 0xFFFF0000) >> 16);
 						int modifiers = (int)((uint)m.LParam & 0x0000FFFF);
@@ -673,42 +766,42 @@ namespace MultipleClipboards
 
 						// wait while there are any modifier keys held down
 						// this causes unpredictable results when the user has setup a combination of different hotkeys
-						while (ModifierKeysPressed())
+						while (this.ModifierKeysPressed())
 							;
 
 						try
 						{
-							clipboardManager.ProcessHotKey(hotKey);
+							this.clipboardManager.ProcessHotKey(hotKey);
 						}
 						catch (Exception e)
 						{
-							LogError("Error processing the hotkey:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
+							this.LogError("Error processing the hotkey:\r\n" + hotKey.ToString() + "\r\n" + e.ToString());
 						}
 					}
 					break;
 
-				case WM_DRAWCLIPBOARD:
-					if (!clipboardManager.IsProcessingClipboardAction && !this.isFirstClipboardMessage)
+				case MultipleClipboardsDialog.WM_DRAWCLIPBOARD:
+					if (!this.clipboardManager.IsProcessingClipboardAction && !this.isFirstClipboardMessage)
 					{
 						// the data on the clipboard has changed
 						// this means the user used the regular windows clipboard
 						// track the data on the clipboard for the history viewer
 						// data coppied using any additional clipboards will be tracked internally
-						clipboardManager.StoreClipboardContents();
+						this.clipboardManager.StoreClipboardContents();
 					}
 					// send the message to the next app in the clipboard chain
-					SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+					MultipleClipboardsDialog.SendMessage(this.nextClipboardViewer, m.Msg, m.WParam, m.LParam);
 					this.isFirstClipboardMessage = false;
 					break;
 
-				case WM_CHANGECBCHAIN:
-					if (m.WParam == nextClipboardViewer)
+				case MultipleClipboardsDialog.WM_CHANGECBCHAIN:
+					if (m.WParam == this.nextClipboardViewer)
 					{
-						nextClipboardViewer = m.LParam;
+						this.nextClipboardViewer = m.LParam;
 					}
 					else
 					{
-						SendMessage(nextClipboardViewer, m.Msg, m.WParam, m.LParam);
+						MultipleClipboardsDialog.SendMessage(this.nextClipboardViewer, m.Msg, m.WParam, m.LParam);
 					}
 					break;
 

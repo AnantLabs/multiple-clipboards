@@ -119,6 +119,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_C7E8FEC01BA64D618F33F1E53EF5AC25"
+            {
+            "Name" = "8:Primary output from MultipleClipboards (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_B4A1E74FE3A74ABB96B493E9A2BA1560"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_415C4DF4_E122_4A6B_AAFA_B92D52E47AB1"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -796,7 +810,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_B4A1E74FE3A74ABB96B493E9A2BA1560"
             {
-            "SourcePath" = "8:..\\MultipleClipboards\\obj\\Debug\\MultipleClipboards.exe"
+            "SourcePath" = "8:..\\MultipleClipboards\\obj\\Release\\MultipleClipboards.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4C3F54B93D604E84936A21EF20EBF2E2"
