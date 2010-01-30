@@ -377,6 +377,17 @@ namespace MultipleClipboards
 		}
 
 		/// <summary>
+		/// Called when the user clicks the clear grid button.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The evnt args.</param>
+		private void BtnClearGrid_Click(object sender, EventArgs e)
+		{
+			this.clipboardManager.ClearClipboardHistory();
+			this.RefreshHistoryTab();
+		}
+
+		/// <summary>
 		/// Called when the user clicks the show error log menu item.
 		/// </summary>
 		/// <param name="sender">The sender of the event.</param>
@@ -394,8 +405,8 @@ namespace MultipleClipboards
 		/// <param name="e">The event args.</param>
 		private void ClipboardHistoryMenuItem_DropDownOpening(object sender, EventArgs e)
 		{
-			// first clear out all the items except the last 2
-			while (this.clipboardHistoryMenuItem.DropDownItems.Count > 2)
+			// first clear out all the items except the last 3
+			while (this.clipboardHistoryMenuItem.DropDownItems.Count > 3)
 			{
 				this.clipboardHistoryMenuItem.DropDownItems.RemoveAt(0);
 			}
@@ -428,6 +439,16 @@ namespace MultipleClipboards
 		private void ClipboardHistoryMenuItem_Click(object sender, EventArgs e)
 		{
 			this.clipboardManager.PlaceHistoricalEntryOnClipboard(((ClipboardHistoryToolStripMenuItem)sender).ClipboardHistoryIndex, 0);
+		}
+
+		/// <summary>
+		/// Called when the user clicks the clear clipboard history right click menu item.
+		/// </summary>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="e">The event args.</param>
+		private void ClearHistoryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.clipboardManager.ClearClipboardHistory();
 		}
 
 		/// <summary>
@@ -787,7 +808,14 @@ namespace MultipleClipboards
 						// this means the user used the regular windows clipboard
 						// track the data on the clipboard for the history viewer
 						// data coppied using any additional clipboards will be tracked internally
-						this.clipboardManager.StoreClipboardContents();
+						try
+						{
+							this.clipboardManager.StoreClipboardContents();
+						}
+						catch (Exception e)
+						{
+							this.LogError("Error storing clipboard contents:\r\n" + e.ToString());
+						}
 					}
 					// send the message to the next app in the clipboard chain
 					MultipleClipboardsDialog.SendMessage(this.nextClipboardViewer, m.Msg, m.WParam, m.LParam);

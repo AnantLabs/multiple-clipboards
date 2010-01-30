@@ -225,6 +225,14 @@ namespace MultipleClipboards
 		}
 
 		/// <summary>
+		/// Clears the contents of the clipboard history queue.
+		/// </summary>
+		public void ClearClipboardHistory()
+		{
+			this.clipboardHistory.Clear();
+		}
+
+		/// <summary>
 		/// Processes a hot key action.
 		/// Called from the form when a registered hotkey is pressed.
 		/// </summary>
