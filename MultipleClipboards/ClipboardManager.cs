@@ -289,11 +289,14 @@ namespace MultipleClipboards
 		/// <param name="entry">The clipboard entry to enqueue.</param>
 		private void EnqueueHistoricalEntry(ClipboardEntry entry)
 		{
-			if (this.clipboardHistory.Count == this.NumberOfHistoricalRecords)
+			if (entry.dataType != ClipboardDataType.NO_DATA)
 			{
-				this.clipboardHistory.Dequeue();
+				if (this.clipboardHistory.Count == this.NumberOfHistoricalRecords)
+				{
+					this.clipboardHistory.Dequeue();
+				}
+				this.clipboardHistory.Enqueue(entry);
 			}
-			this.clipboardHistory.Enqueue(entry);
 		}
 
 		/************************************************************************************************************
