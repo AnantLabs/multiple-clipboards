@@ -1,0 +1,119 @@
+﻿<UserControl
+    x:Class="MultipleClipboards.Presentation.Tabs.HistoryTab"         
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
+    xmlns:ClipboardManagement="clr-namespace:MultipleClipboards.ClipboardManagement"
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase" mc:Ignorable="d" 
+    d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="HistoryGridSource" Source="{Binding ClipboardHistory, Source={x:Static ClipboardManagement:ClipboardManager.Instance}}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>        
+    </UserControl.Resources>
+
+    <Grid Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="135" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Text="Select a row and disired clipboard." Height="25" VerticalAlignment="Bottom"></TextBlock>
+        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="25" Width="140" Name="ClipboardSelectComboBox" DisplayMemberPath="DisplayString" SelectedValuePath="ClipboardId"></ComboBox>
+        <Local:IconButton Grid.Row="0" Grid.Column="2" x:Name="PasteButton" HorizontalAlignment="Right" Icon="Paste" Text="Place on Clipboard" Click="PasteButton_Click" />
+
+        <DataGrid
+            Name="ClipboardHistoryDataGrid"
+            Grid.Row="1" 
+            Grid.Column="0" 
+            Grid.ColumnSpan="3" 
+            Margin="0,5,0,0"
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch" 
+            AutoGenerateColumns="False"
+            ItemsSource="{Binding Source={StaticResource HistoryGridSource}}"
+            CanUserReorderColumns="False" 
+            CanUserResizeColumns="True" 
+            CanUserSortColumns="True" 
+            GridLinesVisibility="Horizontal" 
+            AreRowDetailsFrozen="False" 
+            CanUserResizeRows="False" 
+            UseLayoutRounding="False" 
+            IsReadOnly="True"
+            SelectionMode="Extended"
+            HorizontalScrollBarVisibility="Hidden"
+            VerticalScrollBarVisibility="Auto">
+
+            <DataGrid.RowHeaderStyle>
+                <Style TargetType="DataGridRowHeader">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+            </DataGrid.RowHeaderStyle>
+                
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#DFF0F8" />
+                            <Setter Property="BorderBrush" Value="{x:Null}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsSelected" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="#F2F9FC" />
+                        </MultiTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="{x:Null}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="26">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" Width="16" Source="{Binding IconPath}" ToolTip="{Binding IconToolTip}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Data Preview" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="0,5,0,5" Text="{Binding DataPreview}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Time" MinWidth="70">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="5" Text="{Binding Path=TimeStamp, StringFormat=T}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
