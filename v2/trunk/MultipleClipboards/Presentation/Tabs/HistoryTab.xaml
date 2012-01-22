@@ -5,17 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
-    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-    xmlns:MultipleClipboards="clr-namespace:MultipleClipboards" mc:Ignorable="d" 
+    mc:Ignorable="d" 
     d:DesignHeight="300" d:DesignWidth="300">
-    
-    <UserControl.Resources>
-        <CollectionViewSource x:Key="HistoryGridSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-    </UserControl.Resources>
 
     <Grid Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -41,7 +32,7 @@
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 
             AutoGenerateColumns="False"
-            ItemsSource="{Binding Source={StaticResource HistoryGridSource}}"
+            ItemsSource="{Binding Source={StaticResource ClipboardHistoryViewSource}}"
             CanUserReorderColumns="False" 
             CanUserResizeColumns="True" 
             CanUserSortColumns="True" 

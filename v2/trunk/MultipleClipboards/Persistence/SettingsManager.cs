@@ -94,6 +94,37 @@ namespace MultipleClipboards.Persistence
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether or not the application should automatically launch when the system starts.
+		/// </summary>
+		public bool LaunchApplicationOnSystemStartup
+		{
+			get
+			{
+				return this.GetSettingSafe(Constants.LaunchApplicationOnSystemStartupSettingKey);
+			}
+			set
+			{
+				this.SaveApplicationSetting(Constants.LaunchApplicationOnSystemStartupSettingKey, value);
+				ToggleAutoLaunchShortcut(value);
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not to show the advanced options portion of the UI.
+		/// </summary>
+		public bool ShowAdvancedOptions
+		{
+			get
+			{
+				return this.GetSettingSafe(Constants.ShowAdvancedOptionsSettingKey);
+			}
+			set
+			{
+				this.SaveApplicationSetting(Constants.ShowAdvancedOptionsSettingKey, value);
+			}
+		}
+
+		/// <summary>
 		/// Gets the list of all the defined clipboard.
 		/// </summary>
 		public ObservableCollection<ClipboardDefinition> ClipboardDefinitions
@@ -175,18 +206,14 @@ namespace MultipleClipboards.Persistence
 		/// <returns>The specified setting.</returns>
 		private dynamic GetSettingSafe(string key)
 		{
-			if (this.DataStore.ApplicationSettings.ContainsKey(key))
-			{
-				// The setting exists in the data store, so just return it.
-				return this.DataStore.ApplicationSettings[key];
-			}
-			else
+			if (!this.DataStore.ApplicationSettings.ContainsKey(key))
 			{
 				// The setting does not exist in the persisted data store.
 				// Add it here with the default value.
 				this.SaveApplicationSetting(key, Constants.DefaultSettings[key]);
-				return this.DataStore.ApplicationSettings[key];
 			}
+			
+			return this.DataStore.ApplicationSettings[key];
 		}
 
 		/// <summary>
@@ -203,6 +230,25 @@ namespace MultipleClipboards.Persistence
 
 			this.DataStore.ApplicationSettings[key] = value;
 			this.SaveSettings();
+		}
+
+		private static void ToggleAutoLaunchShortcut(bool launchOnStartup)
+		{
+			// TODO: Add error handling here.
+
+			if (launchOnStartup)
+			{
+				// Copy the application shortucut from the working directory to the Startup folder.
+				if (File.Exists(Constants.ShortcutPath))
+				{
+					File.Copy(Constants.ShortcutPath, Constants.AutoLaunchShortcutPath, true);
+				}
+			}
+			else
+			{
+				// Delete the shortcut from the Startup folder.
+				File.Delete(Constants.AutoLaunchShortcutPath);
+			}
 		}
 	}
 }

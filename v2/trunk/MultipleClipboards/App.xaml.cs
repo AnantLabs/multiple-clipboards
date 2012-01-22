@@ -1,10 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using MultipleClipboards.Persistence;
 using MultipleClipboards.Presentation;
-using MultipleClipboards.Presentation.Icons;
 
 namespace MultipleClipboards
 {
@@ -29,8 +28,11 @@ namespace MultipleClipboards
 			// because the tray icon's context menu binds to properties on the clipboard manager.
 			AppController.TrayIcon = (TaskbarIcon)this.FindResource("TrayIcon");
 
-			// TODO: Only show the main window on application launch if it is launched from the installed shortcut.
-			AppController.ShowMainWindow();
+			// Only show the main UI if the application was launched by the installed shortcut.
+			if (e.Args.Contains("-fromShortcut"))
+			{
+				AppController.ShowMainWindow();
+			}
 
 			LogManager.Debug("Application initialized!");
 		}

@@ -44,6 +44,7 @@
                 <Grid Layout:MarginSetter.Margin="2,5,2,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition MinWidth="142" Width="Auto" />
@@ -57,11 +58,17 @@
                         <AccessText>Clipboard History Size:</AccessText>
                     </Label>
                     <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
-                    
-                    <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
+
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LaunchApplicationOnStarupCheckBox}">
+                        <AccessText>Launch Application on Starup</AccessText>
+                    </Label>
+                    <CheckBox Grid.Row="0" Grid.Column="3" Name="LaunchApplicationOnStarupCheckBox" VerticalAlignment="Center" IsChecked="{Binding LaunchApplicationOnSystemStartup, Source={x:Static MultipleClipboards:AppController.Settings}}"></CheckBox>
+
+                    <!-- Basic Settings Grid - Row 1 -->
+                    <Label Grid.Row="1" Grid.Column="0" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
                         <AccessText>Show Advanced Options</AccessText>
                     </Label>
-                    <CheckBox Grid.Row="0" Grid.Column="3" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center"></CheckBox>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center" IsChecked="{Binding ShowAdvancedOptions, Source={x:Static MultipleClipboards:AppController.Settings}}"></CheckBox>
                 </Grid>
 
                 <!-- Advanced Settings Grid -->

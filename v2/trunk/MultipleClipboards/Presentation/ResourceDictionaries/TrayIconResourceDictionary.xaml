@@ -6,8 +6,7 @@
                     xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
                     xmlns:Entities="clr-namespace:MultipleClipboards.Entities">
 
-    <CollectionViewSource x:Key="ContextMenuItemSource"
-                          Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+    <CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
         <CollectionViewSource.SortDescriptions>
             <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
         </CollectionViewSource.SortDescriptions>
@@ -22,7 +21,7 @@
     <Style x:Shared="False" TargetType="MenuItem">
         <Setter Property="Icon">
             <Setter.Value>
-                <Image Width="16" Source="{Binding IconPath}" />
+                <Image Width="16" Source="{Binding IconPath}" ToolTip="{Binding IconToolTip}" />
             </Setter.Value>
         </Setter>
         <Setter Property="Command" Value="{Commands:PasteCommand}" />
@@ -42,7 +41,7 @@
 
     <TaskbarNotification:TaskbarIcon x:Key="TrayIcon"
                                      ToolTipText="Multiple Clipboards"
-                                     IconSource="/Presentation/Icons/Clipboard.ico"
+                                     IconSource="/Presentation/Icons/ClipboardIcon.ico"
                                      MenuActivation="RightClick"
                                      DoubleClickCommand="{Commands:ApplicationCommand}"
                                      DoubleClickCommandParameter="Open">
@@ -50,7 +49,7 @@
             <ContextMenu>
                 <ContextMenu.ItemsSource>
                     <CompositeCollection>
-                        <CollectionContainer Collection="{Binding Source={StaticResource ContextMenuItemSource}}" />
+                        <CollectionContainer Collection="{Binding Source={StaticResource ClipboardHistoryViewSource}}" />
                         <Separator />
                         <MenuItem Header="Multiple Clipboards..."
                               FontWeight="Bold"

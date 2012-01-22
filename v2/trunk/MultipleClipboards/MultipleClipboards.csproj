@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Presentation\Icons\Clipboard.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ApplicationBasics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -210,7 +213,7 @@
     <Resource Include="Presentation\Icons\16\Delete.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\Clipboard.ico" />
+    <EmbeddedResource Include="Presentation\Icons\Clipboard.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Presentation\Icons\32\Exit.png" />
@@ -219,6 +222,9 @@
   <ItemGroup>
     <Resource Include="Presentation\Icons\16\Exit.png" />
     <Resource Include="Presentation\Icons\16\Log.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Presentation\Icons\ClipboardIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

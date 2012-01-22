@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards", "MultipleClipboards\MultipleClipboards.csproj", "{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{6F349DA3-2A70-4D32-A07F-2314AC095BD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,12 @@ Global
 		{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}.Release|Mixed Platforms.Build.0 = Release|x86
 		{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}.Release|x86.ActiveCfg = Release|x86
 		{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}.Release|x86.Build.0 = Release|x86
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Debug|Any CPU.ActiveCfg = Debug
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Debug|x86.ActiveCfg = Debug
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Release|Any CPU.ActiveCfg = Release
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Release|Mixed Platforms.ActiveCfg = Release
+		{6F349DA3-2A70-4D32-A07F-2314AC095BD3}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
