@@ -18,49 +18,18 @@ namespace MultipleClipboards.ClipboardManagement
 	/// </summary>
 	public class ClipboardManager : IDisposable
 	{
-		private static ClipboardManager _clipboardManager;
-		private readonly bool _isInitialized;
-
-		/// <summary>
-		/// Gets the application-wide instance of the clipboard manager.
-		/// </summary>
-		public static ClipboardManager Instance
-		{
-			get
-			{
-				if (_clipboardManager == null || !_clipboardManager._isInitialized)
-				{
-					throw new InvalidOperationException("An attempt was made to use the application-wide instance of the ClipboardManager class before it has been initialized.  You must call the static initialize method prior to using the static instance of this class.");
-				}
-				return _clipboardManager;
-			}
-		}
-
-		/// <summary>
-		/// Initializes the application-wide instance of the clipboard manager for use with the given window handle.
-		/// </summary>
-		/// <param name="windowHandle">The handle to the main window of the application.</param>
-		public static void Initialize(IntPtr windowHandle)
-		{
-			if (_clipboardManager != null && _clipboardManager._isInitialized)
-			{
-				throw new InvalidOperationException("An attempt was made to initialize the application-wide instance of the ClipboardManager class after is has already been initialized.  The application-wide instance of this class can only be initialized once.");
-			}
-
-			_clipboardManager = new ClipboardManager(windowHandle);
-		}
-
 		/// <summary>
 		/// Constructs a new Clipboard Manager object for use with the given window handle.
 		/// </summary>
 		/// <param name="windowHandle">The handle of the window using this clipboard manager.</param>
 		public ClipboardManager(IntPtr windowHandle)
 		{
-			SettingsManager.Instance.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitions_CollectionChanged;
+			AppController.Settings.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitions_CollectionChanged;
 			this.WindowHandle = windowHandle;
 			this.HotKeys = new List<HotKey>();
 			this.ClipboardHistory = new ObservableCollection<ClipboardData>();
 			this.ClipboardDataByClipboardId = new Dictionary<int, ClipboardData>();
+			this.AllowStoreClipboardContents = true;
 
 			this.PopulateAvailableClipboardList();
 			this.RegisterAllClipboards();
@@ -71,7 +40,6 @@ namespace MultipleClipboards.ClipboardManagement
 				this.EnqueueHistoricalEntry(this.CurrentSystemClipboardData);
 			}
 
-			this._isInitialized = true;
 			LogManager.Debug("ClipboardManager initialized.  All hot keys are registered.");
 		}
 
@@ -133,17 +101,26 @@ namespace MultipleClipboards.ClipboardManagement
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether or not the current contents of the clipboard should be stored.
+		/// </summary>
+		protected bool AllowStoreClipboardContents
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the existing data on the clipboard
 		/// </summary>
 		protected ClipboardData CurrentSystemClipboardData
 		{
 			get
 			{
-				return this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardDefinition.ClipboardId];
+				return this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId];
 			}
 			set
 			{
-				this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardDefinition.ClipboardId] = value;
+				this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId] = value;
 			}
 		}
 
@@ -153,7 +130,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboard">The clipboard to add.</param>
 		public void AddClipboard(ClipboardDefinition clipboard)
 		{
-            SettingsManager.Instance.AddNewClipboard(clipboard);
+            AppController.Settings.AddNewClipboard(clipboard);
 			LogManager.DebugFormat("New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);
 		}
@@ -162,7 +139,7 @@ namespace MultipleClipboards.ClipboardManagement
         {
 			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
         	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
-            SettingsManager.Instance.RemoveClipboard(clipboard);
+            AppController.Settings.RemoveClipboard(clipboard);
 			LogManager.DebugFormat("Clipboard removed:\r\n{0}", clipboard);
         }
 
@@ -171,9 +148,12 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		public void StoreClipboardContents()
 		{
-			// TODO: This same code exists in the CutCopy() method.  Figure out what the best way to consolidate it is.
-			this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardDefinition.ClipboardId] = RetrieveDataFromClipboard();
-			this.EnqueueHistoricalEntry(this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardDefinition.ClipboardId]);
+			if (this.AllowStoreClipboardContents)
+			{
+				var clipboardData = RetrieveDataFromClipboard();
+				this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId] = clipboardData;
+				this.EnqueueHistoricalEntry(clipboardData);
+			}
 		}
 
 		/// <summary>
@@ -183,18 +163,32 @@ namespace MultipleClipboards.ClipboardManagement
 		/// /// <param name="clipboardDataId">The Id of the clipboard entry to place on a clipboard.</param>
 		public void PlaceHistoricalEntryOnClipboard(int clipboardId, ulong clipboardDataId)
 		{
-			ClipboardData clipboardEntry = this.ClipboardHistory.FirstOrDefault(data => data.Id == clipboardDataId);
+			try
+			{
+				this.AllowStoreClipboardContents = false;
+				ClipboardData clipboardEntry = this.ClipboardHistory.FirstOrDefault(data => data.Id == clipboardDataId);
 
-			if (clipboardId == ClipboardDefinition.SystemClipboardDefinition.ClipboardId)
-			{
-				// Put data on the windows clipboard.
-				this.CurrentSystemClipboardData = clipboardEntry;
-				this.RestoreClipboardData();
+				if (clipboardEntry != null)
+				{
+					// Put the data on the specified clipboard.
+					this.ClipboardDataByClipboardId[clipboardId] = clipboardEntry;
+
+					if (clipboardId == ClipboardDefinition.SystemClipboardId)
+					{
+						this.RestoreClipboardData();
+					}
+
+					// Finally, remove and re-add the entry that we just placed on a clipboard.
+					// This is done because accessing an item from the history counts as a fresh copy,
+					// meaning it needs to moved to the end of the queue.
+					clipboardEntry.TimeStamp = DateTime.Now;
+					this.ClipboardHistory.Remove(clipboardEntry);
+					this.ClipboardHistory.Add(clipboardEntry);
+				}
 			}
-			else
+			finally
 			{
-				// Put the data on the specified clipboard.
-				this.ClipboardDataByClipboardId[clipboardId] = clipboardEntry;
+				this.AllowStoreClipboardContents = true;
 			}
 		}
 
@@ -266,7 +260,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			this.AvailableClipboards.Add(ClipboardDefinition.SystemClipboardDefinition);
 
-			foreach (ClipboardDefinition clipboard in SettingsManager.Instance.ClipboardDefinitions)
+			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
 			{
 				this.AvailableClipboards.Add(clipboard);
 			}
@@ -278,9 +272,9 @@ namespace MultipleClipboards.ClipboardManagement
 		private void RegisterAllClipboards()
 		{
 			// TODO: Capture any errors here (NOT try catch), build a report card of what went wrong, and figure out a way to return it to the UI.
-			this.ClipboardDataByClipboardId.Add(ClipboardDefinition.SystemClipboardDefinition.ClipboardId, null);
+			this.ClipboardDataByClipboardId.Add(ClipboardDefinition.SystemClipboardId, null);
 
-			foreach (ClipboardDefinition clipboard in SettingsManager.Instance.ClipboardDefinitions)
+			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
 			{
 				this.RegisterClipboard(clipboard);
 			}
@@ -377,7 +371,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboardData">The clipboard data to enqueue.</param>
 		private void EnqueueHistoricalEntry(ClipboardData clipboardData)
 		{
-			if (this.ClipboardHistory.Count == SettingsManager.Instance.NumberOfClipboardHistoryRecords)
+			if (this.ClipboardHistory.Count == AppController.Settings.NumberOfClipboardHistoryRecords)
 			{
 				this.ClipboardHistory.RemoveAt(0);
 			}
@@ -401,7 +395,7 @@ namespace MultipleClipboards.ClipboardManagement
 			// When this happens you wind up with the original clipboard data still on the clipboard, but also stored in whatever clipboard matches the hotkey that we're processing.
 			// Just to be safe, have the program sleep for a fraction of a second before trying to retrieve the new clipboard data.
 			// This shouldn't yield any noticable delay.
-			Thread.Sleep(SettingsManager.Instance.ThreadDelayTime);
+			Thread.Sleep(AppController.Settings.ThreadDelayTime);
 
 			try
 			{
@@ -445,7 +439,7 @@ namespace MultipleClipboards.ClipboardManagement
 				}
 
 				// A little delay for the same reason as in CutCopy.
-				Thread.Sleep(SettingsManager.Instance.ThreadDelayTime);
+				Thread.Sleep(AppController.Settings.ThreadDelayTime);
 			}
 			finally
 			{
@@ -497,12 +491,12 @@ namespace MultipleClipboards.ClipboardManagement
 				}
 				catch (COMException comException)
 				{
-					if (numberOfTries >= SettingsManager.Instance.NumberOfClipboardOperationRetries)
+					if (numberOfTries >= AppController.Settings.NumberOfClipboardOperationRetries)
 					{
 						throw;
 					}
-					LogManager.ErrorFormat("Attempt #{0} at performing a clipboard operation resulted in the following error.  Trying again in {1}ms.", comException, numberOfTries, SettingsManager.Instance.ThreadDelayTime);
-					Thread.Sleep(SettingsManager.Instance.ThreadDelayTime);
+					LogManager.ErrorFormat("Attempt #{0} at performing a clipboard operation resulted in the following error.  Trying again in {1}ms.", comException, numberOfTries, AppController.Settings.ThreadDelayTime);
+					Thread.Sleep(AppController.Settings.ThreadDelayTime);
 					numberOfTries++;
 				}
 			}

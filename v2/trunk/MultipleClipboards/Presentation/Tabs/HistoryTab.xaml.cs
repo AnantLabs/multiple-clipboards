@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Persistence;
 
@@ -18,7 +17,7 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			InitializeComponent();
 			this.BindClipboardSelectDropdown();
-			SettingsManager.Instance.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitions_CollectionChanged;
+			AppController.Settings.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitions_CollectionChanged;
 		}
 
 		private void ClipboardDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -34,11 +33,11 @@ namespace MultipleClipboards.Presentation.Tabs
 
 			if (data != null)
 			{
-				ClipboardManager.Instance.PlaceHistoricalEntryOnClipboard(clipboardId, data.Id);
+				AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(clipboardId, data.Id);
 			}
 			else
 			{
-				ClipboardDefinition clipboard = ClipboardManager.Instance.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
+				ClipboardDefinition clipboard = AppController.ClipboardManager.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
 				LogManager.ErrorFormat("Error placing historical clipboard data on the clipboard '{0}'.  The data retrieved from the bound data grid was null.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
 				// TODO: Display some error message to the user.
 			}
@@ -48,9 +47,9 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			LogManager.Debug("Binding the clipboard select dropdown on the history tab.");
 			IList<ClipboardSelectBinding> bindings = new List<ClipboardSelectBinding>();
-			bindings.Add(new ClipboardSelectBinding(ClipboardDefinition.SystemClipboardDefinition.ClipboardId, ClipboardDefinition.SystemClipboardDefinition.ToDisplayString()));
+			bindings.Add(new ClipboardSelectBinding(ClipboardDefinition.SystemClipboardId, ClipboardDefinition.SystemClipboardDefinition.ToDisplayString()));
 
-			foreach (ClipboardDefinition clipboard in SettingsManager.Instance.ClipboardDefinitions)
+			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
 			{
 				bindings.Add(new ClipboardSelectBinding(clipboard.ClipboardId, string.Format("#{0} - {1}", clipboard.ClipboardId, clipboard.ToDisplayString())));
 			}

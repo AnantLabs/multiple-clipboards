@@ -8,7 +8,9 @@
              xmlns:Layout="clr-namespace:MultipleClipboards.Presentation.Layout"
              xmlns:Converters="clr-namespace:MultipleClipboards.Presentation.Converters"
              xmlns:Persistence="clr-namespace:MultipleClipboards.Persistence"
-             xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls" d:DesignHeight="300" d:DesignWidth="300">
+             xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
+             xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+             d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="ModifierKeysEnumValues">
@@ -54,7 +56,7 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=NumberOfHistoricalRecordsTextBox}">
                         <AccessText>Clipboard History Size:</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static Persistence:SettingsManager.Instance}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
                     
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
                         <AccessText>Show Advanced Options</AccessText>
@@ -79,18 +81,18 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=ThreadDelayTimeTextBox}">
                         <AccessText>Thread Delay Time (ms):</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Text="{Binding ThreadDelayTime, Source={x:Static Persistence:SettingsManager.Instance}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=NumberOfClipboardOperationRetriesTextBox}">
                         <AccessText># of Clipboard Operation Retries:</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Right" Width="70" Name="NumberOfClipboardOperationRetriesTextBox" Text="{Binding NumberOfClipboardOperationRetries, Source={x:Static Persistence:SettingsManager.Instance}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" HorizontalAlignment="Right" Width="70" Name="NumberOfClipboardOperationRetriesTextBox" Text="{Binding NumberOfClipboardOperationRetries, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
 
                     <!-- Advanced Settings Grid - Row 1 -->
                     <Label Grid.Row="1" Grid.Column="0" Target="{Binding ElementName=LogLevelComboBox}">
                         <AccessText>Application Log Level:</AccessText>
                     </Label>
-                    <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox" ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}" SelectedItem="{Binding ApplicationLogLevel, Source={x:Static Persistence:SettingsManager.Instance}}"></ComboBox>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox" ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}" SelectedItem="{Binding ApplicationLogLevel, Source={x:Static MultipleClipboards:AppController.Settings}}"></ComboBox>
                 </Grid>
             </StackPanel>
         </GroupBox>
@@ -131,7 +133,7 @@
                 <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButton_Click" Icon="Add" Text="Add" />
 
                 <!-- Clipboard Definition Grid - Row 2 -->
-                <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" AutoGenerateColumns="False" ItemsSource="{Binding ClipboardDefinitions, Source={x:Static Persistence:SettingsManager.Instance}}" Name="ClipboardDefinitionDataGrid" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="False" CanUserResizeRows="False" UseLayoutRounding="False" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden">
+                <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" AutoGenerateColumns="False" ItemsSource="{Binding ClipboardDefinitions, Source={x:Static MultipleClipboards:AppController.Settings}}" Name="ClipboardDefinitionDataGrid" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="False" CanUserResizeRows="False" UseLayoutRounding="False" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="Visibility" Value="Collapsed" />

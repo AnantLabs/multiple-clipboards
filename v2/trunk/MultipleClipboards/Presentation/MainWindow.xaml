@@ -3,19 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Tabs="clr-namespace:MultipleClipboards.Presentation.Tabs"
         xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
-        xmlns:TaskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
         Title="Multiple Clipboards"
-        ShowInTaskbar="False"
+        WindowStyle="None"
+        Background="Transparent"
+        BorderThickness="1"
+        AllowsTransparency="True"
+        ShowInTaskbar="True"
+        Icon="/Presentation/Icons/Clipboard.ico"
         Width="700" Height="600">
 
     <Border CornerRadius="5">
         <Grid>
-            <TaskbarNotification:TaskbarIcon
-                Name="ApplicationTrayIcon"
-                IconSource="/Presentation/Icons/16/Clipboard.ico"
-                ToolTipText="Multiple Clipboard">
-            </TaskbarNotification:TaskbarIcon>
-
             <Border Width="Auto" Height="Auto" Style="{StaticResource MainGridBorder}" MouseLeftButtonDown="DragStart">
             </Border>
             <Grid Margin="5,0,12,0">
@@ -47,7 +45,7 @@
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         </Style>
                     </TabControl.ItemContainerStyle>
-                    <TabItem Name="SettingsTabItem" Padding="5">
+                    <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image VerticalAlignment="Center" Width="32">
@@ -60,7 +58,7 @@
                         </TabItem.Header>
                         <Tabs:SettingsTab />
                     </TabItem>
-                    <TabItem Name="ClipboardInspectorTabItem" Padding="5">
+                    <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image VerticalAlignment="Center" Width="32">
@@ -73,7 +71,7 @@
                         </TabItem.Header>
                         <Tabs:ClipboardInspectorTab />
                     </TabItem>
-                    <TabItem Name="HistoryTabItem" Padding="5">
+                    <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image VerticalAlignment="Center" Width="32">
@@ -86,7 +84,7 @@
                         </TabItem.Header>
                         <Tabs:HistoryTab />
                     </TabItem>
-			        <TabItem Name="AboutTabItem" Padding="5">
+			        <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image VerticalAlignment="Center" Width="32">
@@ -99,18 +97,18 @@
                         </TabItem.Header>
 				        <Grid />
 			        </TabItem>
-			        <TabItem Name="ErrorLogTabItem" Padding="5">
+			        <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <Image VerticalAlignment="Center" Width="32">
                                     <Image.Source>
-                                        <BitmapImage DecodePixelWidth="32" UriSource="/Presentation/Icons/32/Error.png" />
+                                        <BitmapImage DecodePixelWidth="32" UriSource="/Presentation/Icons/32/Log.png" />
                                     </Image.Source>
                                 </Image>
-                                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,0,0" Text="Error Log" />
+                                <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,0,0" Text="Application Log" />
                             </StackPanel>
                         </TabItem.Header>
-                        <Tabs:ErrorLogTab />
+                        <Tabs:ApplicationLogTab />
                     </TabItem>
 		        </TabControl>
             </Grid>

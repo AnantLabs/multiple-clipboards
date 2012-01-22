@@ -1,0 +1,84 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:TaskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
+                    xmlns:Commands="clr-namespace:MultipleClipboards.Presentation.Commands"
+                    xmlns:System="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                    xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+                    xmlns:Entities="clr-namespace:MultipleClipboards.Entities">
+
+    <CollectionViewSource x:Key="ContextMenuItemSource"
+                          Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+        <CollectionViewSource.SortDescriptions>
+            <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+
+    <!--
+        The x:Shared="False" is essential.
+        Without it, the parser would use the same Image instance for each menu item that is created.
+        This means that only one would actually have an icon at any given time.
+        Setting Shared="False" tells the parser to create a new Image instance for each menu item.
+    -->
+    <Style x:Shared="False" TargetType="MenuItem">
+        <Setter Property="Icon">
+            <Setter.Value>
+                <Image Width="16" Source="{Binding IconPath}" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Command" Value="{Commands:PasteCommand}" />
+        <Setter Property="CommandParameter" Value="{Binding Id}" />
+    </Style>
+
+    <DataTemplate DataType="{x:Type Entities:ClipboardData}">
+        <Grid Margin="5,0,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Name="DataPreviewTextBlock" HorizontalAlignment="Left" Text="{Binding DataPreview}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Name="TimeStampTextBlock" HorizontalAlignment="Right" Margin="20,0,0,0" Text="{Binding TimeStamp, StringFormat=T}" />
+        </Grid>
+    </DataTemplate>
+
+    <TaskbarNotification:TaskbarIcon x:Key="TrayIcon"
+                                     ToolTipText="Multiple Clipboards"
+                                     IconSource="/Presentation/Icons/Clipboard.ico"
+                                     MenuActivation="RightClick"
+                                     DoubleClickCommand="{Commands:ApplicationCommand}"
+                                     DoubleClickCommandParameter="Open">
+        <TaskbarNotification:TaskbarIcon.ContextMenu>
+            <ContextMenu>
+                <ContextMenu.ItemsSource>
+                    <CompositeCollection>
+                        <CollectionContainer Collection="{Binding Source={StaticResource ContextMenuItemSource}}" />
+                        <Separator />
+                        <MenuItem Header="Multiple Clipboards..."
+                              FontWeight="Bold"
+                              Command="{Commands:ApplicationCommand}"
+                              CommandParameter="Open">
+                            <MenuItem.Icon>
+                                <Image Width="16" Source="/Presentation/Icons/16/Clipboard.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Exit"
+                              Command="{Commands:ApplicationCommand}"
+                              CommandParameter="Shutdown">
+                            <MenuItem.Icon>
+                                <Image Width="16" Source="/Presentation/Icons/16/Exit.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </CompositeCollection>
+                </ContextMenu.ItemsSource>
+            </ContextMenu>
+        </TaskbarNotification:TaskbarIcon.ContextMenu>
+        
+        <!--<TaskbarNotification:TaskbarIcon.TrayPopup>
+            <SystemTray:SysTrayPopup />
+        </TaskbarNotification:TaskbarIcon.TrayPopup>
+
+        <TaskbarNotification:TaskbarIcon.TrayToolTip>
+            <SystemTray:SysTrayToolTip />
+        </TaskbarNotification:TaskbarIcon.TrayToolTip>-->
+    </TaskbarNotification:TaskbarIcon>
+
+</ResourceDictionary>

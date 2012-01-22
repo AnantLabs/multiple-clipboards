@@ -1,13 +1,13 @@
 ﻿<Application x:Class="MultipleClipboards.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Presentation\MainWindow.xaml">
+             ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Presentation\ResourceDictionaries\TrayIconResourceDictionary.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="Presentation\ResourceDictionaries\MainWindowDictionary.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="Presentation\ResourceDictionaries\HighlightButtonDictionary.xaml"></ResourceDictionary>
-                <ResourceDictionary Source="Presentation\ResourceDictionaries\StealthButtonDictionary.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

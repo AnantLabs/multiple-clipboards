@@ -7,11 +7,12 @@ namespace MultipleClipboards.Entities
 	[Serializable]
 	public class ClipboardDefinition
 	{
+		public const int SystemClipboardId = -1;
 		private const string ClipboardDisplayStringFormat = "{0}{1}+{2}";
 
 		public static ClipboardDefinition SystemClipboardDefinition = new ClipboardDefinition
 		{
-			ClipboardId = -1,
+			ClipboardId = SystemClipboardId,
 			ModifierOneKey = ModifierKeys.Control,
 			ModifierTwoKey = ModifierKeys.None,
 			CutKey = Key.X,

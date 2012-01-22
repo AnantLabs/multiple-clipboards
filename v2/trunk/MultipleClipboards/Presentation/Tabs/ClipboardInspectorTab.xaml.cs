@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 
 namespace MultipleClipboards.Presentation.Tabs
@@ -38,18 +35,18 @@ namespace MultipleClipboards.Presentation.Tabs
 		private void Refresh()
 		{
 			this.ClipboardInspectorStackPanel.Children.Clear();
-			int textBoxHeight = (ContainerHeight / ClipboardManager.Instance.AvailableClipboards.Count) - TextBoxPadding;
+			int textBoxHeight = (ContainerHeight / AppController.ClipboardManager.AvailableClipboards.Count) - TextBoxPadding;
 
 			if (textBoxHeight < MinTextBoxHeight)
 			{
 				textBoxHeight = MinTextBoxHeight;
 			}
 
-			foreach (ClipboardDefinition clipboard in ClipboardManager.Instance.AvailableClipboards)
+			foreach (ClipboardDefinition clipboard in AppController.ClipboardManager.AvailableClipboards)
 			{
-				ClipboardData data = ClipboardManager.Instance.ClipboardDataByClipboardId[clipboard.ClipboardId];
+				ClipboardData data = AppController.ClipboardManager.ClipboardDataByClipboardId[clipboard.ClipboardId];
 
-				if (clipboard.ClipboardId != ClipboardDefinition.SystemClipboardDefinition.ClipboardId)
+				if (clipboard.ClipboardId != ClipboardDefinition.SystemClipboardId)
 				{
 					TextBlock labelTextBlock = new TextBlock
 					{

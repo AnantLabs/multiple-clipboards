@@ -5,16 +5,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
-    xmlns:ClipboardManagement="clr-namespace:MultipleClipboards.ClipboardManagement"
-    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase" mc:Ignorable="d" 
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:MultipleClipboards="clr-namespace:MultipleClipboards" mc:Ignorable="d" 
     d:DesignHeight="300" d:DesignWidth="300">
     
     <UserControl.Resources>
-        <CollectionViewSource x:Key="HistoryGridSource" Source="{Binding ClipboardHistory, Source={x:Static ClipboardManagement:ClipboardManager.Instance}}">
+        <CollectionViewSource x:Key="HistoryGridSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>        
+        </CollectionViewSource>
     </UserControl.Resources>
 
     <Grid Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">

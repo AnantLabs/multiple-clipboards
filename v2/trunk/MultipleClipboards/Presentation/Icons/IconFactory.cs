@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MultipleClipboards.Presentation.Icons
 {
@@ -12,13 +9,14 @@ namespace MultipleClipboards.Presentation.Icons
 		Audio,
 		Clipboard,
 		Delete,
-		Error,
+		Exit,
 		FileDrop,
 		Find,
 		Gear,
 		History,
 		Html,
 		Image,
+		Log,
 		Paste,
 		Preferences,
 		Refresh,
@@ -31,8 +29,7 @@ namespace MultipleClipboards.Presentation.Icons
 	{
 		// ReSharper disable InconsistentNaming
 		_16 = 16,
-		_32 = 32,
-		_48 = 48
+		_32 = 32
 		// ReSharper restore InconsistentNaming
 	}
 
@@ -48,13 +45,14 @@ namespace MultipleClipboards.Presentation.Icons
 			{ IconType.Audio, "Audio stream" },
 			{ IconType.Clipboard, "Clipboard" },
 			{ IconType.Delete, "Delete" },
-			{ IconType.Error, "Error" },
+			{ IconType.Exit, "Exit" },
 			{ IconType.FileDrop, "A list of files that have been placed on the clipboard" },
 			{ IconType.Find, "Find" },
 			{ IconType.Gear, "Settings" },
 			{ IconType.History, "Clipboard history" },
 			{ IconType.Html, "Html text" },
 			{ IconType.Image, "Bitmap image" },
+			{ IconType.Log, "Application Log" },
 			{ IconType.Paste, "Paste" },
 			{ IconType.Preferences, "Preferences" },
 			{ IconType.Refresh, "Refresh" },
@@ -71,11 +69,6 @@ namespace MultipleClipboards.Presentation.Icons
 		public static string GetIcon32(IconType icon)
 		{
 			return GetIcon(icon, IconSize._32);
-		}
-
-		public static string GetIcon48(IconType icon)
-		{
-			return GetIcon(icon, IconSize._48);
 		}
 
 		public static string GetIcon(IconType icon, IconSize size)

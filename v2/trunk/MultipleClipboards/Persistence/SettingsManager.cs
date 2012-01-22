@@ -11,23 +11,10 @@ namespace MultipleClipboards.Persistence
 	/// </summary>
 	public sealed class SettingsManager
 	{
-		private static SettingsManager _settingsManager;
-
-		/// <summary>
-		/// Gets the singleton instance of the SettingsManager object.
-		/// </summary>
-		public static SettingsManager Instance
-		{
-			get
-			{
-				return _settingsManager ?? (_settingsManager = new SettingsManager());
-			}
-		}
-
 		/// <summary>
 		/// Constructs a new Settings Manager object.
 		/// </summary>
-		private SettingsManager()
+		public SettingsManager()
 		{
 			if (!Directory.Exists(Constants.BaseDataPath))
 			{

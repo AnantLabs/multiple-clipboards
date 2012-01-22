@@ -42,8 +42,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\ApplicationBasics.dll</HintPath>
     </Reference>
-    <Reference Include="Hardcodet.Wpf.TaskbarNotification">
-      <HintPath>..\..\References\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -66,6 +67,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Presentation\ClipboardWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Presentation\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,7 +78,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppController.cs" />
     <Compile Include="ClipboardManagement\ClipboardManager.cs" />
+    <Compile Include="Presentation\ClipboardWindow.xaml.cs">
+      <DependentUpon>ClipboardWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Commands\ApplicationCommand.cs" />
+    <Compile Include="Presentation\Commands\PasteCommand.cs" />
+    <Compile Include="Presentation\Commands\CommandExtension.cs" />
     <Compile Include="Presentation\Controls\IconButton.cs" />
     <Compile Include="Presentation\Controls\HighlightButton.cs" />
     <Compile Include="Presentation\Converters\BooleanToVisibilityConverter.cs" />
@@ -98,15 +110,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Presentation\ResourceDictionaries\StealthButtonDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Presentation\ResourceDictionaries\TrayIconResourceDictionary.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Presentation\Tabs\ClipboardInspectorTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Presentation\Tabs\ErrorLogTab.xaml">
+    <Page Include="Presentation\Tabs\ApplicationLogTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -128,8 +140,8 @@
     <Compile Include="Presentation\Tabs\ClipboardInspectorTab.xaml.cs">
       <DependentUpon>ClipboardInspectorTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Presentation\Tabs\ErrorLogTab.xaml.cs">
-      <DependentUpon>ErrorLogTab.xaml</DependentUpon>
+    <Compile Include="Presentation\Tabs\ApplicationLogTab.xaml.cs">
+      <DependentUpon>ApplicationLogTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Presentation\Tabs\HistoryTab.xaml.cs">
       <DependentUpon>HistoryTab.xaml</DependentUpon>
@@ -163,24 +175,15 @@
   <ItemGroup>
     <Resource Include="Presentation\Icons\16\About.png" />
     <Resource Include="Presentation\Icons\16\Clipboard.png" />
-    <Resource Include="Presentation\Icons\16\Error.png" />
     <Resource Include="Presentation\Icons\16\Find.png" />
     <Resource Include="Presentation\Icons\16\Gear.png" />
     <Resource Include="Presentation\Icons\16\History.png" />
     <Resource Include="Presentation\Icons\16\Preferences.png" />
     <Resource Include="Presentation\Icons\32\About.png" />
     <Resource Include="Presentation\Icons\32\Clipboard.png" />
-    <Resource Include="Presentation\Icons\32\Error.png" />
     <Resource Include="Presentation\Icons\32\Find.png" />
     <Resource Include="Presentation\Icons\32\History.png" />
     <Resource Include="Presentation\Icons\32\Preferences.png" />
-    <Resource Include="Presentation\Icons\48\About.png" />
-    <Resource Include="Presentation\Icons\48\Clipboard.png" />
-    <Resource Include="Presentation\Icons\48\Error.png" />
-    <Resource Include="Presentation\Icons\48\Find.png" />
-    <Resource Include="Presentation\Icons\48\Gear.png" />
-    <Resource Include="Presentation\Icons\48\History.png" />
-    <Resource Include="Presentation\Icons\48\Preferences.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Presentation\Icons\32\Gear.png" />
@@ -207,7 +210,15 @@
     <Resource Include="Presentation\Icons\16\Delete.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Clipboard.ico" />
+    <Resource Include="Presentation\Icons\Clipboard.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Presentation\Icons\32\Exit.png" />
+    <Resource Include="Presentation\Icons\32\Log.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Presentation\Icons\16\Exit.png" />
+    <Resource Include="Presentation\Icons\16\Log.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace MultipleClipboards.Persistence
 {
@@ -16,8 +17,8 @@ namespace MultipleClipboards.Persistence
 	public static class LogManager
 	{
 		private const string InitLogMessage = "\r\n*********************************************************\r\n{0} (UTC)\tApplication Starting.\r\n*********************************************************";
-		private const string LogMessageFormatStringWithTimeStamp = "{0}\t-\t{1} (UTC)\r\n{2}\r\n\r\n";
-		private const string LogMessageFormatString = "{0}\r\n\r\n";
+		private const string LogMessageFormatStringWithTimeStamp = "{0}\t-\t{1} (UTC)\r\nThread ID: {2}\r\n{3}\r\n\r\n";
+		private const string LogMessageFormatString = "{0}\r\nThread ID: {1}\r\n\r\n";
 		private const string DateTimeFormatString = "MM-dd-yyyy hh:mm:ss.fff";
 		private static readonly Object FileLock = new Object();
 
@@ -101,7 +102,7 @@ namespace MultipleClipboards.Persistence
 		{
 			try
 			{
-				if (string.IsNullOrWhiteSpace(message) || (level & SettingsManager.Instance.ApplicationLogLevel) != level)
+				if (string.IsNullOrWhiteSpace(message) || (level & AppController.Settings.ApplicationLogLevel) != level)
 				{
 					return;
 				}
@@ -109,8 +110,8 @@ namespace MultipleClipboards.Persistence
 				lock (FileLock)
 				{
 					string logMessage = includeTimeStamp
-						? string.Format(LogMessageFormatStringWithTimeStamp, level.ToString().ToUpperInvariant(), DateTime.UtcNow.ToString(DateTimeFormatString), message)
-						: string.Format(LogMessageFormatString, message);
+						? string.Format(LogMessageFormatStringWithTimeStamp, level.ToString().ToUpperInvariant(), DateTime.UtcNow.ToString(DateTimeFormatString), Thread.CurrentThread.ManagedThreadId, message)
+						: string.Format(LogMessageFormatString, Thread.CurrentThread.ManagedThreadId, message);
 
 					File.AppendAllText(Constants.LogFilePath, logMessage);
 				}

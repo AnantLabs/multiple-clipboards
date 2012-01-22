@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using ApplicationBasics;
-using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 
 namespace MultipleClipboards.Presentation.Tabs
@@ -45,7 +44,7 @@ namespace MultipleClipboards.Presentation.Tabs
 				PasteKey = Enum<Key>.Parse(this.PasteKeyTextBox.Text)
 			};
 
-			ClipboardManager.Instance.AddClipboard(clipboard);
+			AppController.ClipboardManager.AddClipboard(clipboard);
 		}
 
 		private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -55,7 +54,7 @@ namespace MultipleClipboards.Presentation.Tabs
 
 			if (clipboard != null)
 			{
-				ClipboardManager.Instance.RemoveClipboard(clipboard);
+				AppController.ClipboardManager.RemoveClipboard(clipboard);
 			}
 		}
 	}
