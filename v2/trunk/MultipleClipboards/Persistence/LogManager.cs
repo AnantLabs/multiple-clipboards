@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading;
+using MultipleClipboards.Interop;
 
 namespace MultipleClipboards.Persistence
 {
@@ -16,15 +17,13 @@ namespace MultipleClipboards.Persistence
 
 	public static class LogManager
 	{
-		private const string InitLogMessage = "\r\n*********************************************************\r\n{0} (UTC)\tApplication Starting.\r\n*********************************************************";
-		private const string LogMessageFormatStringWithTimeStamp = "{0}\t-\t{1} (UTC)\r\nThread ID: {2}\r\n{3}\r\n\r\n";
-		private const string LogMessageFormatString = "{0}\r\nThread ID: {1}\r\n\r\n";
+		private const string InitLogMessage = "\r\n*********************************************************\r\n{0}\tApplication Starting.\r\n*********************************************************";
 		private const string DateTimeFormatString = "MM-dd-yyyy hh:mm:ss.fff";
 		private static readonly Object FileLock = new Object();
 
 		static LogManager()
 		{
-			Log(string.Format(InitLogMessage, DateTime.UtcNow.ToString(DateTimeFormatString)), LogLevel.Debug, false);
+			Log(string.Format(InitLogMessage, DateTime.Now.ToString(DateTimeFormatString)), LogLevel.Debug, false);
 		}
 
 		public static void Error(Exception exception)
@@ -100,6 +99,7 @@ namespace MultipleClipboards.Persistence
 
 		private static void Log(string message, LogLevel level, bool includeTimeStamp)
 		{
+
 			try
 			{
 				if (string.IsNullOrWhiteSpace(message) || (level & AppController.Settings.ApplicationLogLevel) != level)
@@ -109,11 +109,20 @@ namespace MultipleClipboards.Persistence
 
 				lock (FileLock)
 				{
-					string logMessage = includeTimeStamp
-						? string.Format(LogMessageFormatStringWithTimeStamp, level.ToString().ToUpperInvariant(), DateTime.UtcNow.ToString(DateTimeFormatString), Thread.CurrentThread.ManagedThreadId, message)
-						: string.Format(LogMessageFormatString, Thread.CurrentThread.ManagedThreadId, message);
+					StringBuilder logBuilder = new StringBuilder();
+					logBuilder.Append(level.ToString().ToUpperInvariant());
 
-					File.AppendAllText(Constants.LogFilePath, logMessage);
+					if (includeTimeStamp)
+					{
+						logBuilder.AppendFormat(" | {0}", DateTime.Now.ToString(DateTimeFormatString));
+					}
+
+					logBuilder.AppendFormat(" | Managed Thread ID: {0}  |  Native Thread ID: {1}\r\n{2}\r\n\r\n",
+					                        Thread.CurrentThread.ManagedThreadId,
+					                        Win32API.GetCurrentThreadId(),
+					                        message);
+
+					File.AppendAllText(Constants.LogFilePath, logBuilder.ToString());
 				}
 			}
 			catch

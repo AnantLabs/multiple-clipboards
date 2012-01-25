@@ -15,14 +15,14 @@ namespace MultipleClipboards.Entities
 		private int _modifierBitMask;
 
 		/// <summary>
-		/// Initializes and returns a new HotKey object from the give HotKeyMessage.
+		/// Initializes and returns a new HotKey object from the give WindowsMessage.
 		/// </summary>
-		/// <param name="hotKeyMessage">The HotKeyMessage object.</param>
+		/// <param name="windowsMessage">The WindowsMessage object.</param>
 		/// <returns>The new HotKey.</returns>
-		public static HotKey FromHotKeyMessage(HotKeyMessage hotKeyMessage)
+		public static HotKey FromWindowsMessage(WindowsMessage windowsMessage)
 		{
-			int modifierBitMask = (int)((uint)hotKeyMessage.LParam & 0x0000FFFF);
-			int keyCode = (int)(((uint)hotKeyMessage.LParam & 0xFFFF0000) >> 16);
+			int modifierBitMask = (int)((uint)windowsMessage.LParam & 0x0000FFFF);
+			int keyCode = (int)(((uint)windowsMessage.LParam & 0xFFFF0000) >> 16);
 
 			HotKey hotKey = new HotKey
 			{

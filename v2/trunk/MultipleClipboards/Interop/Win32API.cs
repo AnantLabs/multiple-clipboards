@@ -34,5 +34,8 @@ namespace MultipleClipboards.Interop
 
         [DllImport("kernel32", SetLastError = true)]
         public static extern short GlobalDeleteAtom(short nAtom);
+
+		[DllImport("kernel32.dll")]
+		public static extern int GetCurrentThreadId();
     }
 }

@@ -6,11 +6,11 @@ namespace MultipleClipboards.Entities
 	/// <summary>
 	/// Class to represent a unique Hot Key message.
 	/// </summary>
-	public class HotKeyMessage
+	public class WindowsMessage
 	{
-		public HotKeyMessage()
+		public WindowsMessage()
 		{
-			this.MessageTime = DateTime.UtcNow;
+			this.MessageTime = DateTime.Now;
 		}
 
 		public IntPtr Hwnd
@@ -47,15 +47,15 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
-		/// Compares two HotkeyMessage objects.
+		/// Compares two WindowsMessage objects.
 		/// </summary>
 		/// <remarks>
-		/// A HotkeyMessage is equal to another if the message string is identical and the message time is the same, disregarding milliseconds.
+		/// A WindowsMessage is equal to another if the message string is identical and the message time is the same, disregarding milliseconds.
 		/// </remarks>
-		/// <param name="lhs">The HotkeyMessage on the left side of the comparison.</param>
-		/// <param name="rhs">The HotkeyMessage on the right side of the comparison.</param>
+		/// <param name="lhs">The WindowsMessage on the left side of the comparison.</param>
+		/// <param name="rhs">The WindowsMessage on the right side of the comparison.</param>
 		/// <returns>True if the two messages are equal, false if they are not.</returns>
-		public static bool operator ==(HotKeyMessage lhs, HotKeyMessage rhs)
+		public static bool operator ==(WindowsMessage lhs, WindowsMessage rhs)
 		{
 			if (Object.ReferenceEquals(lhs, rhs))
 			{
@@ -77,32 +77,32 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
-		/// Compares two HotkeyMessage objects.
+		/// Compares two WindowsMessage objects.
 		/// </summary>
 		/// <remarks>
-		/// A HotkeyMessage is equal to another if the message string is identical and the message time is the same, disregarding milliseconds.
+		/// A WindowsMessage is equal to another if the message string is identical and the message time is the same, disregarding milliseconds.
 		/// </remarks>
-		/// <param name="lhs">The HotkeyMessage on the left side of the comparison.</param>
-		/// <param name="rhs">The HotkeyMessage on the right side of the comparison.</param>
+		/// <param name="lhs">The WindowsMessage on the left side of the comparison.</param>
+		/// <param name="rhs">The WindowsMessage on the right side of the comparison.</param>
 		/// <returns>True if the two messages are not equal, false if they are.</returns>
-		public static bool operator !=(HotKeyMessage lhs, HotKeyMessage rhs)
+		public static bool operator !=(WindowsMessage lhs, WindowsMessage rhs)
 		{
 			return !(lhs == rhs);
 		}
 
 		/// <summary>
-		/// Compares a HotkeyMessage to another object.
+		/// Compares a WindowsMessage to another object.
 		/// </summary>
-		/// <param name="obj">The object to compare the HotkeyMessage to.</param>
+		/// <param name="obj">The object to compare the WindowsMessage to.</param>
 		/// <returns>True if the two objects are equal, false if they are not.</returns>
 		public override bool Equals(object obj)
 		{
-			if (obj == null || !(obj is HotKeyMessage))
+			if (obj == null || !(obj is WindowsMessage))
 			{
 				return false;
 			}
 
-			return this == (HotKeyMessage)obj;
+			return this == (WindowsMessage)obj;
 		}
 
 		/// <summary>
@@ -120,9 +120,9 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
-		/// Gets the string representation of this HotKeyMessage object.
+		/// Gets the string representation of this WindowsMessage object.
 		/// </summary>
-		/// <returns>The string representation of this HotKeyMessage object.</returns>
+		/// <returns>The string representation of this WindowsMessage object.</returns>
 		public override string ToString()
 		{
 			StringBuilder builder = new StringBuilder();

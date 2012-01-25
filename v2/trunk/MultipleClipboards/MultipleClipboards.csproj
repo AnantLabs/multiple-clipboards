@@ -97,7 +97,7 @@
     <Compile Include="Entities\ClipboardDefinition.cs" />
     <Compile Include="Entities\ClipboardData.cs" />
     <Compile Include="Entities\HotKey.cs" />
-    <Compile Include="Entities\HotKeyMessage.cs" />
+    <Compile Include="Entities\WindowsMessage.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
     <Compile Include="Presentation\Icons\IconFactory.cs" />
     <Compile Include="Presentation\Layout\MarginSetter.cs" />
