@@ -1,8 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MultipleClipboards.Persistence
+namespace MultipleClipboards.GlobalResources
 {
+	[Flags]
+	public enum LogLevel
+	{
+		None = 0x0,
+		Error = 0x1,
+		Warning = 0x3,
+		Debug = 0x7
+	}
+
 	public static class Constants
 	{
 		// File names.  These will never change without a new build.
@@ -10,6 +19,7 @@ namespace MultipleClipboards.Persistence
 		private const string LogFileName = "MultipleClipboardsLog.txt";
 		private const string AboutTextFileName = "AboutText.rtf";
 		private const string ShortcutFileName = "Multiple Clipboards.lnk";
+		public const string ApplicationExecutableName = "MultipleClipboards.exe";
 
 		// Application Setting Keys.
 		public const string NumberOfClipboardHistoryRecordsSettingKey = "NumberOfClipboardHistoryRecords";

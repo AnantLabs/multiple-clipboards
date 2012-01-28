@@ -78,6 +78,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -135,7 +138,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Persistence\Constants.cs" />
     <Compile Include="Persistence\LogManager.cs" />
     <Compile Include="Persistence\MultipleClipboardsDataModel.cs" />
     <Compile Include="Persistence\SettingsManager.cs" />
@@ -225,6 +227,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Presentation\Icons\ClipboardIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MultipleClipboards.GlobalResources\MultipleClipboards.GlobalResources.csproj">
+      <Project>{1309D2C2-9634-40F6-9533-14F26EE99DED}</Project>
+      <Name>MultipleClipboards.GlobalResources</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

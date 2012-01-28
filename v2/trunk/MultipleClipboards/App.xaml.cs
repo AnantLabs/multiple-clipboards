@@ -15,7 +15,7 @@ namespace MultipleClipboards
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-			this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+			this.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
 			// Create the hidden window that will handle the message loop for this app.
 			// Because this is the first window that gets created the framework automatically makes this
@@ -44,7 +44,7 @@ namespace MultipleClipboards
 			base.OnExit(e);
 		}
 
-		private static void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+		private static void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
 			LogManager.Error("An unhandled expception has occured.", e.Exception);
 			e.Handled = true;

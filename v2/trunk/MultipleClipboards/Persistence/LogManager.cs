@@ -3,18 +3,10 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using MultipleClipboards.Interop;
+using MultipleClipboards.GlobalResources;
 
 namespace MultipleClipboards.Persistence
 {
-	[Flags]
-	public enum LogLevel
-	{
-		None = 0x0,
-		Error = 0x1,
-		Warning = 0x3,
-		Debug = 0x7
-	}
-
 	public static class LogManager
 	{
 		private const string InitLogMessage = "\r\n*********************************************************\r\n{0}\tApplication Starting.\r\n*********************************************************";

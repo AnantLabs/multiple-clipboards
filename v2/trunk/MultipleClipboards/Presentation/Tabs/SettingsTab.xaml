@@ -7,9 +7,9 @@
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Layout="clr-namespace:MultipleClipboards.Presentation.Layout"
              xmlns:Converters="clr-namespace:MultipleClipboards.Presentation.Converters"
-             xmlns:Persistence="clr-namespace:MultipleClipboards.Persistence"
              xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
              xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+             xmlns:GlobalResources="clr-namespace:MultipleClipboards.GlobalResources;assembly=MultipleClipboards.GlobalResources"
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -20,7 +20,7 @@
         </ObjectDataProvider>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="LogLevelEnumValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="Persistence:LogLevel" />
+                <x:Type TypeName="GlobalResources:LogLevel" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <Converters:EnumToStringConverter x:Key="EnumToStringConverter" />

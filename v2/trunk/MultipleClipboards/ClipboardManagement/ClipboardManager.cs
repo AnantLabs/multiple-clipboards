@@ -7,6 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows;
 using MultipleClipboards.Entities;
+using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Interop;
 using MultipleClipboards.Persistence;
 using SendKeys = System.Windows.Forms.SendKeys;

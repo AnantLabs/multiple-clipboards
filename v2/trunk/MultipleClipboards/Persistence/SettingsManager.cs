@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Xml.Serialization;
 using MultipleClipboards.Entities;
+using MultipleClipboards.GlobalResources;
 
 namespace MultipleClipboards.Persistence
 {
