@@ -19,7 +19,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" FontWeight="SemiBold" Text="System Clipboard" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-        <Local:IconButton Grid.Row="0" Grid.Column="1" x:Name="RefreshButton" HorizontalAlignment="Right" Margin="0,0,5,0" Icon="Refresh" Text="Refresh" Click="RefreshButton_Click" />
+        <Local:IconButton Grid.Row="0" Grid.Column="1" x:Name="RefreshButton" HorizontalAlignment="Right" Margin="0,0,5,0" Icon="Refresh" Text="Refresh" Click="RefreshButtonClick" />
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
             <StackPanel Name="ClipboardInspectorStackPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

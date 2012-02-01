@@ -49,6 +49,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\References\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -86,6 +89,7 @@
     </Compile>
     <Compile Include="AppController.cs" />
     <Compile Include="ClipboardManagement\ClipboardManager.cs" />
+    <Compile Include="Persistence\LogHelper.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
     </Compile>
@@ -120,6 +124,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Presentation\Tabs\AboutTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Presentation\Tabs\ClipboardInspectorTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -138,10 +146,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Persistence\LogManager.cs" />
     <Compile Include="Persistence\MultipleClipboardsDataModel.cs" />
     <Compile Include="Persistence\SettingsManager.cs" />
     <Compile Include="Interop\Win32API.cs" />
+    <Compile Include="Presentation\Tabs\AboutTab.xaml.cs">
+      <DependentUpon>AboutTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Presentation\Tabs\ClipboardInspectorTab.xaml.cs">
       <DependentUpon>ClipboardInspectorTab.xaml</DependentUpon>
     </Compile>
@@ -171,6 +181,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

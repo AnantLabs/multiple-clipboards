@@ -9,7 +9,7 @@ using System.Windows;
 using MultipleClipboards.Entities;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Interop;
-using MultipleClipboards.Persistence;
+using log4net;
 using SendKeys = System.Windows.Forms.SendKeys;
 
 namespace MultipleClipboards.ClipboardManagement
@@ -19,6 +19,8 @@ namespace MultipleClipboards.ClipboardManagement
 	/// </summary>
 	public class ClipboardManager : IDisposable
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardManager));
+
 		/// <summary>
 		/// Constructs a new Clipboard Manager object for use with the given window handle.
 		/// </summary>
@@ -41,7 +43,7 @@ namespace MultipleClipboards.ClipboardManagement
 				this.EnqueueHistoricalEntry(this.CurrentSystemClipboardData);
 			}
 
-			LogManager.Debug("ClipboardManager initialized.  All hot keys are registered.");
+			log.Debug("ClipboardManager initialized.  All hot keys are registered.");
 		}
 
 		/// <summary>
@@ -53,7 +55,7 @@ namespace MultipleClipboards.ClipboardManagement
 			{
 				this.UnRegisterHotKey(hotKeyId);
 			}
-			LogManager.Debug("ClipboardManager destroyed.  All hot keys have been un-registered.");
+			log.Debug("ClipboardManager destroyed.  All hot keys have been un-registered.");
 		}
 
 		/// <summary>
@@ -132,7 +134,7 @@ namespace MultipleClipboards.ClipboardManagement
 		public void AddClipboard(ClipboardDefinition clipboard)
 		{
             AppController.Settings.AddNewClipboard(clipboard);
-			LogManager.DebugFormat("New clipboard added:\r\n{0}", clipboard);
+			log.DebugFormat("New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);
 		}
 
@@ -141,7 +143,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
         	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
             AppController.Settings.RemoveClipboard(clipboard);
-			LogManager.DebugFormat("Clipboard removed:\r\n{0}", clipboard);
+			log.DebugFormat("Clipboard removed:\r\n{0}", clipboard);
         }
 
 		/// <summary>
@@ -208,7 +210,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="systemHotKey">The hot key that was pressed.</param>
 		public void ProcessHotKey(HotKey systemHotKey)
 		{
-			LogManager.DebugFormat("About to process HotKey: {0}", systemHotKey);
+			log.DebugFormat("About to process HotKey: {0}", systemHotKey);
 
 			// 1) Find the matching hotkey in the local collection to get the Clipboard ID and Operation
 			// 2) Switch on the operation for this specific key
@@ -232,7 +234,7 @@ namespace MultipleClipboards.ClipboardManagement
 					throw new InvalidOperationException(string.Format("The HotKeyType '{0}' is not supported.", hotKey.HotKeyType));
 			}
 
-			LogManager.DebugFormat("Finished processing HotKey: {0}", hotKey);
+			log.DebugFormat("Finished processing HotKey: {0}", hotKey);
 		}
 
 		/// <summary>
@@ -310,7 +312,7 @@ namespace MultipleClipboards.ClipboardManagement
 				short hotKeyId = Win32API.GlobalAddAtom(hotKey.ToString());
 				if (hotKeyId == 0)
 				{
-					LogManager.ErrorFormat("Unable to generate unique hotkey ID by using the string '{0}'. Error code: {1}", hotKey, Marshal.GetLastWin32Error());
+					log.ErrorFormat("Unable to generate unique hotkey ID by using the string '{0}'. Error code: {1}", hotKey, Marshal.GetLastWin32Error());
 					return false;
 				}
 				hotKey.HotKeyId = hotKeyId;
@@ -324,18 +326,18 @@ namespace MultipleClipboards.ClipboardManagement
 
 				if (Win32API.RegisterHotKey(this.WindowHandle, hotKeyId, modifierBitmask, hotKey.KeyCode) == 0)
 				{
-					LogManager.ErrorFormat("Unable to register hotkey combination: {0}.  ErrorCode: {1}", hotKey, Marshal.GetLastWin32Error());
+					log.ErrorFormat("Unable to register hotkey combination: {0}.  ErrorCode: {1}", hotKey, Marshal.GetLastWin32Error());
 					return false;
 				}
 
 				this.HotKeys.Add(hotKey);
-				LogManager.DebugFormat("New HotKey registered: {0}", hotKey);
+				log.DebugFormat("New HotKey registered: {0}", hotKey);
 				return true;
 			}
 			catch (Exception e)
 			{
 				// Clean up if hotkey registration failed.
-				LogManager.ErrorFormat("Unable to register hotkey combination: {0}", e, hotKey);
+				log.Error(string.Format("Unable to register hotkey combination: {0}", hotKey), e);
 				this.UnRegisterHotKey(hotKey.HotKeyId);
 				return false;
 			}
@@ -467,7 +469,7 @@ namespace MultipleClipboards.ClipboardManagement
 		private static void PutDataOnClipboard(ClipboardData clipboardData)
 		{
 			PerformClipboardOperation(() => Clipboard.SetDataObject(clipboardData.DataObject, true));
-			LogManager.DebugFormat("The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
+			log.DebugFormat("The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
 		}
 
 		private static ClipboardData RetrieveDataFromClipboard()
@@ -475,7 +477,7 @@ namespace MultipleClipboards.ClipboardManagement
 			ClipboardData clipboardData = null;
 			PerformClipboardOperation(() => clipboardData = new ClipboardData(Clipboard.GetDataObject()));
 
-			LogManager.DebugFormat("The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData == null ? "NULL" : clipboardData.ToShortDisplayString());
+			log.DebugFormat("The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData == null ? "NULL" : clipboardData.ToShortDisplayString());
 			return clipboardData;
 		}
 
@@ -486,7 +488,7 @@ namespace MultipleClipboards.ClipboardManagement
 			{
 				try
 				{
-					LogManager.DebugFormat("Attempting Clipboard Action.  Try #{0}.", numberOfTries);
+					log.DebugFormat("Attempting Clipboard Action.  Try #{0}.", numberOfTries);
 					action();
 					break;
 				}
@@ -496,7 +498,14 @@ namespace MultipleClipboards.ClipboardManagement
 					{
 						throw;
 					}
-					LogManager.ErrorFormat("Attempt #{0} at performing a clipboard operation resulted in the following error.  Trying again in {1}ms.", comException, numberOfTries, AppController.Settings.ThreadDelayTime);
+					
+					log.Error(
+						string.Format(
+							"Attempt #{0} at performing a clipboard operation resulted in the following error.  Trying again in {1}ms.", 
+							numberOfTries, 
+							AppController.Settings.ThreadDelayTime), 
+						comException);
+
 					Thread.Sleep(AppController.Settings.ThreadDelayTime);
 					numberOfTries++;
 				}

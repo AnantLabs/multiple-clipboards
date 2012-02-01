@@ -9,7 +9,7 @@
              xmlns:Converters="clr-namespace:MultipleClipboards.Presentation.Converters"
              xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
              xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
-             xmlns:GlobalResources="clr-namespace:MultipleClipboards.GlobalResources;assembly=MultipleClipboards.GlobalResources"
+             xmlns:Persistence="clr-namespace:MultipleClipboards.Persistence"
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -20,7 +20,7 @@
         </ObjectDataProvider>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="LogLevelEnumValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="GlobalResources:LogLevel" />
+                <x:Type TypeName="Persistence:LogLevel" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <Converters:EnumToStringConverter x:Key="EnumToStringConverter" />
@@ -137,7 +137,7 @@
                 <TextBox Grid.Row="1" Grid.Column="3" Name="CopyKeyTextBox"></TextBox>
                 <TextBox Grid.Row="1" Grid.Column="4" Name="CutKeyTextBox"></TextBox>
                 <TextBox Grid.Row="1" Grid.Column="5" Name="PasteKeyTextBox"></TextBox>
-                <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButton_Click" Icon="Add" Text="Add" />
+                <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" />
 
                 <!-- Clipboard Definition Grid - Row 2 -->
                 <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" AutoGenerateColumns="False" ItemsSource="{Binding ClipboardDefinitions, Source={x:Static MultipleClipboards:AppController.Settings}}" Name="ClipboardDefinitionDataGrid" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="False" CanUserResizeRows="False" UseLayoutRounding="False" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden">
@@ -208,7 +208,7 @@
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Delete" Click="DeleteButton_Click" Cursor="Hand">
+                                    <Button Content="Delete" Click="DeleteButtonClick" Cursor="Hand">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <TextBlock TextDecorations="Underline">

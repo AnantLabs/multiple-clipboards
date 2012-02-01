@@ -18,15 +18,15 @@ namespace MultipleClipboards.Presentation.Tabs
 		public ClipboardInspectorTab()
 		{
 			InitializeComponent();
-			this.Loaded += this.ClipboardInspectorTab_Loaded;
+			this.Loaded += this.ClipboardInspectorTabLoaded;
 		}
 
-		private void ClipboardInspectorTab_Loaded(object sender, RoutedEventArgs e)
+		private void ClipboardInspectorTabLoaded(object sender, RoutedEventArgs e)
 		{
 			this.Refresh();
 		}
 
-		private void RefreshButton_Click(object sender, RoutedEventArgs e)
+		private void RefreshButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
 			this.Refresh();

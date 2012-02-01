@@ -1,10 +1,12 @@
 ﻿using System;
-using MultipleClipboards.Persistence;
+using log4net;
 
 namespace MultipleClipboards.Presentation.Commands
 {
 	public class ApplicationCommand : CommandExtension<ApplicationCommand>
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ApplicationCommand));
+
 		public ApplicationCommand()
 		{
 		}
@@ -17,7 +19,7 @@ namespace MultipleClipboards.Presentation.Commands
 		{
 			if (parameter == null)
 			{
-				LogManager.Error("An ApplicationCommand was invoked with a null parameter.  This application should not allow that.");
+				log.Error("An ApplicationCommand was invoked with a null parameter.  This application should not allow that.");
 				return;
 			}
 

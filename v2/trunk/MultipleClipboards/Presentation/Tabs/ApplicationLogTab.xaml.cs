@@ -14,30 +14,30 @@ namespace MultipleClipboards.Presentation.Tabs
 		public ApplicationLogTab()
 		{
 			InitializeComponent();
-			this.Loaded += ApplicationLogTab_Loaded;
+			this.Loaded += this.ApplicationLogTabLoaded;
 		}
 
-		private void ApplicationLogTab_Loaded(object sender, RoutedEventArgs e)
+		private void ApplicationLogTabLoaded(object sender, RoutedEventArgs e)
 		{
 			this.Refresh();
 		}
 
-		private void RefreshButton_Click(object sender, RoutedEventArgs e)
+		private void RefreshButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
 			this.Refresh();
 		}
 
-		private void ClearButton_Click(object sender, RoutedEventArgs e)
+		private void ClearButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
-			LogManager.ClearLog();
+			LogHelper.ClearLog();
 			this.Refresh();
 		}
 
 		private void Refresh()
 		{
-			string logText = LogManager.GetLogText();
+			string logText = LogHelper.GetLogText();
 			TextAlignment alignment = TextAlignment.Left;
 			FontWeight fontWeight = FontWeights.Normal;
 

@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Interop;
-using MultipleClipboards.Persistence;
+using log4net;
 
 namespace MultipleClipboards.Presentation
 {
@@ -14,6 +14,8 @@ namespace MultipleClipboards.Presentation
 	/// </summary>
 	public partial class ClipboardWindow : Window, IDisposable
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardWindow));
+
 		public ClipboardWindow()
 		{
 			// Must set the window style properties before we aquire the handle to the window.
@@ -37,18 +39,17 @@ namespace MultipleClipboards.Presentation
 			else
 			{
 				// TODO: Add error handling here.
-				LogManager.Error("Unable to aquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
+				log.Error("Unable to aquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
 			}
 
 			InitializeComponent();
-			this.LastHotKeyMessageProcessed = null;
-			LogManager.Debug("Clipboard message window initialized!");
+			log.Debug("Clipboard message window initialized!");
 		}
 
 		public void Dispose()
 		{
 			Win32API.ChangeClipboardChain(this.Handle, this.NextClipboardViewerHandle);
-			LogManager.Debug("Clipboard Manager has been disposed and the clipboard message window is closing.");
+			log.Debug("Clipboard Manager has been disposed and the clipboard message window is closing.");
 		}
 
 		private bool HasProcessedFirstMessage
@@ -57,7 +58,7 @@ namespace MultipleClipboards.Presentation
 			set;
 		}
 
-		private bool IsProcessingClipboardOperation
+		private bool IsClipboardManagerInUse
 		{
 			get;
 			set;
@@ -75,25 +76,7 @@ namespace MultipleClipboards.Presentation
 			set;
 		}
 
-		private WindowsMessage CurrentHotKeyMessage
-		{
-			get;
-			set;
-		}
-
-		private WindowsMessage LastHotKeyMessageProcessed
-		{
-			get;
-			set;
-		}
-
-		private WindowsMessage CurrentDrawClipboardMessage
-		{
-			get;
-			set;
-		}
-
-		private WindowsMessage LastDrawClipboardMessageProcessed
+		private WindowsMessage CurrentMessage
 		{
 			get;
 			set;
@@ -101,8 +84,22 @@ namespace MultipleClipboards.Presentation
 
 		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 		{
-			handled = true;
-			
+			// Here's the deal.  Weird shit happens in a message loop.
+			// My own logs have proved this and some former native C++ developers that I know confirmed this.
+			// The OS can re-enter this function on the same thread that you are currently doing work on.
+			// I have not taken the time to figure out how this works, but it does.
+			// Therefore, any kind of traditional locking mechanisms do nothing because we're on the same thread.
+			// Once I figured this out it actually made things much easier.  Just set and check flags to make
+			// sure you don't process the same message more than once.
+			//
+			// However, I only care about 3 message types, so bail on this whole thing if it's not a message I care about.
+			handled = false;
+
+			if (msg != Win32API.WM_HOTKEY && msg != Win32API.WM_DRAWCLIPBOARD && msg != Win32API.WM_CHANGECBCHAIN)
+			{
+				return IntPtr.Zero;
+			}
+
 			var currentMessage = new WindowsMessage
 			{
 				Hwnd = hwnd,
@@ -111,87 +108,90 @@ namespace MultipleClipboards.Presentation
 				LParam = lParam
 			};
 
+			if (this.CurrentMessage == currentMessage)
+			{
+				log.Debug("New message recieved, but it is the same as the message that is currently being processed.  Skipping.");
+				return IntPtr.Zero;
+			}
+			
+			this.CurrentMessage = currentMessage;
+			log.DebugFormat("New message recieved:\r\n{0}", currentMessage);
+
 			switch (msg)
 			{
 				case Win32API.WM_HOTKEY:
-					if (this.CurrentHotKeyMessage != currentMessage)
+					if (this.IsClipboardManagerInUse)
 					{
-						this.CurrentHotKeyMessage = currentMessage;
-						LogManager.DebugFormat("New HotKey message recieved:\r\n{0}", currentMessage);
-						this.IsProcessingClipboardOperation = true;
+						log.Warn("Unable to process hotkey message because the clipboard manager is in use by another message. Skipping.");
+					}
+					else
+					{
+						// Set the flag to indicate that the clipboard manager is in use.
+						this.IsClipboardManagerInUse = true;
 
 						// Figure out what key was pressed and send it along to the clipboard manager.
 						HotKey hotKey = HotKey.FromWindowsMessage(currentMessage);
 
-						// Make sure this thread is the only one using the clipboard manager right now.
-						if (this.CurrentHotKeyMessage != this.LastHotKeyMessageProcessed)
+						// Wait while there are any modifier keys held down.
+						// This causes unpredictable results when the user has setup a combination of different hotkeys.
+						while (ModifierKeysPressed())
 						{
-							// Wait while there are any modifier keys held down.
-							// This causes unpredictable results when the user has setup a combination of different hotkeys.
-							while (ModifierKeysPressed())
-							{
-								Thread.Sleep(10);
-							}
-
-							try
-							{
-								AppController.ClipboardManager.ProcessHotKey(hotKey);
-								this.LastHotKeyMessageProcessed = this.CurrentHotKeyMessage;
-							}
-							catch (Exception e)
-							{
-								LogManager.ErrorFormat("Error processing the hotkey: {0}", e, hotKey);
-							}
-						}
-						else
-						{
-							LogManager.Debug("This message is the same as the last hotkey message that was processed.  Skipping message.");
+							Thread.Sleep(10);
 						}
 
-						this.IsProcessingClipboardOperation = false;
+						try
+						{
+							AppController.ClipboardManager.ProcessHotKey(hotKey);
+						}
+						catch (Exception e)
+						{
+							log.Error(string.Format("Error processing the hotkey: {0}", hotKey), e);
+						}
+
+						this.IsClipboardManagerInUse = false;
 					}
+
+					handled = true;
 					break;
 
 				case Win32API.WM_DRAWCLIPBOARD:
-					if (this.CurrentDrawClipboardMessage != currentMessage)
+					if (this.HasProcessedFirstMessage)
 					{
-						this.CurrentDrawClipboardMessage = currentMessage;
-						LogManager.DebugFormat("New Draw Clipboard message recieved:\r\n{0}", currentMessage);
-
-						if (!this.IsProcessingClipboardOperation && this.HasProcessedFirstMessage)
+						if (this.IsClipboardManagerInUse)
 						{
+							log.Debug("System clipboard has changed, but we are currently processing another clipboard message.  Skipping.");
+						}
+						else
+						{
+							// Set the flag to indicate that the clipboard manager is in use.
+							this.IsClipboardManagerInUse = true;
+
 							// The data on the clipboard has changed.
 							// This means the user used the regular windows clipboard.
 							// Track the data on the clipboard for the history viewer.
 							// Data coppied using any additional clipboards will be tracked internally.
 							try
 							{
-								LogManager.Debug("System clipboard has changed.  About to store the contents of the clipboard.");
-
+								log.Debug("System clipboard has changed.  About to store the contents of the clipboard.");
 								AppController.ClipboardManager.StoreClipboardContents();
-								this.LastDrawClipboardMessageProcessed = this.CurrentDrawClipboardMessage;
-
-								LogManager.Debug("Stored clipboard contents successfully.");
+								log.Debug("Stored clipboard contents successfully.");
 							}
 							catch (Exception e)
 							{
-								LogManager.Error("Error storing clipboard contents", e);
+								log.Error("Error storing clipboard contents", e);
 							}
-						}
-						else
-						{
-							LogManager.Debug("System clipboard has changed, but we are currently processing another clipboard action.  Skipping message.");
+
+							this.IsClipboardManagerInUse = false;
 						}
 					}
 
 					// Send the message to the next app in the clipboard chain.
 					Win32API.SendMessage(this.NextClipboardViewerHandle, msg, wParam, lParam);
 					this.HasProcessedFirstMessage = true;
+					handled = true;
 					break;
 
 				case Win32API.WM_CHANGECBCHAIN:
-					LogManager.DebugFormat("New Change Clipboard Chain message recieved:\r\n{0}", currentMessage);
-
 					if (wParam == this.NextClipboardViewerHandle)
 					{
 						this.NextClipboardViewerHandle = lParam;
@@ -200,10 +200,7 @@ namespace MultipleClipboards.Presentation
 					{
 						Win32API.SendMessage(this.NextClipboardViewerHandle, msg, wParam, lParam);
 					}
-					break;
-
-				default:
-					handled = false;
+					handled = true;
 					break;
 			}
 

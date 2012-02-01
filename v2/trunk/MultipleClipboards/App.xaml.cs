@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
-using MultipleClipboards.Persistence;
+using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation;
+using log4net;
+using log4net.Config;
 
 namespace MultipleClipboards
 {
@@ -12,10 +16,31 @@ namespace MultipleClipboards
 	/// </summary>
 	public partial class App : Application
 	{
+		private static readonly ILog log;
+		private static readonly ManualResetEvent staticInitializationComplete = new ManualResetEvent(false);
+
+		static App()
+		{
+			// Make sure the app data directory exists.
+			if (!Directory.Exists(Constants.BaseDataPath))
+			{
+				Directory.CreateDirectory(Constants.BaseDataPath);
+			}
+
+			// Configure the logger.
+			GlobalContext.Properties["LogFilePath"] = Constants.LogFilePath;
+			XmlConfigurator.ConfigureAndWatch(new FileInfo(Constants.LogConfigFileName));
+			log = LogManager.GetLogger(typeof(App));
+			staticInitializationComplete.Set();
+		}
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 			this.DispatcherUnhandledException += AppDispatcherUnhandledException;
+
+			// Make sure the static constructor has done it's thing.
+			staticInitializationComplete.WaitOne();
 
 			// Create the hidden window that will handle the message loop for this app.
 			// Because this is the first window that gets created the framework automatically makes this
@@ -34,19 +59,19 @@ namespace MultipleClipboards
 				AppController.ShowMainWindow();
 			}
 
-			LogManager.Debug("Application initialized!");
+			log.Debug("Application initialized!");
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
 			this.ClipboardWindow.Dispose();
-			LogManager.DebugFormat("Application exiting with exit code {0}.", e.ApplicationExitCode);
+			log.DebugFormat("Application exiting with exit code {0}.", e.ApplicationExitCode);
 			base.OnExit(e);
 		}
 
 		private static void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
-			LogManager.Error("An unhandled expception has occured.", e.Exception);
+			log.Error("An unhandled expception has occured.", e.Exception);
 			e.Handled = true;
 		}
 

@@ -18,7 +18,7 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			InitializeComponent();
 			this.BindModifierKeyOneComboBox();
-			this.AddNewClipboardButton.Click += this.AddNewClipboardButton_Click;
+			this.AddNewClipboardButton.Click += this.AddNewClipboardButtonClick;
 		}
 
 		private void BindModifierKeyOneComboBox()
@@ -32,7 +32,7 @@ namespace MultipleClipboards.Presentation.Tabs
 			this.ModifierKeyOneComboBox.ItemsSource = view;
 		}
 
-		private void AddNewClipboardButton_Click(object sender, RoutedEventArgs e)
+		private void AddNewClipboardButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
 			ClipboardDefinition clipboard = new ClipboardDefinition
@@ -47,7 +47,7 @@ namespace MultipleClipboards.Presentation.Tabs
 			AppController.ClipboardManager.AddClipboard(clipboard);
 		}
 
-		private void DeleteButton_Click(object sender, RoutedEventArgs e)
+		private void DeleteButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
 			ClipboardDefinition clipboard = ((FrameworkElement)sender).DataContext as ClipboardDefinition;

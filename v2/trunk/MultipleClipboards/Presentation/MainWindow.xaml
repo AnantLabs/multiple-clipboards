@@ -95,8 +95,8 @@
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,0,0" Text="About" />
                             </StackPanel>
                         </TabItem.Header>
-				        <Grid />
-			        </TabItem>
+                        <Tabs:AboutTab />
+                    </TabItem>
 			        <TabItem Padding="5">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">

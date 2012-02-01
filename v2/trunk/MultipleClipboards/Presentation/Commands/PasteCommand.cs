@@ -1,10 +1,12 @@
 ﻿using MultipleClipboards.Entities;
-using MultipleClipboards.Persistence;
+using log4net;
 
 namespace MultipleClipboards.Presentation.Commands
 {
 	public class PasteCommand : CommandExtension<PasteCommand>
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(PasteCommand));
+
 		public PasteCommand()
 		{
 		}
@@ -17,7 +19,7 @@ namespace MultipleClipboards.Presentation.Commands
 		{
 			if (parameter == null)
 			{
-				LogManager.Error("A PasteCommand was invoked with a null parameter.  This application should not allow that.");
+				log.Error("A PasteCommand was invoked with a null parameter.  This application should not allow that.");
 				return;
 			}
 
@@ -28,7 +30,7 @@ namespace MultipleClipboards.Presentation.Commands
 			}
 			else
 			{
-				LogManager.ErrorFormat("A PasteCommand was invoked with a parameter that was not a valid clipboard data ID.  The given parameter was: '{0}'.", parameter);
+				log.ErrorFormat("A PasteCommand was invoked with a parameter that was not a valid clipboard data ID.  The given parameter was: '{0}'.", parameter);
 			}
 		}
 	}
