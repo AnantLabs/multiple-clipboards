@@ -180,13 +180,6 @@ namespace MultipleClipboards.ClipboardManagement
 					{
 						this.RestoreClipboardData();
 					}
-
-					// Finally, remove and re-add the entry that we just placed on a clipboard.
-					// This is done because accessing an item from the history counts as a fresh copy,
-					// meaning it needs to moved to the end of the queue.
-					clipboardEntry.TimeStamp = DateTime.Now;
-					this.ClipboardHistory.Remove(clipboardEntry);
-					this.ClipboardHistory.Add(clipboardEntry);
 				}
 			}
 			finally
