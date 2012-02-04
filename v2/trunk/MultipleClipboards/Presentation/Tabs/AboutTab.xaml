@@ -7,16 +7,19 @@
              d:DesignHeight="300" d:DesignWidth="300">
     
     <Grid Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="33"/>
-            <RowDefinition Height="*" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="135" />
         </Grid.ColumnDefinitions>-->
         
-        <TextBlock Name="VersionTextBlock" FontSize="16" FontWeight="SemiBold" />
+        <TextBlock Grid.Row="0" Name="VersionTextBlock" FontSize="16" FontWeight="SemiBold" />
+        <TextBlock Grid.Row="1" Text="...testing installer..." />
+        <TextBlock Grid.Row="2" Text="...testing installer..." />
     </Grid>
 </UserControl>

@@ -64,6 +64,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5635BF479D6E7C8B1A52F8C4BA05D3AC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E42A48BACFEA44C0B58F7BE0634ECA13"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -83,12 +89,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_AF778171E710563C2A524FC48F646C15"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5635BF479D6E7C8B1A52F8C4BA05D3AC"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -242,7 +242,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MultipleClipboards.GlobalResources, Version=2.0.0.41803, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:MultipleClipboards.GlobalResources, Version=2.0.5.118, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5635BF479D6E7C8B1A52F8C4BA05D3AC"
@@ -440,15 +440,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Multiple Clipboards"
-        "ProductCode" = "8:{0A3A22B9-9E54-444F-B2B1-5FD0958F93EB}"
-        "PackageCode" = "8:{527033B3-CE2E-4A31-88EE-7667C1DC43D0}"
+        "ProductCode" = "8:{74AADE0C-6950-417A-9EEB-68167C2BE026}"
+        "PackageCode" = "8:{D451C9D0-0283-4814-BDDB-4991540B4B31}"
         "UpgradeCode" = "8:{867A0B01-5CB2-414A-A05A-474ED838BDED}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:2.0.6"
         "Manufacturer" = "8:Eric Coonradt"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -458,8 +458,8 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:"
-        "ARPIconIndex" = "3:0"
+        "ARPPRODUCTICON" = "8:_3B279207A74E43D1AA7597ECCB1A0468"
+        "ARPIconIndex" = "3:32512"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"

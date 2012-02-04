@@ -64,11 +64,13 @@ namespace MultipleClipboards.CustomInstallerActions
 				Directory.CreateDirectory(Constants.BackupDataPath);
 			}
 
+			string backupFolderName = string.Concat(Constants.BackupDataPath, DateTime.Now.ToString("MM-dd-yyyy-HH-mm-ss"), @"\");
+			Directory.CreateDirectory(backupFolderName);
+
 			foreach (var fileName in Directory.GetFiles(Constants.BaseDataPath))
 			{
 				FileInfo file = new FileInfo(fileName);
-				string newFileName = string.Concat(Constants.BackupDataPath, file.Name.Replace(file.Extension, string.Empty), "-", DateTime.Now.ToString("MM-dd-yyyy-HH-mm-ss"), file.Extension);
-				file.CopyTo(newFileName);
+				file.CopyTo(string.Concat(backupFolderName, file.Name));
 				
 				if (!fileName.Equals(Constants.SettingsFilePath, StringComparison.InvariantCultureIgnoreCase))
 				{
