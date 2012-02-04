@@ -242,7 +242,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MultipleClipboards.GlobalResources, Version=2.0.0.40627, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:MultipleClipboards.GlobalResources, Version=2.0.0.41803, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5635BF479D6E7C8B1A52F8C4BA05D3AC"
@@ -381,7 +381,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_D825777B814F4DC980D3E4D182D55BE9"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFilesFolder]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"

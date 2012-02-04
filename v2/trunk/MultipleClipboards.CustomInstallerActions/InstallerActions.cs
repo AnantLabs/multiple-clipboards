@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using MultipleClipboards.GlobalResources;
 
 namespace MultipleClipboards.CustomInstallerActions
@@ -11,6 +12,10 @@ namespace MultipleClipboards.CustomInstallerActions
 	[RunInstaller(true)]
 	public partial class InstallerActions : Installer
 	{
+		private const string UninstallConfirmMessage =
+			"Would you like to preserve existing application data?\r\n\r\n" +
+			"Choosing yes will keep all data and settings files created by this application.  If you choose to re-install this application at a later date your previous settings will be there waiting for you.";
+
 		public InstallerActions()
 		{
 			InitializeComponent();
@@ -37,7 +42,11 @@ namespace MultipleClipboards.CustomInstallerActions
 		public override void Uninstall(IDictionary savedState)
 		{
 			base.Uninstall(savedState);
-			PurgeExistingAppData();
+
+			if (MessageBox.Show(UninstallConfirmMessage, "Preserve App Data?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+			{
+				PurgeExistingAppData();
+			}
 		}
 
 		private static void PurgeExistingAppData()
