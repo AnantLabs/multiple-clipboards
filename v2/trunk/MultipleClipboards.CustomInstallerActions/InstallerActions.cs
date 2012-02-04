@@ -27,10 +27,7 @@ namespace MultipleClipboards.CustomInstallerActions
 		public override void Commit(IDictionary savedState)
 		{
 			base.Commit(savedState);
-
-			// If app settings already exist then we want to keep them.
-			// However, we don't want to keep an old log around when the user installs a new version.
-			RenameExistingLogFile();
+			BackupExistingAppData();
 
 			// Launch the application.
 			string path = string.Concat(savedState["TargetDirectory"], @"\", Constants.ApplicationExecutableName);
@@ -51,22 +48,24 @@ namespace MultipleClipboards.CustomInstallerActions
 			}
 		}
 
-		private static void RenameExistingLogFile()
+		private static void BackupExistingAppData()
 		{
-			if (!File.Exists(Constants.LogFilePath))
-			{
-				return;
-			}
-
 			if (!Directory.Exists(Constants.BackupDataPath))
 			{
 				Directory.CreateDirectory(Constants.BackupDataPath);
 			}
 
-			FileInfo file = new FileInfo(Constants.LogFilePath);
-			string newFileName = string.Concat(Constants.BackupDataPath, file.Name.Replace(file.Extension, string.Empty), "-", DateTime.Now.ToString("MM-dd-yyyy-HH-mm-ss"), file.Extension);
-			File.Copy(Constants.LogFilePath, newFileName);
-			File.Delete(Constants.LogFilePath);
+			foreach (var fileName in Directory.GetFiles(Constants.BaseDataPath))
+			{
+				FileInfo file = new FileInfo(fileName);
+				string newFileName = string.Concat(Constants.BackupDataPath, file.Name.Replace(file.Extension, string.Empty), "-", DateTime.Now.ToString("MM-dd-yyyy-HH-mm-ss"), file.Extension);
+				file.CopyTo(newFileName);
+				
+				if (!fileName.Equals(Constants.SettingsFilePath, StringComparison.InvariantCultureIgnoreCase))
+				{
+					file.Delete();
+				}
+			}
 		}
 	}
 }
