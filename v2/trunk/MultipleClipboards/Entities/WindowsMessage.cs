@@ -99,7 +99,7 @@ namespace MultipleClipboards.Entities
 		/// Compares two WindowsMessage objects.
 		/// </summary>
 		/// <remarks>
-		/// A WindowsMessage is equal to another if the message type, handle, and msg code are identical and the message times are within 500 milliseconds of one another.
+		/// A WindowsMessage is equal to another if the message type and handle are identical and the message times are within 500 milliseconds of one another.
 		/// </remarks>
 		/// <param name="lhs">The WindowsMessage on the left side of the comparison.</param>
 		/// <param name="rhs">The WindowsMessage on the right side of the comparison.</param>
@@ -117,7 +117,6 @@ namespace MultipleClipboards.Entities
 
 			return (lhs.Hwnd == rhs.Hwnd &&
 			        lhs.Msg == rhs.Msg &&
-			        lhs.MessageType == rhs.MessageType &&
 			        lhs.MessageTime.Day == rhs.MessageTime.Day &&
 			        lhs.MessageTime.Hour == rhs.MessageTime.Hour &&
 			        lhs.MessageTime.Minute == rhs.MessageTime.Minute &&

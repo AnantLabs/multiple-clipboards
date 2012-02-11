@@ -5,7 +5,7 @@ using System.Windows.Input;
 namespace MultipleClipboards.Entities
 {
 	[Serializable]
-	public class ClipboardDefinition
+	public class ClipboardDefinition : IEquatable<ClipboardDefinition>
 	{
 		public const int SystemClipboardId = -1;
 		private const string ClipboardDisplayStringFormat = "{0}{1}+{2}";
@@ -72,6 +72,56 @@ namespace MultipleClipboards.Entities
 
 			string modifierTwoKeyString = this.ModifierTwoKey == ModifierKeys.None ? string.Empty : "+" + this.ModifierTwoKey;
 			return string.Format(ClipboardDisplayStringFormat, this.ModifierOneKey, modifierTwoKeyString, this.CopyKey);
+		}
+
+		public static bool operator ==(ClipboardDefinition left, ClipboardDefinition right)
+		{
+			if (ReferenceEquals(left, right))
+			{
+				return true;
+			}
+			else if ((object)left == null || (object)right == null)
+			{
+				return false;
+			}
+
+			return
+				left.ModifierOneKey == right.ModifierOneKey &&
+				left.ModifierTwoKey == right.ModifierTwoKey &&
+				left.CopyKey == right.CopyKey &&
+				left.CutKey == right.CutKey &&
+				left.PasteKey == right.PasteKey;
+		}
+
+		public static bool operator !=(ClipboardDefinition left, ClipboardDefinition right)
+		{
+			return !(left == right);
+		}
+
+		public override int GetHashCode()
+		{
+			return
+				this.ClipboardId.GetHashCode() ^
+				this.ModifierOneKey.GetHashCode() ^
+				this.ModifierTwoKey.GetHashCode() ^
+				this.CopyKey.GetHashCode() ^
+				this.CutKey.GetHashCode() ^
+				this.PasteKey.GetHashCode();
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null || !(obj is ClipboardDefinition))
+			{
+				return false;
+			}
+
+			return this == (ClipboardDefinition)obj;
+		}
+
+		public bool Equals(ClipboardDefinition other)
+		{
+			return this == other;
 		}
 
 		public override string ToString()

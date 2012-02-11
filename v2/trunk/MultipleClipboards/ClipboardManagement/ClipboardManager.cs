@@ -134,6 +134,12 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboard">The clipboard to add.</param>
 		public void AddClipboard(ClipboardDefinition clipboard)
 		{
+			if (AppController.Settings.ClipboardDefinitions.Any(c => c == clipboard))
+			{
+				// TODO: Once the messaging / notification system is in place post a message here.
+				return;
+			}
+
             AppController.Settings.AddNewClipboard(clipboard);
 			log.DebugFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);

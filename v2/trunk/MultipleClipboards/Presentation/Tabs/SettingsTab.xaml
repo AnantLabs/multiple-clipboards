@@ -57,7 +57,7 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=NumberOfHistoricalRecordsTextBox}">
                         <AccessText>Clipboard History Size:</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LaunchApplicationOnStarupCheckBox}">
                         <AccessText>Launch Application on Starup</AccessText>
@@ -87,7 +87,7 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=ThreadDelayTimeTextBox}">
                         <AccessText>Thread Delay Time (ms):</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LogLevelComboBox}">
                         <AccessText>Application Log Level:</AccessText>
@@ -127,9 +127,9 @@
                 <TextBlock Grid.Row="1" Grid.Column="0"></TextBlock>
                 <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" />
                 <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" />
-                <TextBox Grid.Row="1" Grid.Column="3" Name="CopyKeyTextBox"></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="4" Name="CutKeyTextBox"></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="5" Name="PasteKeyTextBox"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CopyKeyTextBox"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CutKeyTextBox"></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="PasteKeyTextBox"></TextBox>
                 <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" />
 
                 <!-- Clipboard Definition Grid - Row 2 -->
