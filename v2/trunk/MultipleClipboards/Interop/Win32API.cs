@@ -20,6 +20,9 @@ namespace MultipleClipboards.Interop
         [DllImport("user32", SetLastError = true)]
         public static extern short GetAsyncKeyState(int vKey);
 
+		[DllImport("user32", SetLastError = true)]
+    	public static extern IntPtr GetOpenClipboardWindow();
+
         [DllImport("user32", CharSet = CharSet.Auto)]
         public static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
 

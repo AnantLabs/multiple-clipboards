@@ -16,7 +16,7 @@ namespace MultipleClipboards.Entities
 		private const string Tab = "  ";
 		private const string UnknownDataPreviewString = "Unknown";
 		private const string UnableToRetrieveDataMessage = "Unable to retrieve data in this format.";
-		private static readonly object IdLock = new object();
+		private static readonly object idLock = new object();
 		private static ulong _idCounter;
 
 		public ClipboardData(ClipboardData clipboardData)
@@ -30,7 +30,7 @@ namespace MultipleClipboards.Entities
 			this.SetDescriptionData();
 			this.TimeStamp = DateTime.Now;
 
-			lock (IdLock)
+			lock (idLock)
 			{
 				_idCounter++;
 				this.Id = _idCounter;

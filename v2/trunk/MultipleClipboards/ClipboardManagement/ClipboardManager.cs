@@ -7,6 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows;
 using MultipleClipboards.Entities;
+using MultipleClipboards.Exceptions;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Interop;
 using log4net;
@@ -27,7 +28,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="windowHandle">The handle of the window using this clipboard manager.</param>
 		public ClipboardManager(IntPtr windowHandle)
 		{
-			AppController.Settings.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitions_CollectionChanged;
+			AppController.Settings.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitionsCollectionChanged;
 			this.WindowHandle = windowHandle;
 			this.HotKeys = new List<HotKey>();
 			this.ClipboardHistory = new ObservableCollection<ClipboardData>();
@@ -134,7 +135,7 @@ namespace MultipleClipboards.ClipboardManagement
 		public void AddClipboard(ClipboardDefinition clipboard)
 		{
             AppController.Settings.AddNewClipboard(clipboard);
-			log.DebugFormat("New clipboard added:\r\n{0}", clipboard);
+			log.DebugFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);
 		}
 
@@ -143,7 +144,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
         	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
             AppController.Settings.RemoveClipboard(clipboard);
-			log.DebugFormat("Clipboard removed:\r\n{0}", clipboard);
+			log.DebugFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
         }
 
 		/// <summary>
@@ -151,12 +152,14 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		public void StoreClipboardContents()
 		{
-			if (this.AllowStoreClipboardContents)
+			if (!this.AllowStoreClipboardContents)
 			{
-				var clipboardData = RetrieveDataFromClipboard();
-				this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId] = clipboardData;
-				this.EnqueueHistoricalEntry(clipboardData);
+				return;
 			}
+			
+			var clipboardData = RetrieveDataFromClipboard();
+			this.CurrentSystemClipboardData = clipboardData;
+			this.EnqueueHistoricalEntry(clipboardData);
 		}
 
 		/// <summary>
@@ -200,34 +203,53 @@ namespace MultipleClipboards.ClipboardManagement
 		/// Processes a hot key action.
 		/// Called from the form when a registered hotkey is pressed.
 		/// </summary>
-		/// <param name="systemHotKey">The hot key that was pressed.</param>
-		public void ProcessHotKey(HotKey systemHotKey)
+		/// <param name="processHotKeyArguments">The process hot key arguments.</param>
+		public void ProcessHotKey(object processHotKeyArguments)
 		{
-			log.DebugFormat("About to process HotKey: {0}", systemHotKey);
+			var arguments = processHotKeyArguments as ProcessHotKeyArguments;
 
-			// 1) Find the matching hotkey in the local collection to get the Clipboard ID and Operation
-			// 2) Switch on the operation for this specific key
-			HotKey hotKey = this.HotKeys.Single(h => h == systemHotKey);
-
-			switch (hotKey.HotKeyType)
+			if (arguments == null)
 			{
-				case HotKeyType.Cut:
-					this.CutCopy(hotKey.ClipboardId, HotKeyType.Cut);
-					break;
-
-				case HotKeyType.Copy:
-					this.CutCopy(hotKey.ClipboardId, HotKeyType.Copy);
-					break;
-
-				case HotKeyType.Paste:
-					this.Paste(hotKey.ClipboardId);
-					break;
-
-				default:
-					throw new InvalidOperationException(string.Format("The HotKeyType '{0}' is not supported.", hotKey.HotKeyType));
+				log.Error("ProcessHotKey(): Unable to process hot key because the arguments passed to ProcessHotKey are not of type ProcessHotKeyArguments.");
+				return;
 			}
 
-			log.DebugFormat("Finished processing HotKey: {0}", hotKey);
+			try
+			{
+				log.DebugFormat("ProcessHotKey(): About to process HotKey: {0}", arguments.HotKey);
+
+				// 1) Find the matching hotkey in the local collection to get the Clipboard ID and Operation
+				// 2) Switch on the operation for this specific key
+				HotKey hotKey = this.HotKeys.Single(h => h == arguments.HotKey);
+
+				switch (hotKey.HotKeyType)
+				{
+					case HotKeyType.Cut:
+						this.CutCopy(hotKey.ClipboardId, HotKeyType.Cut);
+						break;
+
+					case HotKeyType.Copy:
+						this.CutCopy(hotKey.ClipboardId, HotKeyType.Copy);
+						break;
+
+					case HotKeyType.Paste:
+						this.Paste(hotKey.ClipboardId);
+						break;
+
+					default:
+						throw new InvalidOperationException(string.Format("The HotKeyType '{0}' is not supported.", hotKey.HotKeyType));
+				}
+
+				log.DebugFormat("ProcessHotKey(): Finished processing HotKey: {0}", hotKey);
+			}
+			catch (Exception e)
+			{
+				log.Error("Unexpected error while processing hot key.", e);
+			}
+			finally
+			{
+				arguments.Callback();
+			}
 		}
 
 		/// <summary>
@@ -235,7 +257,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void ClipboardDefinitions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private void ClipboardDefinitionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			this.PopulateAvailableClipboardList();
 		}
@@ -305,7 +327,7 @@ namespace MultipleClipboards.ClipboardManagement
 				short hotKeyId = Win32API.GlobalAddAtom(hotKey.ToString());
 				if (hotKeyId == 0)
 				{
-					log.ErrorFormat("Unable to generate unique hotkey ID by using the string '{0}'. Error code: {1}", hotKey, Marshal.GetLastWin32Error());
+					log.ErrorFormat("RegisterHotKey(): Unable to generate unique hotkey ID by using the string '{0}'. Error code: {1}", hotKey, Marshal.GetLastWin32Error());
 					return false;
 				}
 				hotKey.HotKeyId = hotKeyId;
@@ -319,18 +341,18 @@ namespace MultipleClipboards.ClipboardManagement
 
 				if (Win32API.RegisterHotKey(this.WindowHandle, hotKeyId, modifierBitmask, hotKey.KeyCode) == 0)
 				{
-					log.ErrorFormat("Unable to register hotkey combination: {0}.  ErrorCode: {1}", hotKey, Marshal.GetLastWin32Error());
+					log.ErrorFormat("RegisterHotKey(): Unable to register hotkey combination: {0}.  ErrorCode: {1}", hotKey, Marshal.GetLastWin32Error());
 					return false;
 				}
 
 				this.HotKeys.Add(hotKey);
-				log.DebugFormat("New HotKey registered: {0}", hotKey);
+				log.DebugFormat("RegisterHotKey(): New HotKey registered: {0}", hotKey);
 				return true;
 			}
 			catch (Exception e)
 			{
 				// Clean up if hotkey registration failed.
-				log.Error(string.Format("Unable to register hotkey combination: {0}", hotKey), e);
+				log.Error(string.Format("RegisterHotKey(): Unable to register hotkey combination: {0}", hotKey), e);
 				this.UnRegisterHotKey(hotKey.HotKeyId);
 				return false;
 			}
@@ -384,6 +406,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.PreserveClipboardData();
 
 			// Send the system cut or copy command to get the new data on the clipboard.
+			log.DebugFormat("CutCopy(): Sending {0} command via SendKeys.", hotKeyType);
 			SendKeys.SendWait(hotKeyType.ToSendKeysCode());
 
 			// According the MSDN (and my own experiences) all the SendKeys methods are subject to timing issues.
@@ -393,13 +416,21 @@ namespace MultipleClipboards.ClipboardManagement
 			// This shouldn't yield any noticable delay.
 			Thread.Sleep(AppController.Settings.ThreadDelayTime);
 
+			// It is essential this this check comes AFTER the initial delay.
+			// The initial delay allows SendKeys to do its thing, but there's no telling what other applications are going to do with the
+			// Draw Clipboard message that is sent as a result.  Some applications (Google Chrome for example) hold the clipboard open for a LONG time.
+			// Therefore, to ensure clipboard data integrity we must wait for exclusive access.
+			WaitForExclusiveClipboardAccess();
+			log.Debug("CutCopy(): Now have exclusive clipboard access.");
+
 			try
 			{
 				// Store the new data in the correct clipboard.
 				this.ClipboardDataByClipboardId[clipboardId] = RetrieveDataFromClipboard();
 
 				// Store this in the clipboard history list.
-				this.EnqueueHistoricalEntry(this.ClipboardDataByClipboardId[clipboardId]);
+				// This has to be done on the UI thread since it is an observable collection.
+				Application.Current.Dispatcher.Invoke(new Action<ClipboardData>(this.EnqueueHistoricalEntry), this.ClipboardDataByClipboardId[clipboardId]);
 			}
 			finally
 			{
@@ -425,12 +456,18 @@ namespace MultipleClipboards.ClipboardManagement
 				}
 				else
 				{
+					// Wait for exclusive access to avoid COMExceptions if the clipboard is in use.
+					// This is much less important (possibly even unnecessary) than the CutCopy case because sending Ctrl + V
+					// does not result in any Win32 messages that I know of.
+					WaitForExclusiveClipboardAccess();
+					log.Debug("Paste(): Now have exclusive clipboard access.");
 					PutDataOnClipboard(this.ClipboardDataByClipboardId[clipboardId]);
 				}
 
 				// Send the system paste command.
 				if (sendPasteSignal)
 				{
+					log.Debug("Paste(): Sending paste command via SendKeys.");
 					SendKeys.SendWait(HotKeyType.Paste.ToSendKeysCode());
 				}
 
@@ -448,6 +485,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		private void PreserveClipboardData()
 		{
+			log.Debug("PreserveClipboardData(): About to preserve system clipboard data.");
 			this.CurrentSystemClipboardData = RetrieveDataFromClipboard();
 		}
 
@@ -456,52 +494,50 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		private void RestoreClipboardData()
 		{
+			log.Debug("RestoreClipboardData(): About to restore system clipboard data.");
 			PutDataOnClipboard(this.CurrentSystemClipboardData);
 		}
 
 		private static void PutDataOnClipboard(ClipboardData clipboardData)
 		{
-			PerformClipboardOperation(() => Clipboard.SetDataObject(clipboardData.DataObject, true));
-			log.DebugFormat("The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
+			Clipboard.SetDataObject(clipboardData.DataObject, true);
+			log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
 		}
 
 		private static ClipboardData RetrieveDataFromClipboard()
 		{
-			ClipboardData clipboardData = null;
-			PerformClipboardOperation(() => clipboardData = new ClipboardData(Clipboard.GetDataObject()));
-
-			log.DebugFormat("The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData == null ? "NULL" : clipboardData.ToShortDisplayString());
+			ClipboardData clipboardData = new ClipboardData(Clipboard.GetDataObject());
+			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
 			return clipboardData;
 		}
 
-		private static void PerformClipboardOperation(Action action)
+		private static void WaitForExclusiveClipboardAccess()
 		{
-			int numberOfTries = 1;
+			const int maxTimeToWaitMs = 10000;
+			int numberOfTries = 0;
+
 			while (true)
 			{
-				try
-				{
-					log.DebugFormat("Attempting Clipboard Action.  Try #{0}.", numberOfTries);
-					action();
-					break;
-				}
-				catch (COMException comException)
-				{
-					if (numberOfTries >= AppController.Settings.NumberOfClipboardOperationRetries)
-					{
-						throw;
-					}
-					
-					log.Error(
-						string.Format(
-							"Attempt #{0} at performing a clipboard operation resulted in the following error.  Trying again in {1}ms.", 
-							numberOfTries, 
-							AppController.Settings.ThreadDelayTime), 
-						comException);
+				var clipboardOwner = Win32API.GetOpenClipboardWindow();
 
-					Thread.Sleep(AppController.Settings.ThreadDelayTime);
-					numberOfTries++;
+				if (clipboardOwner == IntPtr.Zero)
+				{
+					return;
 				}
+
+				numberOfTries++;
+
+				if (numberOfTries * AppController.Settings.ThreadDelayTime > maxTimeToWaitMs)
+				{
+					// This truly exceptional case will most likely result in clipboard data loss.
+					throw new ClipboardInUseException(
+						string.Format(
+							"Despite waiting a total of {0}s the application was unable to gain exclusive access to the clipboard.\r\nThe clipboard was held by the window with the handle {1}.",
+							TimeSpan.FromMilliseconds(numberOfTries * AppController.Settings.ThreadDelayTime).Seconds,
+							clipboardOwner));
+				}
+
+				Thread.Sleep(AppController.Settings.ThreadDelayTime);
 			}
 		}
 	}

@@ -1,13 +1,42 @@
 ﻿using System;
 using System.Text;
+using MultipleClipboards.Interop;
 
 namespace MultipleClipboards.Entities
 {
+	/// <summary>
+	/// Enumeration that defines the Windows message types that this application is concerned with.
+	/// </summary>
+	public enum WindowsMessageType
+	{
+		/// <summary>
+		/// An unknown message type.
+		/// </summary>
+		Unknown = 0,
+
+		/// <summary>
+		/// A HotKey message.  Sent when the user presses a hot key combination that has been registered with this application.
+		/// </summary>
+		HotKey = Win32API.WM_HOTKEY,
+
+		/// <summary>
+		/// A Draw Clipboard message.  Sent when data on the system clipboard has changed.
+		/// </summary>
+		DrawClipboard = Win32API.WM_DRAWCLIPBOARD,
+
+		/// <summary>
+		/// A Change Clipboard Chain message.  Sent when an application is added or removed from the clipboard chain.
+		/// </summary>
+		ChangeClipboardChain = Win32API.WM_CHANGECBCHAIN
+	}
+
 	/// <summary>
 	/// Class to represent a unique Hot Key message.
 	/// </summary>
 	public class WindowsMessage
 	{
+		private WindowsMessageType? messageType;
+
 		public WindowsMessage()
 		{
 			this.MessageTime = DateTime.Now;
@@ -47,17 +76,37 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
+		/// Gets the type of this Windows message.
+		/// </summary>
+		public WindowsMessageType MessageType
+		{
+			get
+			{
+				if (!this.messageType.HasValue)
+				{
+					WindowsMessageType messageTypeForParse;
+					if (!Enum.TryParse(this.Msg.ToString(), out messageTypeForParse))
+					{
+						messageTypeForParse = WindowsMessageType.Unknown;
+					}
+					this.messageType = messageTypeForParse;
+				}
+				return this.messageType.Value;
+			}
+		}
+
+		/// <summary>
 		/// Compares two WindowsMessage objects.
 		/// </summary>
 		/// <remarks>
-		/// A WindowsMessage is equal to another if the message string is identical and the message time is the same, disregarding milliseconds.
+		/// A WindowsMessage is equal to another if the message type, handle, and msg code are identical and the message times are within 500 milliseconds of one another.
 		/// </remarks>
 		/// <param name="lhs">The WindowsMessage on the left side of the comparison.</param>
 		/// <param name="rhs">The WindowsMessage on the right side of the comparison.</param>
 		/// <returns>True if the two messages are equal, false if they are not.</returns>
 		public static bool operator ==(WindowsMessage lhs, WindowsMessage rhs)
 		{
-			if (Object.ReferenceEquals(lhs, rhs))
+			if (ReferenceEquals(lhs, rhs))
 			{
 				return true;
 			}
@@ -67,13 +116,12 @@ namespace MultipleClipboards.Entities
 			}
 
 			return (lhs.Hwnd == rhs.Hwnd &&
-					lhs.Msg == rhs.Msg &&
-					lhs.WParam == rhs.WParam &&
-					lhs.LParam == rhs.LParam &&
-					lhs.MessageTime.Day == rhs.MessageTime.Day &&
-					lhs.MessageTime.Hour == rhs.MessageTime.Hour &&
-					lhs.MessageTime.Minute == rhs.MessageTime.Minute &&
-					lhs.MessageTime.Second == rhs.MessageTime.Second);
+			        lhs.Msg == rhs.Msg &&
+			        lhs.MessageType == rhs.MessageType &&
+			        lhs.MessageTime.Day == rhs.MessageTime.Day &&
+			        lhs.MessageTime.Hour == rhs.MessageTime.Hour &&
+			        lhs.MessageTime.Minute == rhs.MessageTime.Minute &&
+			        lhs.MessageTime.Subtract(rhs.MessageTime).Duration().TotalMilliseconds <= 500);
 		}
 
 		/// <summary>
@@ -126,6 +174,7 @@ namespace MultipleClipboards.Entities
 		public override string ToString()
 		{
 			StringBuilder builder = new StringBuilder();
+			builder.AppendFormat("Type: {0}\r\n", this.MessageType);
 			builder.AppendFormat("Hwnd: 0x{0}\r\n", this.Hwnd.ToString("X8"));
 			builder.AppendFormat("Msg: 0x{0}\r\n", this.Msg.ToString("X8"));
 			builder.AppendFormat("WParam: 0x{0}\r\n", this.WParam.ToString("X8"));

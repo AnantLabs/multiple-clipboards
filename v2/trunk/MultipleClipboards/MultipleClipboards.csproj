@@ -89,6 +89,8 @@
     </Compile>
     <Compile Include="AppController.cs" />
     <Compile Include="ClipboardManagement\ClipboardManager.cs" />
+    <Compile Include="ClipboardManagement\ProcessHotKeyArguments.cs" />
+    <Compile Include="Exceptions\ClipboardInUseException.cs" />
     <Compile Include="Persistence\LogHelper.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>

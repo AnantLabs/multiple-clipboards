@@ -12,7 +12,7 @@ namespace MultipleClipboards.Entities
 	/// </summary>
 	public class HotKey
 	{
-		private int _modifierBitMask;
+		private int modifierBitMask;
 
 		/// <summary>
 		/// Initializes and returns a new HotKey object from the give WindowsMessage.
@@ -114,12 +114,12 @@ namespace MultipleClipboards.Entities
 		{
 			get
 			{
-				if (this._modifierBitMask == 0)
+				if (this.modifierBitMask == 0)
 				{
-					Array.ForEach(this.ModifierKeys.ToArray(), value => this._modifierBitMask = this._modifierBitMask | (int)value);
+					Array.ForEach(this.ModifierKeys.ToArray(), value => this.modifierBitMask = this.modifierBitMask | (int)value);
 				}
 
-				return this._modifierBitMask;
+				return this.modifierBitMask;
 			}
 		}
 

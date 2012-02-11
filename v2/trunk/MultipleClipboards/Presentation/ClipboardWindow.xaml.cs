@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Interop;
 using log4net;
@@ -43,7 +44,7 @@ namespace MultipleClipboards.Presentation
 			}
 
 			InitializeComponent();
-			log.Debug("Clipboard message window initialized!");
+			log.DebugFormat("Clipboard message window initialized!  Handle: {0}", this.Handle);
 		}
 
 		public void Dispose()
@@ -110,19 +111,19 @@ namespace MultipleClipboards.Presentation
 
 			if (this.CurrentMessage == currentMessage)
 			{
-				log.Debug("New message recieved, but it is the same as the message that is currently being processed.  Skipping.");
+				log.DebugFormat("WndProc(): New {0} message recieved, but it is the same as the last messaage of this type that was processed.  Skipping.", currentMessage.MessageType);
 				return IntPtr.Zero;
 			}
 			
 			this.CurrentMessage = currentMessage;
-			log.DebugFormat("New message recieved:\r\n{0}", currentMessage);
+			log.DebugFormat("WndProc(): New message recieved:\r\n{0}", currentMessage);
 
 			switch (msg)
 			{
 				case Win32API.WM_HOTKEY:
 					if (this.IsClipboardManagerInUse)
 					{
-						log.Warn("Unable to process hotkey message because the clipboard manager is in use by another message. Skipping.");
+						log.Warn("WndProc(): Unable to process hotkey message because the clipboard manager is in use by another message. Skipping.");
 					}
 					else
 					{
@@ -139,16 +140,25 @@ namespace MultipleClipboards.Presentation
 							Thread.Sleep(10);
 						}
 
-						try
+						var arguments = new ProcessHotKeyArguments
 						{
-							AppController.ClipboardManager.ProcessHotKey(hotKey);
-						}
-						catch (Exception e)
-						{
-							log.Error(string.Format("Error processing the hotkey: {0}", hotKey), e);
-						}
+							HotKey = hotKey,
+							Callback = () => this.IsClipboardManagerInUse = false
+						};
 
-						this.IsClipboardManagerInUse = false;
+						// Process the hot key in a seperate thread.
+						// We are about to perform clipboard operations.  That involves opening the system clipboard and sending system
+						// keystokes (Ctrl + C, etc).  Since the system clipboard is just one big race condition between all running applications,
+						// there is a lot of waiting involved.  These delays vary tremendously depending on the application that currently has focus.
+						// See comments in ClipboardManager for more info.  All that matters here is that we don't block the message loop thread.
+						//
+						// It concerns me that hot key operations use the one and only clipboard manager in a seperate thread while everything else
+						// continues to use it on the main UI thread.  However, the only errors I have ever encountered have been while processing
+						// hot keys, so hopefully this is OK.
+						var clipboardThread = new Thread(AppController.ClipboardManager.ProcessHotKey);
+						clipboardThread.SetApartmentState(ApartmentState.STA);
+						clipboardThread.IsBackground = true;
+						clipboardThread.Start(arguments);
 					}
 
 					handled = true;
@@ -159,7 +169,7 @@ namespace MultipleClipboards.Presentation
 					{
 						if (this.IsClipboardManagerInUse)
 						{
-							log.Debug("System clipboard has changed, but we are currently processing another clipboard message.  Skipping.");
+							log.Debug("WndProc(): System clipboard has changed, but we are currently processing another clipboard message.  Skipping.");
 						}
 						else
 						{
@@ -172,13 +182,13 @@ namespace MultipleClipboards.Presentation
 							// Data coppied using any additional clipboards will be tracked internally.
 							try
 							{
-								log.Debug("System clipboard has changed.  About to store the contents of the clipboard.");
+								log.Debug("WndProc(): System clipboard has changed.  About to store the contents of the clipboard.");
 								AppController.ClipboardManager.StoreClipboardContents();
-								log.Debug("Stored clipboard contents successfully.");
+								log.Debug("WndProc(): Stored clipboard contents successfully.");
 							}
 							catch (Exception e)
 							{
-								log.Error("Error storing clipboard contents", e);
+								log.Error("WndProc(): Error storing clipboard contents", e);
 							}
 
 							this.IsClipboardManagerInUse = false;

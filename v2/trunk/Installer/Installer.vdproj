@@ -64,19 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5635BF479D6E7C8B1A52F8C4BA05D3AC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E42A48BACFEA44C0B58F7BE0634ECA13"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_99FE98712ED50B26B791DFE11168C966"
+        "OwnerKey" = "8:_AF778171E710563C2A524FC48F646C15"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -88,7 +76,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AF778171E710563C2A524FC48F646C15"
+        "OwnerKey" = "8:_99FE98712ED50B26B791DFE11168C966"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E42A48BACFEA44C0B58F7BE0634ECA13"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5635BF479D6E7C8B1A52F8C4BA05D3AC"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -245,11 +245,6 @@
             "AssemblyAsmDisplayName" = "8:MultipleClipboards.GlobalResources, Version=2.0.5.118, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5635BF479D6E7C8B1A52F8C4BA05D3AC"
-                    {
-                    "Name" = "8:MultipleClipboards.GlobalResources.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:MultipleClipboards.GlobalResources.dll"
             "TargetName" = "8:"
@@ -276,11 +271,6 @@
             "AssemblyAsmDisplayName" = "8:log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_99FE98712ED50B26B791DFE11168C966"
-                    {
-                    "Name" = "8:log4net.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:log4net.dll"
             "TargetName" = "8:"
@@ -307,11 +297,6 @@
             "AssemblyAsmDisplayName" = "8:ApplicationBasics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_AF778171E710563C2A524FC48F646C15"
-                    {
-                    "Name" = "8:ApplicationBasics.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:ApplicationBasics.dll"
             "TargetName" = "8:"
@@ -338,11 +323,6 @@
             "AssemblyAsmDisplayName" = "8:Hardcodet.Wpf.TaskbarNotification, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E4C2FDF419D489C03E67ED3519A59B6B"
-                    {
-                    "Name" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Hardcodet.Wpf.TaskbarNotification.dll"
             "TargetName" = "8:"
@@ -440,15 +420,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Multiple Clipboards"
-        "ProductCode" = "8:{74AADE0C-6950-417A-9EEB-68167C2BE026}"
-        "PackageCode" = "8:{D451C9D0-0283-4814-BDDB-4991540B4B31}"
+        "ProductCode" = "8:{842E4F3F-21DA-4AC8-80B1-CA1CBAA0A3CA}"
+        "PackageCode" = "8:{1FFE2FEB-F4FE-4B3B-A6E8-21A6365A9918}"
         "UpgradeCode" = "8:{867A0B01-5CB2-414A-A05A-474ED838BDED}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.0.6"
+        "ProductVersion" = "8:2.0.1"
         "Manufacturer" = "8:Eric Coonradt"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

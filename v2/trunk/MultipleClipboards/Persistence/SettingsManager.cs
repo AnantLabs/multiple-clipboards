@@ -31,7 +31,6 @@ namespace MultipleClipboards.Persistence
 		private const string NumberOfClipboardHistoryRecordsSettingKey = "NumberOfClipboardHistoryRecords";
 		private const string ThreadDelayTimeSettingKey = "ThreadDelayTime";
 		private const string ApplicationLogLevelSettingKey = "LogLevel";
-		private const string NumberOfClipboardOperationRetriesSettingKey = "NumberOfClipboardOperationRetries";
 		private const string LaunchApplicationOnSystemStartupSettingKey = "LaunchApplicationOnSystemStartup";
 		private const string ShowAdvancedOptionsSettingKey = "ShowAdvancedOptions";
 
@@ -42,7 +41,6 @@ namespace MultipleClipboards.Persistence
 				{ NumberOfClipboardHistoryRecordsSettingKey, 20 },
 				{ ThreadDelayTimeSettingKey, 250 },
 				{ ApplicationLogLevelSettingKey, LogLevel.Error },
-				{ NumberOfClipboardOperationRetriesSettingKey, 2 },
 				{ LaunchApplicationOnSystemStartupSettingKey, true },
 				{ ShowAdvancedOptionsSettingKey, false }
 			};
@@ -120,21 +118,6 @@ namespace MultipleClipboards.Persistence
 			{
 				this.logLevel = value;
 				UpdateLog4NetConfig(value);
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets the number of times the application will attempt to access the clipboard before throwing the caught exception.
-		/// </summary>
-		public int NumberOfClipboardOperationRetries
-		{
-			get
-			{
-				return this.GetSettingSafe(NumberOfClipboardOperationRetriesSettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(NumberOfClipboardOperationRetriesSettingKey, value);
 			}
 		}
 
