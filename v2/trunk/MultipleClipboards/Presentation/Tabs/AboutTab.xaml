@@ -19,7 +19,5 @@
         </Grid.ColumnDefinitions>-->
         
         <TextBlock Grid.Row="0" Name="VersionTextBlock" FontSize="16" FontWeight="SemiBold" />
-        <TextBlock Grid.Row="1" Text="...testing installer..." />
-        <TextBlock Grid.Row="2" Text="...testing installer..." />
     </Grid>
 </UserControl>

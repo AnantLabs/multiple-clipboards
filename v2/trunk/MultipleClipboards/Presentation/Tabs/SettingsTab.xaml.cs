@@ -35,6 +35,15 @@ namespace MultipleClipboards.Presentation.Tabs
 		private void AddNewClipboardButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
+
+			if (string.IsNullOrWhiteSpace(this.CopyKeyTextBox.Text) ||
+				string.IsNullOrWhiteSpace(this.CutKeyTextBox.Text) ||
+				string.IsNullOrWhiteSpace(this.PasteKeyTextBox.Text))
+			{
+				// TODO: Once the messaging / notification system is in place post a message here.
+				return;
+			}
+
 			ClipboardDefinition clipboard = new ClipboardDefinition
 			{
 				ModifierOneKey = Enum<ModifierKeys>.Parse(this.ModifierKeyOneComboBox.SelectedValue.ToString()),

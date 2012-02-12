@@ -57,18 +57,27 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=NumberOfHistoricalRecordsTextBox}">
                         <AccessText>Clipboard History Size:</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                             Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                             ToolTip="Sets the maximum number of items that will be stored in the clipboard history list.">
+                    </TextBox>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LaunchApplicationOnStarupCheckBox}">
                         <AccessText>Launch Application on Starup</AccessText>
                     </Label>
-                    <CheckBox Grid.Row="0" Grid.Column="3" Name="LaunchApplicationOnStarupCheckBox" VerticalAlignment="Center" IsChecked="{Binding LaunchApplicationOnSystemStartup, Source={x:Static MultipleClipboards:AppController.Settings}}"></CheckBox>
+                    <CheckBox Grid.Row="0" Grid.Column="3" Name="LaunchApplicationOnStarupCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding LaunchApplicationOnSystemStartup, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="When checked the application will automatically launch when your computer starts up.">
+                    </CheckBox>
 
                     <!-- Basic Settings Grid - Row 1 -->
                     <Label Grid.Row="1" Grid.Column="0" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
                         <AccessText>Show Advanced Options</AccessText>
                     </Label>
-                    <CheckBox Grid.Row="1" Grid.Column="1" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center" IsChecked="{Binding ShowAdvancedOptions, Source={x:Static MultipleClipboards:AppController.Settings}}"></CheckBox>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding ShowAdvancedOptions, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="Shows / hides the advanced options for the application.">
+                    </CheckBox>
                 </Grid>
 
                 <!-- Advanced Settings Grid -->
@@ -87,12 +96,39 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=ThreadDelayTimeTextBox}">
                         <AccessText>Thread Delay Time (ms):</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                             Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}">
+                        <TextBox.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    Sets the amount of time (in milliseconds) that the application will pause to allow for a clipboard operation to complete.
+                                    <LineBreak />
+                                    It is recommended that you leave this at the default value (250).
+                                    <LineBreak />
+                                    Values that are too low may cause inconsistent benhavior and values that are too high may cause poor performance.
+                                </TextBlock>
+                            </ToolTip>
+                        </TextBox.ToolTip>
+                    </TextBox>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LogLevelComboBox}">
                         <AccessText>Application Log Level:</AccessText>
                     </Label>
-                    <ComboBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox" ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}" SelectedItem="{Binding ApplicationLogLevel, Source={x:Static MultipleClipboards:AppController.Settings}}"></ComboBox>
+                    <ComboBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox"
+                              ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}"
+                              SelectedItem="{Binding ApplicationLogLevel, Source={x:Static MultipleClipboards:AppController.Settings}}">
+                        <ComboBox.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    Selects the verbosity of the application log.
+                                    <LineBreak />
+                                    Debug is most verbose and Fatal is least verbose.
+                                    <LineBreak />
+                                    It is recommended that you only use the Debug level when gathering detailed information for bug reports.
+                                </TextBlock>
+                            </ToolTip>
+                        </ComboBox.ToolTip>
+                    </ComboBox>
                 </Grid>
             </StackPanel>
         </GroupBox>
@@ -125,12 +161,12 @@
 
                 <!-- Clipboard Definition Grid - Row 1 -->
                 <TextBlock Grid.Row="1" Grid.Column="0"></TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" />
-                <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" />
-                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CopyKeyTextBox"></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CutKeyTextBox"></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="PasteKeyTextBox"></TextBox>
-                <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" ToolTip="The first modifier key. (Required)" />
+                <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ToolTip="The second modifier key. (Optional)" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" />
+                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CopyKeyTextBox" ToolTip="The key (A-Z) to use for the copy command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CutKeyTextBox" ToolTip="The key (A-Z) to use for the cut command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="PasteKeyTextBox" ToolTip="The key (A-Z) to use for the paste command of a new clipboard."></TextBox>
+                <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" ToolTip="Creates a new clipboard using the selected values." />
 
                 <!-- Clipboard Definition Grid - Row 2 -->
                 <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" AutoGenerateColumns="False" ItemsSource="{Binding ClipboardDefinitions, Source={x:Static MultipleClipboards:AppController.Settings}}" Name="ClipboardDefinitionDataGrid" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="False" CanUserResizeRows="False" UseLayoutRounding="False" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden">
@@ -219,6 +255,15 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
+                                        <Button.ToolTip>
+                                            <ToolTip>
+                                                <TextBlock>
+                                                    Permenantly deletes this clipboard.
+                                                    <LineBreak />
+                                                    Any data currently on this clipboard will be lost.
+                                                </TextBlock>
+                                            </ToolTip>
+                                        </Button.ToolTip>
                                     </Button>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

@@ -20,8 +20,11 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Text="Select a row and desired clipboard." Height="25" VerticalAlignment="Bottom"></TextBlock>
-        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="25" Width="140" Name="ClipboardSelectComboBox" DisplayMemberPath="DisplayString" SelectedValuePath="ClipboardId"></ComboBox>
-        <Local:IconButton Grid.Row="0" Grid.Column="2" x:Name="PasteButton" HorizontalAlignment="Right" Icon="Paste" Text="Place on Clipboard" Click="PasteButtonClick" />
+        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="25" Width="140" Name="ClipboardSelectComboBox" DisplayMemberPath="DisplayString" SelectedValuePath="ClipboardId"
+                  ToolTip="Selects the clipboard to place the selected data on.">
+        </ComboBox>
+        <Local:IconButton Grid.Row="0" Grid.Column="2" x:Name="PasteButton" HorizontalAlignment="Right" Icon="Paste" Text="Place on Clipboard" Click="PasteButtonClick"
+                          ToolTip="When clicked, the data on the selected row will be placed on the selected clipboard." />
 
         <DataGrid
             Name="ClipboardHistoryDataGrid"

@@ -17,8 +17,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Local:IconButton Grid.Row="0" Grid.Column="0" x:Name="ClearButton" HorizontalAlignment="Left" Margin="5,0,0,0" Icon="Delete" Text="Clear Log" Click="ClearButtonClick" />
-        <Local:IconButton Grid.Row="0" Grid.Column="1" x:Name="RefreshButton" HorizontalAlignment="Right" Margin="0,0,5,0" Icon="Refresh" Text="Refresh" Click="RefreshButtonClick" />
+        <Local:IconButton Grid.Row="0" Grid.Column="0" x:Name="ClearButton" HorizontalAlignment="Left" Margin="5,0,0,0" Icon="Delete" Text="Clear Log" Click="ClearButtonClick"
+                          ToolTip="Clears all entries from the application log." />
+        
+        <Local:IconButton Grid.Row="0" Grid.Column="1" x:Name="RefreshButton" HorizontalAlignment="Right" Margin="0,0,5,0" Icon="Refresh" Text="Refresh" Click="RefreshButtonClick"
+                          ToolTip="Refreshes this view with the most up to date content from the application log." />
 
         <TextBox Name="ErrorLogTextBox"
                  Grid.Row="1"
