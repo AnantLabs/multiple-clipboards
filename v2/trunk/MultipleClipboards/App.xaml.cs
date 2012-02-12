@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -36,11 +38,28 @@ namespace MultipleClipboards
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
+#if DEBUG
+			if (e.Args.Contains("--debug"))
+			{
+				Debugger.Launch();
+			}
+#endif
+
 			base.OnStartup(e);
 			this.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
 			// Make sure the static constructor has done it's thing.
 			staticInitializationComplete.WaitOne();
+
+			if (Process.GetProcessesByName(Constants.ProcessName).Any(p => p.Id != Process.GetCurrentProcess().Id))
+			{
+				MessageBox.Show(
+					"There is already an instance of Multiple Clipboards running.\r\n\r\nThere can only be one instance of this application running at a time.",
+					"Application Already Running",
+					MessageBoxButton.OK,
+					MessageBoxImage.Exclamation);
+				Environment.Exit(0);
+			}
 
 			// Create the hidden window that will handle the message loop for this app.
 			// Because this is the first window that gets created the framework automatically makes this

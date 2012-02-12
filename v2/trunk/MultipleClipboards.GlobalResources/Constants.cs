@@ -11,7 +11,8 @@ namespace MultipleClipboards.GlobalResources
 		private const string LogFileName = "MultipleClipboardsLog.log";
 		private const string AboutTextFileName = "AboutText.rtf";
 		private const string ShortcutFileName = "Multiple Clipboards.lnk";
-		public const string ApplicationExecutableName = "MultipleClipboards.exe";
+		public const string ProcessName = "MultipleClipboards";
+		public static readonly string ApplicationExecutableName = string.Concat(ProcessName, ".exe");
 		public static readonly string LogConfigFileName = string.Concat(BaseApplicationDirectory, "log4net.config");
 
 		// File paths, which are runtime constants.
