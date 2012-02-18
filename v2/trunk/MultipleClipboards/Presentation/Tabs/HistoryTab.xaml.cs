@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using MultipleClipboards.Entities;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Icons;
 using log4net;
 
 namespace MultipleClipboards.Presentation.Tabs
@@ -40,8 +42,13 @@ namespace MultipleClipboards.Presentation.Tabs
 			else
 			{
 				ClipboardDefinition clipboard = AppController.ClipboardManager.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
-				log.ErrorFormat("Error placing historical clipboard data on the clipboard '{0}'.  The data retrieved from the bound data grid was null.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
-				// TODO: Display some error message to the user.
+				string baseErrorMessage = string.Format("Error placing historical clipboard data on the clipboard '{0}'.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
+				log.ErrorFormat(baseErrorMessage + "  The data retrieved from the bound data grid was null.");
+				MessageBus.Instance.Publish(new Notification
+				{
+					MessageBody = baseErrorMessage,
+					IconType = IconType.Error
+				});
 			}
 		}
 

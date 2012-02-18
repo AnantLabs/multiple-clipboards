@@ -91,6 +91,8 @@
     <Compile Include="ClipboardManagement\ClipboardManager.cs" />
     <Compile Include="ClipboardManagement\ProcessHotKeyArguments.cs" />
     <Compile Include="Exceptions\ClipboardInUseException.cs" />
+    <Compile Include="Messaging\MessageBus.cs" />
+    <Compile Include="Messaging\Notification.cs" />
     <Compile Include="Persistence\LogHelper.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
@@ -110,6 +112,7 @@
     <Compile Include="Entities\WindowsMessage.cs" />
     <Compile Include="Entities\HotKeyType.cs" />
     <Compile Include="Presentation\Icons\IconFactory.cs" />
+    <Compile Include="Presentation\Layout\FadeOutAnimation.cs" />
     <Compile Include="Presentation\Layout\MarginSetter.cs" />
     <Compile Include="Presentation\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -180,6 +183,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Presentation\Icons\32\Error.png" />
+    <Resource Include="Presentation\Icons\32\Success.png" />
+    <Resource Include="Presentation\Icons\32\Warning.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -39,7 +39,8 @@ namespace MultipleClipboards.Presentation
 			}
 			else
 			{
-				// TODO: Add error handling here.
+				// TODO: Once the ability to publish messages to tray popups is in place publish a message here.
+				//		 We can't use the regular pub/sub here because the main window has not been constructed yet.
 				log.Error("Unable to aquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
 			}
 

@@ -72,6 +72,7 @@ namespace MultipleClipboards
 			}
 			else
 			{
+				app.MainWindow.WindowState = WindowState.Normal;
 				app.MainWindow.Focus();
 				app.MainWindow.Activate();
 			}

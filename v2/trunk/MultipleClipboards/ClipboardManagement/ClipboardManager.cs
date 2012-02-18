@@ -10,6 +10,8 @@ using MultipleClipboards.Entities;
 using MultipleClipboards.Exceptions;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Interop;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Icons;
 using log4net;
 using SendKeys = System.Windows.Forms.SendKeys;
 
@@ -136,13 +138,22 @@ namespace MultipleClipboards.ClipboardManagement
 		{
 			if (AppController.Settings.ClipboardDefinitions.Any(c => c == clipboard))
 			{
-				// TODO: Once the messaging / notification system is in place post a message here.
+				MessageBus.Instance.Publish(new Notification
+				{
+					MessageBody = string.Format("The clipboard '{0}' already exists.", clipboard.ToDisplayString()),
+					IconType = IconType.Error
+				});
 				return;
 			}
 
             AppController.Settings.AddNewClipboard(clipboard);
-			log.DebugFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
+			log.InfoFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);
+			MessageBus.Instance.Publish(new Notification
+			{
+				MessageBody = string.Format("The clipboard '{0}' has been registered successfully!.", clipboard.ToDisplayString()),
+				IconType = IconType.Success
+			});
 		}
 
         public void RemoveClipboard(ClipboardDefinition clipboard)
@@ -150,7 +161,12 @@ namespace MultipleClipboards.ClipboardManagement
 			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
         	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
             AppController.Settings.RemoveClipboard(clipboard);
-			log.DebugFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
+			log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
+			MessageBus.Instance.Publish(new Notification
+			{
+				MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard.ToDisplayString()),
+				IconType = IconType.Success
+			});
         }
 
 		/// <summary>

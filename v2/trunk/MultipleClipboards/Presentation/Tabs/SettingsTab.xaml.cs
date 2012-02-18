@@ -6,6 +6,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using ApplicationBasics;
 using MultipleClipboards.Entities;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Icons;
 
 namespace MultipleClipboards.Presentation.Tabs
 {
@@ -40,7 +42,11 @@ namespace MultipleClipboards.Presentation.Tabs
 				string.IsNullOrWhiteSpace(this.CutKeyTextBox.Text) ||
 				string.IsNullOrWhiteSpace(this.PasteKeyTextBox.Text))
 			{
-				// TODO: Once the messaging / notification system is in place post a message here.
+				MessageBus.Instance.Publish(new Notification
+				{
+					MessageBody = "All fields are required when creating a new clipboard.",
+					IconType = IconType.Error
+				});
 				return;
 			}
 

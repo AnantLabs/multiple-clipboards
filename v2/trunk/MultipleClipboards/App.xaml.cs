@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using MultipleClipboards.GlobalResources;
+using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation;
 using log4net;
 using log4net.Config;

@@ -8,6 +8,9 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using MultipleClipboards.Entities;
 using MultipleClipboards.GlobalResources;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Icons;
+using log4net;
 
 namespace MultipleClipboards.Persistence
 {
@@ -26,6 +29,7 @@ namespace MultipleClipboards.Persistence
 	public sealed class SettingsManager
 	{
 		private static readonly ManualResetEvent loggerConfigFileResetEvent = new ManualResetEvent(true);
+		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsManager));
 
 		// Application Setting Keys.
 		private const string NumberOfClipboardHistoryRecordsSettingKey = "NumberOfClipboardHistoryRecords";
@@ -132,8 +136,21 @@ namespace MultipleClipboards.Persistence
 			}
 			set
 			{
-				this.SaveApplicationSetting(LaunchApplicationOnSystemStartupSettingKey, value);
-				ToggleAutoLaunchShortcut(value);
+				try
+				{
+					ToggleAutoLaunchShortcut(value);
+					this.SaveApplicationSetting(LaunchApplicationOnSystemStartupSettingKey, value);
+				}
+				catch (Exception e)
+				{
+					const string baseErrorMessage = "There was an error setting or removing the auto-launch shortcut.";
+					log.Error(baseErrorMessage, e);
+					MessageBus.Instance.Publish(new Notification
+					{
+						MessageBody = baseErrorMessage + "  A detailed error report has been saved to the log.",
+						IconType = IconType.Error
+					});
+				}
 			}
 		}
 
@@ -262,8 +279,6 @@ namespace MultipleClipboards.Persistence
 
 		private static void ToggleAutoLaunchShortcut(bool launchOnStartup)
 		{
-			// TODO: Add error handling here.
-
 			if (launchOnStartup)
 			{
 				// Copy the application shortucut from the working directory to the Startup folder.

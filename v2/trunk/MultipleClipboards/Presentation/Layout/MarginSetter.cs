@@ -28,11 +28,11 @@ namespace MultipleClipboards.Presentation.Layout
 			if (panel == null)
 				return;
 
-			panel.Loaded -= Panel_Loaded;
-			panel.Loaded += Panel_Loaded;
+			panel.Loaded -= PanelLoaded;
+			panel.Loaded += PanelLoaded;
 		}
 
-		static void Panel_Loaded(object sender, RoutedEventArgs e)
+		static void PanelLoaded(object sender, RoutedEventArgs e)
 		{
 			var panel = sender as Panel;
 

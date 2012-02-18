@@ -53,20 +53,23 @@ namespace MultipleClipboards.GlobalResources
 		{
 			get
 			{
-				try
+				if (string.IsNullOrWhiteSpace(_applicationDirectory))
 				{
-					if (string.IsNullOrWhiteSpace(_applicationDirectory))
+					var assembly = Assembly.GetEntryAssembly();
+					
+					if (assembly.ManifestModule.Name == ApplicationExecutableName)
 					{
-						FileInfo assembly = new FileInfo(Assembly.GetEntryAssembly().Location);
-						_applicationDirectory = string.Concat(assembly.DirectoryName, @"\");
+						FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
+						_applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
+					}
+					else
+					{
+						// This is just the failsafe case for when this Constants class is used in an assembly that this
+						// app does not have permissions to look at.  This happens when the installer uses this object.
+						_applicationDirectory = Environment.CurrentDirectory;
 					}
 				}
-				catch
-				{
-					// TODO: Move the application directory stuff up into the app project.
-					// The only reason this file is in a seperate project is because the installer needs the app data paths.
-					// But the reflection stuff fucks it all up.
-				}
+
 				return _applicationDirectory;
 			}
 		}
