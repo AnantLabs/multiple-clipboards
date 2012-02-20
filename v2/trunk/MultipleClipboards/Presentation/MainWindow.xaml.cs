@@ -37,16 +37,14 @@ namespace MultipleClipboards.Presentation
 
 		private void CloseButtonClick(object sender, RoutedEventArgs e)
 		{
-			this.Close();
-			// TODO: Figure out why setting the window to minimized breaks the hover close button once the window is restored.
-			//WindowState = WindowState.Minimized;
+			WindowState = WindowState.Minimized;
 		}
 
-		//protected override void OnStateChanged(EventArgs e)
-		//{
-		//    base.OnStateChanged(e);
-		//    this.ShowInTaskbar = this.WindowState != WindowState.Minimized;
-		//}
+		protected override void OnStateChanged(EventArgs e)
+		{
+			base.OnStateChanged(e);
+			this.ShowInTaskbar = this.WindowState != WindowState.Minimized;
+		}
 
 		private void DragStart(object sender, MouseButtonEventArgs e)
 		{

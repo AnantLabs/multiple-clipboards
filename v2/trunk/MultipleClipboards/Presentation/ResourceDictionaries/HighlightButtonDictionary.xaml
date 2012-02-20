@@ -20,15 +20,14 @@
                     <Setter Property="Opacity" TargetName="ButtonBackgroundBorder" Value="0.5"></Setter>
                 </Trigger.Setters>
             </Trigger>
-            <Trigger Property="IsChecked" Value="True">
+            <Trigger Property="IsPressed" Value="True">
                 <Trigger.Setters>
-                    <Setter Property="Opacity" TargetName="ButtonBackgroundBorder" Value="1"></Setter>
-                    <Setter Property="Background" TargetName="ButtonBackgroundBorder" Value="{Binding Path=PressedBackground, RelativeSource={RelativeSource TemplatedParent}}"></Setter>
+                    <Setter Property="Opacity" TargetName="ButtonBackgroundBorder" Value="0.8"></Setter>
                 </Trigger.Setters>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    <Style x:Key="HighlightButton" TargetType="{x:Type ToggleButton}">
+    <Style x:Key="HighlightButtonStyle" TargetType="{x:Type Controls:HighlightButton}">
         <Setter Property="Template" Value="{StaticResource HighlightButtonTemplate}" />
     </Style>
 </ResourceDictionary>

@@ -32,7 +32,7 @@
                     </Image.Source>
                 </Image>
                 <Label HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Grid.Row="0" Grid.Column="1" Content="Multiple Clipboards"/>
-                <Controls:HighlightButton CornerRadius="0,0,4,0" Height="18" VerticalAlignment="Top" x:Name="CloseButton" Style="{StaticResource HighlightButton}" HighlightBackground="Red" Content="X" Click="CloseButtonClick" Grid.Row="0" Grid.Column="2" FontWeight="Bold" Foreground="#FFFFFFFF" />
+                <Controls:HighlightButton CornerRadius="0,0,4,0" Height="18" VerticalAlignment="Top" x:Name="CloseButton" Style="{StaticResource HighlightButtonStyle}" HighlightBackground="Red" Content="X" Click="CloseButtonClick" Grid.Row="0" Grid.Column="2" FontWeight="Bold" Foreground="#FFFFFFFF" />
             </Grid>
             <Grid>
                 <Grid.RowDefinitions>

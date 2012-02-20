@@ -1,8 +1,8 @@
-﻿using System.Windows.Controls.Primitives;
+﻿using System.Windows.Controls;
 
 namespace MultipleClipboards.Presentation.Controls
 {
-    public class HighlightButton : ToggleButton
+    public class HighlightButton : Button
     {
 		/// <summary>
 		/// Gets or sets the corner radius of the button.
