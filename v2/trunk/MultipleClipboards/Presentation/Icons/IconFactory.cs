@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Reflection;
 
 namespace MultipleClipboards.Presentation.Icons
 {
@@ -40,6 +43,7 @@ namespace MultipleClipboards.Presentation.Icons
 	public sealed class IconFactory
 	{
 		private const string IconPathFormatString = "/Presentation/Icons/{0}/{1}.{2}";
+		private const string IconResourceNameFormatString = "MultipleClipboards.Presentation.Icons._{0}.{1}.{2}";
 		private const string IconExtension = "png";
 
 		private static readonly IDictionary<IconType, string> toolTipByIcon = new Dictionary<IconType, string>
@@ -86,6 +90,24 @@ namespace MultipleClipboards.Presentation.Icons
 		public static string GetIcon(IconType icon, IconSize size)
 		{
 			return string.Format(IconPathFormatString, (int)size, GetIconFileName(icon), IconExtension);
+		}
+
+		public static Bitmap GetBitmap16(IconType icon)
+		{
+			return GetBitmap(icon, IconSize._16);
+		}
+
+		public static Bitmap GetBitmap(IconType icon, IconSize size)
+		{
+			var fullyQualifiedIconName = string.Format(IconResourceNameFormatString, (int)size, GetIconFileName(icon), IconExtension);
+			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream(fullyQualifiedIconName);
+
+			if (iconStream == null)
+			{
+				throw new NullReferenceException(string.Format("Unable to find the image '{0}' embedded in the executing assembly.", fullyQualifiedIconName));
+			}
+
+			return new Bitmap(iconStream);
 		}
 
 		public static string GetToolTip(IconType icon)

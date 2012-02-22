@@ -9,7 +9,7 @@ namespace MultipleClipboards
 {
 	public static class AppController
 	{
-		private static TaskbarIcon _trayIcon;
+		//private static TaskbarIcon _trayIcon;
 
 		static AppController()
 		{
@@ -28,27 +28,27 @@ namespace MultipleClipboards
 			private set;
 		}
 
-		public static TaskbarIcon TrayIcon
-		{
-			get
-			{
-				return _trayIcon;
-			}
-			set
-			{
-				if (value == null)
-				{
-					throw new ArgumentNullException("The application tried to set the tray icon property, but the value given was null.  That's not cool.");
-				}
+		//public static TaskbarIcon TrayIcon
+		//{
+		//    get
+		//    {
+		//        return _trayIcon;
+		//    }
+		//    set
+		//    {
+		//        if (value == null)
+		//        {
+		//            throw new ArgumentNullException("The application tried to set the tray icon property, but the value given was null.  That's not cool.");
+		//        }
 
-				if (_trayIcon != null)
-				{
-					throw new InvalidOperationException("You can only set the application tray icon property once!");
-				}
+		//        if (_trayIcon != null)
+		//        {
+		//            throw new InvalidOperationException("You can only set the application tray icon property once!");
+		//        }
 
-				_trayIcon = value;
-			}
-		}
+		//        _trayIcon = value;
+		//    }
+		//}
 
 		public static void InitializeClipboardManager(IntPtr handle)
 		{

@@ -42,7 +42,7 @@ namespace MultipleClipboards.Presentation.Tabs
 				string.IsNullOrWhiteSpace(this.CutKeyTextBox.Text) ||
 				string.IsNullOrWhiteSpace(this.PasteKeyTextBox.Text))
 			{
-				MessageBus.Instance.Publish(new Notification
+				MessageBus.Instance.Publish(new MainWindowNotification
 				{
 					MessageBody = "All fields are required when creating a new clipboard.",
 					IconType = IconType.Error

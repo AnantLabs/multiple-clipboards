@@ -3,7 +3,7 @@ using MultipleClipboards.Presentation.Icons;
 
 namespace MultipleClipboards.Messaging
 {
-	public class Notification
+	public abstract class NotificationBase
 	{
 		public string MessageBody
 		{
@@ -22,5 +22,13 @@ namespace MultipleClipboards.Messaging
 			get;
 			set;
 		}
+	}
+
+	public class MainWindowNotification : NotificationBase
+	{
+	}
+
+	public class TrayNotification : NotificationBase
+	{
 	}
 }

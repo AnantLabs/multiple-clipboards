@@ -145,7 +145,7 @@ namespace MultipleClipboards.Persistence
 				{
 					const string baseErrorMessage = "There was an error setting or removing the auto-launch shortcut.";
 					log.Error(baseErrorMessage, e);
-					MessageBus.Instance.Publish(new Notification
+					MessageBus.Instance.Publish(new MainWindowNotification
 					{
 						MessageBody = baseErrorMessage + "  A detailed error report has been saved to the log.",
 						IconType = IconType.Error

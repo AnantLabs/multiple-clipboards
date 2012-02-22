@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using Hardcodet.Wpf.TaskbarNotification;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation;
+using MultipleClipboards.Presentation.TrayIcon;
 using log4net;
 using log4net.Config;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MultipleClipboards
 {
@@ -21,6 +27,7 @@ namespace MultipleClipboards
 	{
 		private static readonly ILog log;
 		private static readonly ManualResetEvent staticInitializationComplete = new ManualResetEvent(false);
+		private TrayIconManager trayIconManager;
 
 		static App()
 		{
@@ -71,7 +78,8 @@ namespace MultipleClipboards
 			// Create the tray icon for the app.
 			// This MUST be done after the clipboard window, which initializes the clipboard manager, is loaded
 			// because the tray icon's context menu binds to properties on the clipboard manager.
-			AppController.TrayIcon = (TaskbarIcon)this.FindResource("TrayIcon");
+			//AppController.TrayIcon = (TaskbarIcon)this.FindResource("TrayIcon");
+			this.InitializeTrayIcon();
 
 			// Only show the main UI if the application was launched by the installed shortcut.
 			if (e.Args.Contains("-fromShortcut"))
@@ -85,6 +93,7 @@ namespace MultipleClipboards
 		protected override void OnExit(ExitEventArgs e)
 		{
 			this.ClipboardWindow.Dispose();
+			this.trayIconManager.Dispose();
 			log.DebugFormat("Application exiting with exit code {0}.", e.ApplicationExitCode);
 			base.OnExit(e);
 		}
@@ -99,6 +108,24 @@ namespace MultipleClipboards
 		{
 			get;
 			set;
+		}
+
+		private void InitializeTrayIcon()
+		{
+			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream("MultipleClipboards.Presentation.Icons.Clipboard.ico");
+
+			if (iconStream == null)
+			{
+				throw new NullReferenceException("Unable to find the resource 'MultipleClipboards.Presentation.Icons.Clipboard.ico' in the executing assembly.");
+			}
+
+			var notifyIcon = new NotifyIcon
+			{
+				Icon = new Icon(iconStream),
+				Text = "Multiple Clipboards"
+			};
+			this.trayIconManager = new TrayIconManager(notifyIcon);
+			this.trayIconManager.ShowTrayIcon();
 		}
 	}
 }

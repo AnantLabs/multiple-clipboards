@@ -22,7 +22,7 @@ namespace MultipleClipboards.Presentation
 		{
 			InitializeComponent();
 			Loaded += this.MainWindowLoaded;
-			MessageBus.Instance.Subscribe<Notification>(NotificationRecieved);
+			MessageBus.Instance.Subscribe<MainWindowNotification>(NotificationRecieved);
 			notificationPopupTimer = new Timer(5000);
 			notificationPopupTimer.Elapsed += (sender, args) => Application.Current.Dispatcher.Invoke(new Action(OnNotificationTimerStop));
 		}
@@ -52,11 +52,11 @@ namespace MultipleClipboards.Presentation
 			e.Handled = true;
 		}
 
-		private void NotificationRecieved(Notification notification)
+		private void NotificationRecieved(MainWindowNotification mainWindowNotification)
 		{
-			if (notification.BorderBrush == null)
+			if (mainWindowNotification.BorderBrush == null)
 			{
-				switch (notification.IconType)
+				switch (mainWindowNotification.IconType)
 				{
 					case IconType.Error:
 						this.NotificationPresenterBorder.BorderBrush = Brushes.Red;
@@ -77,17 +77,17 @@ namespace MultipleClipboards.Presentation
 			}
 			else
 			{
-				this.NotificationPresenterBorder.BorderBrush = notification.BorderBrush;
+				this.NotificationPresenterBorder.BorderBrush = mainWindowNotification.BorderBrush;
 			}
 
 			var bitmap = new BitmapImage();
 			bitmap.BeginInit();
-			bitmap.UriSource = new Uri(IconFactory.GetIcon32(notification.IconType), UriKind.Relative);
+			bitmap.UriSource = new Uri(IconFactory.GetIcon32(mainWindowNotification.IconType), UriKind.Relative);
 			bitmap.DecodePixelWidth = 32;
 			bitmap.EndInit();
 
 			NotificationPresenterIcon.Source = bitmap;
-			NotificationPresenterTextBlock.Text = notification.MessageBody;
+			NotificationPresenterTextBlock.Text = mainWindowNotification.MessageBody;
 			NotificationPresenterBorder.Visibility = Visibility.Visible;
 			notificationPopupTimer.Start();
 		}

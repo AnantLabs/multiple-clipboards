@@ -64,6 +64,10 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="VistaMenu, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\VistaMenu.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -92,7 +96,7 @@
     <Compile Include="ClipboardManagement\ProcessHotKeyArguments.cs" />
     <Compile Include="Exceptions\ClipboardInUseException.cs" />
     <Compile Include="Messaging\MessageBus.cs" />
-    <Compile Include="Messaging\Notification.cs" />
+    <Compile Include="Messaging\Notifications.cs" />
     <Compile Include="Persistence\LogHelper.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
@@ -170,6 +174,7 @@
     <Compile Include="Presentation\Tabs\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Presentation\TrayIcon\TrayIconManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -201,12 +206,12 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\About.png" />
-    <Resource Include="Presentation\Icons\16\Clipboard.png" />
-    <Resource Include="Presentation\Icons\16\Find.png" />
-    <Resource Include="Presentation\Icons\16\Gear.png" />
-    <Resource Include="Presentation\Icons\16\History.png" />
-    <Resource Include="Presentation\Icons\16\Preferences.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\About.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Clipboard.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Find.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Gear.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\History.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Preferences.png" />
     <Resource Include="Presentation\Icons\32\About.png" />
     <Resource Include="Presentation\Icons\32\Clipboard.png" />
     <Resource Include="Presentation\Icons\32\Find.png" />
@@ -217,25 +222,25 @@
     <Resource Include="Presentation\Icons\32\Gear.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Add.png" />
-    <Resource Include="Presentation\Icons\16\Refresh.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Add.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Paste.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Paste.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Audio.png" />
-    <Resource Include="Presentation\Icons\16\FileDrop.png" />
-    <Resource Include="Presentation\Icons\16\Image.png" />
-    <Resource Include="Presentation\Icons\16\Text.png" />
-    <Resource Include="Presentation\Icons\16\Html.png" />
-    <Resource Include="Presentation\Icons\16\Rtf.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Audio.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\FileDrop.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Image.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Text.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Html.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Rtf.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Unknown.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Unknown.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Delete.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Delete.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Presentation\Icons\Clipboard.ico" />
@@ -245,8 +250,8 @@
     <Resource Include="Presentation\Icons\32\Log.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\16\Exit.png" />
-    <Resource Include="Presentation\Icons\16\Log.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Exit.png" />
+    <EmbeddedResource Include="Presentation\Icons\16\Log.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Presentation\Icons\ClipboardIcon.ico" />

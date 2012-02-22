@@ -44,7 +44,7 @@ namespace MultipleClipboards.Presentation.Tabs
 				ClipboardDefinition clipboard = AppController.ClipboardManager.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
 				string baseErrorMessage = string.Format("Error placing historical clipboard data on the clipboard '{0}'.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
 				log.ErrorFormat(baseErrorMessage + "  The data retrieved from the bound data grid was null.");
-				MessageBus.Instance.Publish(new Notification
+				MessageBus.Instance.Publish(new MainWindowNotification
 				{
 					MessageBody = baseErrorMessage,
 					IconType = IconType.Error

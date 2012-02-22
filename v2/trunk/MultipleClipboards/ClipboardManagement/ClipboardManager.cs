@@ -138,7 +138,7 @@ namespace MultipleClipboards.ClipboardManagement
 		{
 			if (AppController.Settings.ClipboardDefinitions.Any(c => c == clipboard))
 			{
-				MessageBus.Instance.Publish(new Notification
+				MessageBus.Instance.Publish(new MainWindowNotification
 				{
 					MessageBody = string.Format("The clipboard '{0}' already exists.", clipboard.ToDisplayString()),
 					IconType = IconType.Error
@@ -149,7 +149,7 @@ namespace MultipleClipboards.ClipboardManagement
             AppController.Settings.AddNewClipboard(clipboard);
 			log.InfoFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
 			this.RegisterClipboard(clipboard);
-			MessageBus.Instance.Publish(new Notification
+			MessageBus.Instance.Publish(new MainWindowNotification
 			{
 				MessageBody = string.Format("The clipboard '{0}' has been registered successfully!.", clipboard.ToDisplayString()),
 				IconType = IconType.Success
@@ -162,7 +162,7 @@ namespace MultipleClipboards.ClipboardManagement
         	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
             AppController.Settings.RemoveClipboard(clipboard);
 			log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
-			MessageBus.Instance.Publish(new Notification
+			MessageBus.Instance.Publish(new MainWindowNotification
 			{
 				MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard.ToDisplayString()),
 				IconType = IconType.Success

@@ -18,6 +18,8 @@ namespace MultipleClipboards.Entities
 		private const string UnableToRetrieveDataMessage = "Unable to retrieve data in this format.";
 		private static readonly object idLock = new object();
 		private static ulong _idCounter;
+		private string iconPath;
+		private string iconToolTip;
 
 		public ClipboardData(ClipboardData clipboardData)
 			: this(clipboardData.DataObject)
@@ -67,16 +69,26 @@ namespace MultipleClipboards.Entities
 			private set;
 		}
 
-		public string IconPath
+		public IconType IconType
 		{
 			get;
 			private set;
 		}
 
+		public string IconPath
+		{
+			get
+			{
+				return this.iconPath ?? (iconPath = IconFactory.GetIcon16(this.IconType));
+			}
+		}
+
 		public string IconToolTip
 		{
-			get;
-			private set;
+			get
+			{
+				return this.iconToolTip ?? (this.iconToolTip = IconFactory.GetToolTip(this.IconType));
+			}
 		}
 
 		public string ToShortDisplayString()
@@ -184,22 +196,19 @@ namespace MultipleClipboards.Entities
 			if (this.Formats.Contains(DataFormats.Html))
 			{
 				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconPath = IconFactory.GetIcon16(IconType.Html);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Html);
+				this.IconType = IconType.Html;
 			}
 			else if (this.Formats.Contains(DataFormats.Rtf))
 			{
 				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconPath = IconFactory.GetIcon16(IconType.Rtf);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Rtf);
+				this.IconType = IconType.Rtf;
 			}
 			else if (this.Formats.Contains(DataFormats.WaveAudio))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.WaveAudio);
 				Stream audioStream = dataObject as Stream;
 				this.DataPreview = audioStream != null ? string.Format("Audio stream ({0} bytes)", audioStream.Length) : dataObject.ToString();
-				this.IconPath = IconFactory.GetIcon16(IconType.Audio);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Audio);
+				this.IconType = IconType.Audio;
 			}
 			else if (this.Formats.Contains(DataFormats.Bitmap))
 			{
@@ -220,8 +229,7 @@ namespace MultipleClipboards.Entities
 					this.DataPreview = dataObject.ToString();
 				}
 
-				this.IconPath = IconFactory.GetIcon16(IconType.Image);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Image);
+				this.IconType = IconType.Image;
 			}
 			else if (this.Formats.Contains(DataFormats.FileDrop))
 			{
@@ -229,20 +237,17 @@ namespace MultipleClipboards.Entities
 				IEnumerable<string> filePaths = dataObject as IEnumerable<string>;
 				string data = string.Join(", ", filePaths ?? Enumerable.Empty<string>());
 				this.DataPreview = FormatDataPreviewString(data);
-				this.IconPath = IconFactory.GetIcon16(IconType.FileDrop);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.FileDrop);
+				this.IconType = IconType.FileDrop;
 			}
 			else if (this.Formats.Contains(DataFormats.Text))
 			{
 				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconPath = IconFactory.GetIcon16(IconType.Text);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Text);
+				this.IconType = IconType.Text;
 			}
 			else
 			{
 				this.DataPreview = FormatDataPreviewString(UnknownDataPreviewString);
-				this.IconPath = IconFactory.GetIcon16(IconType.Unknown);
-				this.IconToolTip = IconFactory.GetToolTip(IconType.Unknown);
+				this.IconType = IconType.Unknown;
 			}
 		}
 
