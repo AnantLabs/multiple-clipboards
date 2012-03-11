@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
+using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation.Icons;
 
 namespace MultipleClipboards.Entities
@@ -79,7 +80,7 @@ namespace MultipleClipboards.Entities
 		{
 			get
 			{
-				return this.iconPath ?? (iconPath = IconFactory.GetIcon16(this.IconType));
+				return this.iconPath ?? (iconPath = IconFactory.GetIconPath16(this.IconType));
 			}
 		}
 
@@ -254,9 +255,9 @@ namespace MultipleClipboards.Entities
 		private static string FormatDataPreviewString(object data)
 		{
 			string dataString = data.ToString().Trim().Replace("\r\n", " ").Replace("\t", " ");
-
-			// TODO: Make this a constant, or something more appropriate.
-			return dataString.Length > 60 ? dataString.Substring(0, 60) : dataString;
+			return dataString.Length > Constants.ClipboardHistoryPreviewLength
+				? dataString.Substring(0, Constants.ClipboardHistoryPreviewLength)
+				: dataString;
 		}
 	}
 }

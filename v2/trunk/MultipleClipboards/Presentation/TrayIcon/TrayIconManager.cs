@@ -78,8 +78,8 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			this.contextMenu = new ContextMenu(new[] { seperator, mainWindowMenuItem, exitMenuItem });
 			this.AddClipboardHistoryItemsToConextMenu(AppController.ClipboardManager.ClipboardHistory);
 
-			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetBitmap16(IconType.Exit));
-			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetBitmap16(IconType.Clipboard));
+			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
+			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));
 			this.menuHelper.EndInit();
 
 			this.notifyIcon.ContextMenu = this.contextMenu;
@@ -91,7 +91,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			{
 				var menuItem = BuildClipboardHistoryMenuItem(clipboardData);
 				this.contextMenu.MenuItems.Add(0, menuItem);
-				this.menuHelper.SetImage(menuItem, IconFactory.GetBitmap16(clipboardData.IconType));
+				this.menuHelper.SetImage(menuItem, IconFactory.GetTrayContextMenuBitmap(clipboardData.IconType));
 			}
 
 			this.menuHelper.EndInit();
@@ -99,7 +99,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		private static MenuItem BuildClipboardHistoryMenuItem(ClipboardData clipboardData)
 		{
-			var menuItem = new MenuItem(clipboardData.DataPreview);
+			var menuItem = new MenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")));
 			menuItem.Click += (sender, args) => AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardData.Id);
 			return menuItem;
 		}

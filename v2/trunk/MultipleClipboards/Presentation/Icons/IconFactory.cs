@@ -43,7 +43,7 @@ namespace MultipleClipboards.Presentation.Icons
 	public sealed class IconFactory
 	{
 		private const string IconPathFormatString = "/Presentation/Icons/{0}/{1}.{2}";
-		private const string IconResourceNameFormatString = "MultipleClipboards.Presentation.Icons._{0}.{1}.{2}";
+		private const string EmbeddedIconPathFormatString = "MultipleClipboards.Presentation.Icons.TrayContextMenu.{0}.{1}";
 		private const string IconExtension = "png";
 
 		private static readonly IDictionary<IconType, string> toolTipByIcon = new Dictionary<IconType, string>
@@ -77,29 +77,24 @@ namespace MultipleClipboards.Presentation.Icons
 			{ IconType.Info, "About" }
 		};
 
-		public static string GetIcon16(IconType icon)
+		public static string GetIconPath16(IconType icon)
 		{
-			return GetIcon(icon, IconSize._16);
+			return GetIconPath(icon, IconSize._16);
 		}
 
-		public static string GetIcon32(IconType icon)
+		public static string GetIconPath32(IconType icon)
 		{
-			return GetIcon(icon, IconSize._32);
+			return GetIconPath(icon, IconSize._32);
 		}
 
-		public static string GetIcon(IconType icon, IconSize size)
+		public static string GetIconPath(IconType icon, IconSize size)
 		{
 			return string.Format(IconPathFormatString, (int)size, GetIconFileName(icon), IconExtension);
 		}
 
-		public static Bitmap GetBitmap16(IconType icon)
+		public static Bitmap GetTrayContextMenuBitmap(IconType icon)
 		{
-			return GetBitmap(icon, IconSize._16);
-		}
-
-		public static Bitmap GetBitmap(IconType icon, IconSize size)
-		{
-			var fullyQualifiedIconName = string.Format(IconResourceNameFormatString, (int)size, GetIconFileName(icon), IconExtension);
+			var fullyQualifiedIconName = string.Format(EmbeddedIconPathFormatString, GetIconFileName(icon), IconExtension);
 			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream(fullyQualifiedIconName);
 
 			if (iconStream == null)

@@ -10,7 +10,7 @@
         BorderThickness="1"
         AllowsTransparency="True"
         ShowInTaskbar="True"
-        Icon="/Presentation/Icons/ClipboardIcon.ico"
+        Icon="/Presentation/Icons/Clipboard.ico"
         Width="700" Height="600">
 
     <Border CornerRadius="5">

@@ -38,7 +38,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Presentation\Icons\Clipboard.ico</ApplicationIcon>
+    <ApplicationIcon>Presentation\Icons\TrayContextMenu\Clipboard.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ApplicationBasics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -188,6 +188,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clipboard.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Exit.png" />
     <Resource Include="Presentation\Icons\32\Error.png" />
     <Resource Include="Presentation\Icons\32\Success.png" />
     <Resource Include="Presentation\Icons\32\Warning.png" />
@@ -206,55 +208,46 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\About.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Clipboard.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Find.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Gear.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\History.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Preferences.png" />
+    <Resource Include="Presentation\Icons\16\About.png" />
+    <Resource Include="Presentation\Icons\16\Clipboard.png" />
+    <Resource Include="Presentation\Icons\16\Find.png" />
+    <Resource Include="Presentation\Icons\16\Gear.png" />
+    <Resource Include="Presentation\Icons\16\History.png" />
+    <Resource Include="Presentation\Icons\16\Preferences.png" />
     <Resource Include="Presentation\Icons\32\About.png" />
     <Resource Include="Presentation\Icons\32\Clipboard.png" />
     <Resource Include="Presentation\Icons\32\Find.png" />
     <Resource Include="Presentation\Icons\32\History.png" />
     <Resource Include="Presentation\Icons\32\Preferences.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Presentation\Icons\32\Gear.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Add.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Paste.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Audio.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\FileDrop.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Image.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Text.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Html.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Rtf.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Unknown.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Delete.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\Clipboard.ico" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Presentation\Icons\16\Add.png" />
+    <Resource Include="Presentation\Icons\16\Refresh.png" />
+    <Resource Include="Presentation\Icons\16\Paste.png" />
+    <Resource Include="Presentation\Icons\16\Audio.png" />
+    <Resource Include="Presentation\Icons\16\FileDrop.png" />
+    <Resource Include="Presentation\Icons\16\Image.png" />
+    <Resource Include="Presentation\Icons\16\Text.png" />
+    <Resource Include="Presentation\Icons\16\Html.png" />
+    <Resource Include="Presentation\Icons\16\Rtf.png" />
+    <Resource Include="Presentation\Icons\16\Unknown.png" />
+    <Resource Include="Presentation\Icons\16\Delete.png" />
     <Resource Include="Presentation\Icons\32\Exit.png" />
     <Resource Include="Presentation\Icons\32\Log.png" />
+    <Resource Include="Presentation\Icons\16\Exit.png" />
+    <Resource Include="Presentation\Icons\16\Log.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Presentation\Icons\16\Exit.png" />
-    <EmbeddedResource Include="Presentation\Icons\16\Log.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Audio.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\FileDrop.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Image.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Text.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Html.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Rtf.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Unknown.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Presentation\Icons\ClipboardIcon.ico" />
+    <Resource Include="Presentation\Icons\Clipboard.ico" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clipboard.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MultipleClipboards.GlobalResources\MultipleClipboards.GlobalResources.csproj">

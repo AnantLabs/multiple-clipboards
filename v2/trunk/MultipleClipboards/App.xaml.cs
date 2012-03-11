@@ -112,11 +112,12 @@ namespace MultipleClipboards
 
 		private void InitializeTrayIcon()
 		{
-			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream("MultipleClipboards.Presentation.Icons.Clipboard.ico");
+			const string trayIconResourcePath = "MultipleClipboards.Presentation.Icons.TrayContextMenu.Clipboard.ico";
+			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream(trayIconResourcePath);
 
 			if (iconStream == null)
 			{
-				throw new NullReferenceException("Unable to find the resource 'MultipleClipboards.Presentation.Icons.Clipboard.ico' in the executing assembly.");
+				throw new NullReferenceException(string.Format("Unable to find the resource '{0}' in the executing assembly.", trayIconResourcePath));
 			}
 
 			var notifyIcon = new NotifyIcon

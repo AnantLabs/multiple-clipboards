@@ -45,7 +45,7 @@ namespace MultipleClipboards.Presentation.Controls
 
 			BitmapImage bitmap = new BitmapImage();
 			bitmap.BeginInit();
-			bitmap.UriSource = new Uri(IconFactory.GetIcon(this.Icon, this.IconSize), UriKind.Relative);
+			bitmap.UriSource = new Uri(IconFactory.GetIconPath(this.Icon, this.IconSize), UriKind.Relative);
 			bitmap.DecodePixelWidth = (int)this.IconSize;
 			bitmap.EndInit();
 

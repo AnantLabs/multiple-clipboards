@@ -82,7 +82,7 @@ namespace MultipleClipboards.Presentation
 
 			var bitmap = new BitmapImage();
 			bitmap.BeginInit();
-			bitmap.UriSource = new Uri(IconFactory.GetIcon32(mainWindowNotification.IconType), UriKind.Relative);
+			bitmap.UriSource = new Uri(IconFactory.GetIconPath32(mainWindowNotification.IconType), UriKind.Relative);
 			bitmap.DecodePixelWidth = 32;
 			bitmap.EndInit();
 

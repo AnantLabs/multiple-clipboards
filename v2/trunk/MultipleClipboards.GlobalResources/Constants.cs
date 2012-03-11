@@ -6,6 +6,8 @@ namespace MultipleClipboards.GlobalResources
 {
 	public static class Constants
 	{
+		public const int ClipboardHistoryPreviewLength = 60;
+
 		// File names.  These will never change without a new build.
 		private const string SettingsFileName = "MultipleClipboardsSettings.xml";
 		private const string LogFileName = "MultipleClipboardsLog.log";
@@ -66,7 +68,7 @@ namespace MultipleClipboards.GlobalResources
 					{
 						// This is just the failsafe case for when this Constants class is used in an assembly that this
 						// app does not have permissions to look at.  This happens when the installer uses this object.
-						_applicationDirectory = Environment.CurrentDirectory;
+						_applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
 					}
 				}
 

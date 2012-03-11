@@ -1,8 +1,10 @@
-﻿using MultipleClipboards.Entities;
+﻿using System;
+using MultipleClipboards.Entities;
 using log4net;
 
 namespace MultipleClipboards.Presentation.Commands
 {
+	[Obsolete("Until WPF supports proper placement of context menus from the system tray this command should not be used.")]
 	public class PasteCommand : CommandExtension<PasteCommand>
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(PasteCommand));
