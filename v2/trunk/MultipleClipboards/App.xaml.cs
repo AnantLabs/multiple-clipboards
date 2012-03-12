@@ -8,9 +8,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using Hardcodet.Wpf.TaskbarNotification;
 using MultipleClipboards.GlobalResources;
-using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation;
 using MultipleClipboards.Presentation.TrayIcon;
 using log4net;
@@ -69,17 +67,20 @@ namespace MultipleClipboards
 				Environment.Exit(0);
 			}
 
+			// Create the system tray icon.
+			// This establishes the tray icon and sets up tray notifications, but does not yet bind to the clipboard manager.
+			// This is done first so that any errors encountered initializing the clipboard manager can be posted to the
+			// tray notification popup.
+			this.InitializeTrayIcon();
+
 			// Create the hidden window that will handle the message loop for this app.
 			// Because this is the first window that gets created the framework automatically makes this
 			// the MainWindow, which is not at all what we want!
 			this.ClipboardWindow = new ClipboardWindow();
 			this.MainWindow = null;
 
-			// Create the tray icon for the app.
-			// This MUST be done after the clipboard window, which initializes the clipboard manager, is loaded
-			// because the tray icon's context menu binds to properties on the clipboard manager.
-			//AppController.TrayIcon = (TaskbarIcon)this.FindResource("TrayIcon");
-			this.InitializeTrayIcon();
+			// Tell the tray icon that the clipboard manager has been initialized so it can bind to the clipboard history collection.
+			this.trayIconManager.OnClipboardManagerInitialized();
 
 			// Only show the main UI if the application was launched by the installed shortcut.
 			if (e.Args.Contains("-fromShortcut"))

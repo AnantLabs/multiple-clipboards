@@ -53,6 +53,16 @@ namespace MultipleClipboards.Entities
 		/// <summary>
 		/// Constructs a new HotKey object.
 		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="modifierKeys">The collection of modifier keys for this hot key.</param>
+		public HotKey(Key key, params ModifierKeys[] modifierKeys)
+			: this(0, HotKeyType.Undefined, key, modifierKeys)
+		{
+		}
+
+		/// <summary>
+		/// Constructs a new HotKey object.
+		/// </summary>
 		/// <param name="clipboardId">The ID of the clipboard that this hot key belongs to.</param>
 		/// <param name="hotKeyType">The hot key type.</param>
 		/// <param name="key">The key.</param>

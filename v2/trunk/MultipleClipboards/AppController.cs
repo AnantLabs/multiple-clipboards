@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using Hardcodet.Wpf.TaskbarNotification;
 using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Persistence;
 using MultipleClipboards.Presentation;
@@ -9,8 +8,6 @@ namespace MultipleClipboards
 {
 	public static class AppController
 	{
-		//private static TaskbarIcon _trayIcon;
-
 		static AppController()
 		{
 			Settings = new SettingsManager();
@@ -27,28 +24,6 @@ namespace MultipleClipboards
 			get;
 			private set;
 		}
-
-		//public static TaskbarIcon TrayIcon
-		//{
-		//    get
-		//    {
-		//        return _trayIcon;
-		//    }
-		//    set
-		//    {
-		//        if (value == null)
-		//        {
-		//            throw new ArgumentNullException("The application tried to set the tray icon property, but the value given was null.  That's not cool.");
-		//        }
-
-		//        if (_trayIcon != null)
-		//        {
-		//            throw new InvalidOperationException("You can only set the application tray icon property once!");
-		//        }
-
-		//        _trayIcon = value;
-		//    }
-		//}
 
 		public static void InitializeClipboardManager(IntPtr handle)
 		{

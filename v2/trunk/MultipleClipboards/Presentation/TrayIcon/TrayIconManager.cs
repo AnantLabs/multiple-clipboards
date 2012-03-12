@@ -2,10 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using MultipleClipboards.Entities;
+using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
 using wyDay.Controls;
+using Application = System.Windows.Application;
+using ContextMenu = System.Windows.Forms.ContextMenu;
+using MenuItem = System.Windows.Forms.MenuItem;
+using Timer = System.Timers.Timer;
 
 namespace MultipleClipboards.Presentation.TrayIcon
 {
@@ -14,7 +24,12 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		private readonly IDictionary<ulong, MenuItem> menuItemsByClipboardId;
 		private readonly NotifyIcon notifyIcon;
 		private readonly VistaMenu menuHelper;
+		private readonly Timer trayPopupTimer;
 		private ContextMenu contextMenu;
+		private Popup trayPopup;
+		private Border trayPopupBorder;
+		private Image trayPopupIcon;
+		private TextBlock trayPopupTextBlock;
 
 		public TrayIconManager(NotifyIcon notifyIcon)
 		{
@@ -22,6 +37,15 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			this.menuItemsByClipboardId = new Dictionary<ulong, MenuItem>();
 			this.notifyIcon = notifyIcon;
 			this.notifyIcon.MouseDoubleClick += NotifyIconMouseDoubleClick;
+			this.trayPopupTimer = new Timer(5000);
+			this.trayPopupTimer.Elapsed += (sender, args) => Application.Current.Dispatcher.Invoke(new Action(OnTrayPopupTimerStop));
+			this.CacheTrayPopupElements();
+			this.trayPopup.CustomPopupPlacementCallback = GetPopupPlacement;
+			MessageBus.Instance.Subscribe<TrayNotification>(this.NotificationRecieved);
+		}
+
+		public void OnClipboardManagerInitialized()
+		{
 			AppController.ClipboardManager.ClipboardHistory.CollectionChanged += ClipboardHistoryCollectionChanged;
 			this.InitializeContextMenu();
 		}
@@ -39,6 +63,28 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		public void Dispose()
 		{
 			this.notifyIcon.Dispose();
+		}
+
+		private static CustomPopupPlacement[] GetPopupPlacement(Size popupSize, Size targetSize, Point offset)
+		{
+			var point = SystemParameters.WorkArea.BottomRight;
+			point.Y = point.Y - popupSize.Height;
+			return new[] { new CustomPopupPlacement(point, PopupPrimaryAxis.Horizontal) };
+		}
+
+		private void CacheTrayPopupElements()
+		{
+			// HACK: This is kind of ugly, and there may be a better way to do this, but for such a simple control I do not care.
+			//		 I need to find the child elements in the popup that have dynamic content, but VisualTreeHelper is of no use
+			//		 because the popup has not been shown yet.  But, this is a popup that I have defined in my own resource dictionary,
+			//		 so I will just find the controls by manually traversing the tree;
+			//		 There are a lot of potential null refference exceptions in here, but that's OK since this would fail later on anyway without them.
+
+			this.trayPopup = (Popup)Application.Current.FindResource("TrayPopup");
+			this.trayPopupBorder = (Border)trayPopup.Child;
+			var grid = (Grid)this.trayPopupBorder.Child;
+			this.trayPopupIcon = (Image)grid.Children[0];
+			this.trayPopupTextBlock = (TextBlock)grid.Children[1];
 		}
 
 		private void ClipboardHistoryCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -102,6 +148,57 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			var menuItem = new MenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")));
 			menuItem.Click += (sender, args) => AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardData.Id);
 			return menuItem;
+		}
+
+		private void NotificationRecieved(TrayNotification mainWindowNotification)
+		{
+			if (this.trayPopupBorder == null || this.trayPopupIcon == null || this.trayPopupTextBlock == null)
+			{
+				throw new NullReferenceException("Unable to show notification popup because the required UI elements could not be found.");
+			}
+
+			if (mainWindowNotification.BorderBrush == null)
+			{
+				switch (mainWindowNotification.IconType)
+				{
+					case IconType.Error:
+						this.trayPopupBorder.BorderBrush = Brushes.Red;
+						break;
+
+					case IconType.Warning:
+						this.trayPopupBorder.BorderBrush = Brushes.Yellow;
+						break;
+
+					case IconType.Success:
+						this.trayPopupBorder.BorderBrush = Brushes.Green;
+						break;
+
+					default:
+						this.trayPopupBorder.BorderBrush = Brushes.Black;
+						break;
+				}
+			}
+			else
+			{
+				this.trayPopupBorder.BorderBrush = mainWindowNotification.BorderBrush;
+			}
+
+			var bitmap = new BitmapImage();
+			bitmap.BeginInit();
+			bitmap.UriSource = new Uri(IconFactory.GetIconPath32(mainWindowNotification.IconType), UriKind.Relative);
+			bitmap.DecodePixelWidth = 32;
+			bitmap.EndInit();
+
+			this.trayPopupIcon.Source = bitmap;
+			this.trayPopupTextBlock.Text = mainWindowNotification.MessageBody;
+			this.trayPopup.IsOpen = true;
+			this.trayPopupTimer.Start();
+		}
+
+		private void OnTrayPopupTimerStop()
+		{
+			this.trayPopupTimer.Stop();
+			this.trayPopup.IsOpen = false;
 		}
 	}
 }

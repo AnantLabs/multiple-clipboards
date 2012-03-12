@@ -1,24 +1,43 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:TaskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
                     xmlns:Commands="clr-namespace:MultipleClipboards.Presentation.Commands"
                     xmlns:System="clr-namespace:System.ComponentModel;assembly=WindowsBase"
                     xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
-                    xmlns:Entities="clr-namespace:MultipleClipboards.Entities">
-    
+                    xmlns:Entities="clr-namespace:MultipleClipboards.Entities"
+                    xmlns:Layout="clr-namespace:MultipleClipboards.Presentation.Layout">
+
+    <Popup x:Key="TrayPopup" Placement="Custom" AllowsTransparency="True" PopupAnimation="Fade">
+        <Border MinWidth="100" MaxWidth="200" MinHeight="75" BorderThickness="4" CornerRadius="2">
+            <Grid Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="52" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="32" />
+                <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0 0 10 0" />
+            </Grid>
+        </Border>
+    </Popup>
+
+
     <!--
         IMPORTANT:
         This file is currently not used in this project because the WPF framework does not allow context menus to open
         next to the cursor when the menu is initiated from the tray icon.  However, a lot of work went into making the 
         WPF context menu work at all, so I'm going to leave this in the project in the hopes that one day WPF will work
         the way I want it to.
+    
+        xmlns:TaskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
     -->
 
-    <CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+    <!--<CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
         <CollectionViewSource.SortDescriptions>
             <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
         </CollectionViewSource.SortDescriptions>
-    </CollectionViewSource>
+    </CollectionViewSource>-->
 
     <!--
         The x:Shared="False" is essential.
@@ -26,7 +45,7 @@
         This means that only one would actually have an icon at any given time.
         Setting Shared="False" tells the parser to create a new Image instance for each menu item.
     -->
-    <Style x:Shared="False" TargetType="MenuItem">
+    <!--<Style x:Shared="False" TargetType="MenuItem">
         <Setter Property="Icon">
             <Setter.Value>
                 <Image Width="16" Source="{Binding IconPath}" ToolTip="{Binding IconToolTip}" />
@@ -45,9 +64,9 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Name="DataPreviewTextBlock" HorizontalAlignment="Left" Text="{Binding DataPreview}" />
             <TextBlock Grid.Row="0" Grid.Column="1" Name="TimeStampTextBlock" HorizontalAlignment="Right" Margin="20,0,0,0" Text="{Binding TimeStamp, StringFormat=T}" />
         </Grid>
-    </DataTemplate>
+    </DataTemplate>-->
 
-    <TaskbarNotification:TaskbarIcon x:Key="TrayIcon"
+    <!--<TaskbarNotification:TaskbarIcon x:Key="TrayIcon"
                                      ToolTipText="Multiple Clipboards"
                                      IconSource="/Presentation/Icons/Clipboard.ico"
                                      MenuActivation="RightClick"
@@ -79,13 +98,13 @@
             </ContextMenu>
         </TaskbarNotification:TaskbarIcon.ContextMenu>
         
-        <!--<TaskbarNotification:TaskbarIcon.TrayPopup>
+        <TaskbarNotification:TaskbarIcon.TrayPopup>
             <SystemTray:SysTrayPopup />
         </TaskbarNotification:TaskbarIcon.TrayPopup>
 
         <TaskbarNotification:TaskbarIcon.TrayToolTip>
             <SystemTray:SysTrayToolTip />
-        </TaskbarNotification:TaskbarIcon.TrayToolTip>-->
-    </TaskbarNotification:TaskbarIcon>
+        </TaskbarNotification:TaskbarIcon.TrayToolTip>
+    </TaskbarNotification:TaskbarIcon>-->
 
 </ResourceDictionary>

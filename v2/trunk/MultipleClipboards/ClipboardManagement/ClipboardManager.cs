@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -311,29 +312,66 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		private void RegisterAllClipboards()
 		{
-			// TODO: Capture any errors here (NOT try catch), build a report card of what went wrong, and figure out a way to return it to the UI.
 			this.ClipboardDataByClipboardId.Add(ClipboardDefinition.SystemClipboardId, null);
+			bool wasCompleteFailure = true;
+			var failedHotKeys = new List<HotKey>();
+			var errorMessageBuilder = new StringBuilder();
 
 			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
 			{
-				this.RegisterClipboard(clipboard);
+				var result = this.RegisterClipboard(clipboard);
+				wasCompleteFailure &= result.WasCompleteFailure;
+				
+				if (result.WasCutRegistrationError)
+				{
+					failedHotKeys.Add(new HotKey(clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
+				}
+				if (result.WasCopyRegistrationError)
+				{
+					failedHotKeys.Add(new HotKey(clipboard.CopyKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
+				}
+				if (result.WasPasteRegistrationError)
+				{
+					failedHotKeys.Add(new HotKey(clipboard.PasteKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
+				}
 			}
+
+			if (failedHotKeys.Count == 0)
+			{
+				return;
+			}
+			
+			errorMessageBuilder.AppendLine("There was an error registering the following hot keys:");
+
+			foreach (var hotKey in failedHotKeys)
+			{
+				errorMessageBuilder.AppendFormat("\t{0}", hotKey);
+				errorMessageBuilder.AppendLine();
+			}
+
+			MessageBus.Instance.Publish(new TrayNotification
+			{
+				MessageBody = errorMessageBuilder.ToString(),
+				IconType = wasCompleteFailure ? IconType.Error : IconType.Warning
+			});
 		}
 
-		private void RegisterClipboard(ClipboardDefinition clipboard)
+		private RegisterClipboardReportCard RegisterClipboard(ClipboardDefinition clipboard)
 		{
 			// Create a new dictionary item for this clipboard ID.
 			// This is the local copy of the item currently stored on the clipbaord that goes with this set of hotkeys.
 			this.ClipboardDataByClipboardId.Add(clipboard.ClipboardId, null);
 
 			HotKey cutHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Cut, clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			this.RegisterHotKey(cutHotKey);
+			bool cutRegistrationResult = this.RegisterHotKey(cutHotKey);
 
 			HotKey copyHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Copy, clipboard.CopyKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			this.RegisterHotKey(copyHotKey);
+			bool copyRegistrationResult = this.RegisterHotKey(copyHotKey);
 
 			HotKey pasteHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Paste, clipboard.PasteKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			this.RegisterHotKey(pasteHotKey);
+			bool pasteRegistrationResult = this.RegisterHotKey(pasteHotKey);
+
+			return new RegisterClipboardReportCard(cutRegistrationResult, copyRegistrationResult, pasteRegistrationResult);
 		}
 
 		/// <summary>
@@ -560,6 +598,42 @@ namespace MultipleClipboards.ClipboardManagement
 				}
 
 				Thread.Sleep(AppController.Settings.ThreadDelayTime);
+			}
+		}
+
+		private class RegisterClipboardReportCard
+		{
+			public RegisterClipboardReportCard(bool cutRegistrationResult, bool copyRegistrationResult, bool pasteRegistrationResult)
+			{
+				this.WasCutRegistrationError = !copyRegistrationResult;
+				this.WasCopyRegistrationError = !cutRegistrationResult;
+				this.WasPasteRegistrationError = !pasteRegistrationResult;
+			}
+
+			public bool WasCopyRegistrationError
+			{
+				get;
+				private set;
+			}
+
+			public bool WasCutRegistrationError
+			{
+				get;
+				private set;
+			}
+
+			public bool WasPasteRegistrationError
+			{
+				get;
+				private set;
+			}
+
+			public bool WasCompleteFailure
+			{
+				get
+				{
+					return this.WasCopyRegistrationError && this.WasCutRegistrationError && this.WasPasteRegistrationError;
+				}
 			}
 		}
 	}
