@@ -57,19 +57,26 @@ namespace MultipleClipboards.GlobalResources
 			{
 				if (string.IsNullOrWhiteSpace(_applicationDirectory))
 				{
-					var assembly = Assembly.GetEntryAssembly();
+				    try
+				    {
+				        var assembly = Assembly.GetEntryAssembly();
 					
-					if (assembly.ManifestModule.Name == ApplicationExecutableName)
-					{
-						FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
-						_applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
-					}
-					else
-					{
-						// This is just the failsafe case for when this Constants class is used in an assembly that this
-						// app does not have permissions to look at.  This happens when the installer uses this object.
-						_applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-					}
+				        if (assembly.ManifestModule.Name == ApplicationExecutableName)
+				        {
+				            FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
+				            _applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
+				        }
+				        else
+				        {
+				            _applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
+				        }
+				    }
+				    catch
+				    {
+				        // This code is used in my installer custom actions, and this property throws an exception.
+                        // Maybe some day I will make this better.
+				        _applicationDirectory = string.Empty;
+				    }
 				}
 
 				return _applicationDirectory;

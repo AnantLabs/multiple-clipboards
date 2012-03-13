@@ -22,22 +22,22 @@
         </Border>
     </Popup>
 
+    <CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+        <CollectionViewSource.SortDescriptions>
+            <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+
 
     <!--
         IMPORTANT:
-        This file is currently not used in this project because the WPF framework does not allow context menus to open
+        The WPF tray icon & context menu are not used in this project because the WPF framework does not allow context menus to open
         next to the cursor when the menu is initiated from the tray icon.  However, a lot of work went into making the 
         WPF context menu work at all, so I'm going to leave this in the project in the hopes that one day WPF will work
         the way I want it to.
     
         xmlns:TaskbarNotification="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.Wpf.TaskbarNotification"
     -->
-
-    <!--<CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
-        <CollectionViewSource.SortDescriptions>
-            <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
-        </CollectionViewSource.SortDescriptions>
-    </CollectionViewSource>-->
 
     <!--
         The x:Shared="False" is essential.
