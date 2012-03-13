@@ -6,6 +6,8 @@ using System.Windows.Interop;
 using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Interop;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Icons;
 using log4net;
 
 namespace MultipleClipboards.Presentation
@@ -39,9 +41,13 @@ namespace MultipleClipboards.Presentation
 			}
 			else
 			{
-				// TODO: Once the ability to publish messages to tray popups is in place publish a message here.
-				//		 We can't use the regular pub/sub here because the main window has not been constructed yet.
 				log.Error("Unable to aquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
+
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = "Unable to aquire the handle to the clipboard message window.  Additional clipboards most likely will not function correctly.",
+					IconType = IconType.Error
+				});
 			}
 
 			InitializeComponent();
@@ -190,6 +196,12 @@ namespace MultipleClipboards.Presentation
 							catch (Exception e)
 							{
 								log.Error("WndProc(): Error storing clipboard contents", e);
+
+								MessageBus.Instance.Publish(new TrayNotification
+								{
+									MessageBody = "There was an error storing the contents of the clipboard.",
+									IconType = IconType.Error
+								});
 							}
 
 							this.IsClipboardManagerInUse = false;

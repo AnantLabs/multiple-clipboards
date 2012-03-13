@@ -268,6 +268,12 @@ namespace MultipleClipboards.ClipboardManagement
 			catch (Exception e)
 			{
 				log.Error("Unexpected error while processing hot key.", e);
+
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = string.Format("There was an error processing the hot key {0}.", arguments.HotKey),
+					IconType = IconType.Error
+				});
 			}
 			finally
 			{
