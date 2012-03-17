@@ -37,6 +37,7 @@ namespace MultipleClipboards.Persistence
 		private const string ApplicationLogLevelSettingKey = "LogLevel";
 		private const string LaunchApplicationOnSystemStartupSettingKey = "LaunchApplicationOnSystemStartup";
 		private const string ShowAdvancedOptionsSettingKey = "ShowAdvancedOptions";
+		private const string ShowMessagesFromTraySettingKey = "ShowMessagesFromTray";
 
 		// Application Settings Default Values.
 		private static readonly IDictionary<string, object> defaultSettings =
@@ -46,7 +47,8 @@ namespace MultipleClipboards.Persistence
 				{ ThreadDelayTimeSettingKey, 250 },
 				{ ApplicationLogLevelSettingKey, LogLevel.Error },
 				{ LaunchApplicationOnSystemStartupSettingKey, true },
-				{ ShowAdvancedOptionsSettingKey, false }
+				{ ShowAdvancedOptionsSettingKey, false },
+				{ ShowMessagesFromTraySettingKey, true }
 			};
 
 		// The in memory version of the log level.
@@ -166,6 +168,21 @@ namespace MultipleClipboards.Persistence
 			set
 			{
 				this.SaveApplicationSetting(ShowAdvancedOptionsSettingKey, value);
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not to show application notification popups from the system tray.
+		/// </summary>
+		public bool ShowMessagesFromTray
+		{
+			get
+			{
+				return this.GetSettingSafe(ShowMessagesFromTraySettingKey);
+			}
+			set
+			{
+				this.SaveApplicationSetting(ShowMessagesFromTraySettingKey, value);
 			}
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
@@ -37,18 +38,23 @@ namespace MultipleClipboards.Presentation.Tabs
 
 			if (data != null)
 			{
-				AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(clipboardId, data.Id);
+				try
+				{
+					AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(clipboardId, data.Id);
+					MessageBus.Instance.Publish(new MainWindowNotification
+					{
+						MessageBody = "The data has been placed on the selected clipboard.",
+						IconType = IconType.Success
+					});
+				}
+				catch (Exception exception)
+				{
+					ShowErrorPlacingDataOnClipboard(clipboardId, "An unexpected error occured while placing data on the desired clipboard.", exception);
+				}
 			}
 			else
 			{
-				ClipboardDefinition clipboard = AppController.ClipboardManager.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
-				string baseErrorMessage = string.Format("Error placing historical clipboard data on the clipboard '{0}'.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
-				log.ErrorFormat(baseErrorMessage + "  The data retrieved from the bound data grid was null.");
-				MessageBus.Instance.Publish(new MainWindowNotification
-				{
-					MessageBody = baseErrorMessage,
-					IconType = IconType.Error
-				});
+				ShowErrorPlacingDataOnClipboard(clipboardId, "The data retrieved from the bound data grid was null.", null);
 			}
 		}
 
@@ -65,6 +71,18 @@ namespace MultipleClipboards.Presentation.Tabs
 
 			this.ClipboardSelectComboBox.ItemsSource = bindings;
 			this.ClipboardSelectComboBox.SelectedIndex = 0;
+		}
+
+		private static void ShowErrorPlacingDataOnClipboard(int clipboardId, string additionalLogText, Exception exception)
+		{
+			ClipboardDefinition clipboard = AppController.ClipboardManager.AvailableClipboards.FirstOrDefault(c => c.ClipboardId == clipboardId);
+			string baseErrorMessage = string.Format("Error placing historical clipboard data on the clipboard '{0}'.", clipboard == null ? clipboardId.ToString() : clipboard.ToDisplayString());
+			log.Error(string.Concat(baseErrorMessage, "  ", additionalLogText), exception);
+			MessageBus.Instance.Publish(new MainWindowNotification
+			{
+				MessageBody = baseErrorMessage,
+				IconType = IconType.Error
+			});
 		}
 
 		private class ClipboardSelectBinding

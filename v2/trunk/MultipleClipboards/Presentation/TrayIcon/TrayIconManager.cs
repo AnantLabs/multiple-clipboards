@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
+using log4net;
 using wyDay.Controls;
 using Application = System.Windows.Application;
 using ContextMenu = System.Windows.Forms.ContextMenu;
@@ -21,6 +22,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 {
 	public sealed class TrayIconManager : IDisposable
 	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(TrayIconManager));
 		private readonly IDictionary<ulong, MenuItem> menuItemsByClipboardId;
 		private readonly NotifyIcon notifyIcon;
 		private readonly VistaMenu menuHelper;
@@ -89,22 +91,35 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		private void ClipboardHistoryCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			// First, remove all items from the menu that have been cleared from the history queue.
-			if (e.OldItems != null)
+			try
 			{
-				foreach (var clipboardData in e.OldItems.Cast<ClipboardData>())
+				// First, remove all items from the menu that have been cleared from the history queue.
+				if (e.OldItems != null)
 				{
-					var menuItem = this.menuItemsByClipboardId[clipboardData.Id];
-					this.contextMenu.MenuItems.Remove(menuItem);
-					menuItem.Dispose();
-					this.menuItemsByClipboardId.Remove(clipboardData.Id);
+					foreach (var clipboardData in e.OldItems.Cast<ClipboardData>())
+					{
+						var menuItem = this.menuItemsByClipboardId[clipboardData.Id];
+						this.contextMenu.MenuItems.Remove(menuItem);
+						this.menuItemsByClipboardId.Remove(clipboardData.Id);
+						this.menuHelper.RemoveMenuItem(menuItem);
+						menuItem.Dispose();
+					}
+				}
+
+				// Now add the new ones.
+				if (e.NewItems != null)
+				{
+					this.AddClipboardHistoryItemsToConextMenu(e.NewItems.Cast<ClipboardData>());
 				}
 			}
-
-			// Now add the new ones.
-			if (e.NewItems != null)
+			catch (Exception exception)
 			{
-				this.AddClipboardHistoryItemsToConextMenu(e.NewItems.Cast<ClipboardData>());
+				log.Error("There was an error updating the tray icon context menu after the clipboard history collection was changed.", exception);
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = "Unexpected error updating the clipboard history context menu.  Data may be inaccurate.",
+					IconType = IconType.Error
+				});
 			}
 		}
 
@@ -126,7 +141,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
 			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));
-			this.menuHelper.EndInit();
+			this.menuHelper.Refresh();
 
 			this.notifyIcon.ContextMenu = this.contextMenu;
 		}
@@ -138,20 +153,43 @@ namespace MultipleClipboards.Presentation.TrayIcon
 				var menuItem = BuildClipboardHistoryMenuItem(clipboardData);
 				this.contextMenu.MenuItems.Add(0, menuItem);
 				this.menuHelper.SetImage(menuItem, IconFactory.GetTrayContextMenuBitmap(clipboardData.IconType));
+				this.menuItemsByClipboardId.Add(clipboardData.Id, menuItem);
 			}
 
-			this.menuHelper.EndInit();
+			this.menuHelper.Refresh();
 		}
 
 		private static MenuItem BuildClipboardHistoryMenuItem(ClipboardData clipboardData)
 		{
 			var menuItem = new MenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")));
-			menuItem.Click += (sender, args) => AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardData.Id);
+			menuItem.Click +=
+				(sender, args) =>
+				{
+					try
+					{
+						AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardData.Id);
+					}
+					catch (Exception exception)
+					{
+						const string errorMessage = "An unexpected error occured while placing data on the system clipboard.";
+						log.Error(errorMessage, exception);
+						MessageBus.Instance.Publish(new TrayNotification
+						{
+							MessageBody = errorMessage,
+							IconType = IconType.Error
+						});
+					}
+				};
 			return menuItem;
 		}
 
 		private void NotificationRecieved(TrayNotification mainWindowNotification)
 		{
+			if (!AppController.Settings.ShowMessagesFromTray)
+			{
+				return;
+			}
+
 			if (this.trayPopupBorder == null || this.trayPopupIcon == null || this.trayPopupTextBlock == null)
 			{
 				throw new NullReferenceException("Unable to show notification popup because the required UI elements could not be found.");
