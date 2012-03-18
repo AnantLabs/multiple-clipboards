@@ -85,8 +85,8 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			this.trayPopup = (Popup)Application.Current.FindResource("TrayPopup");
 			this.trayPopupBorder = (Border)trayPopup.Child;
 			var grid = (Grid)this.trayPopupBorder.Child;
-			this.trayPopupIcon = (Image)grid.Children[0];
-			this.trayPopupTextBlock = (TextBlock)grid.Children[1];
+			this.trayPopupIcon = (Image)grid.Children[1];
+			this.trayPopupTextBlock = (TextBlock)grid.Children[2];
 		}
 
 		private void ClipboardHistoryCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
