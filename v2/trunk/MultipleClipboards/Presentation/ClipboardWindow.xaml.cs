@@ -158,10 +158,6 @@ namespace MultipleClipboards.Presentation
 						// keystokes (Ctrl + C, etc).  Since the system clipboard is just one big race condition between all running applications,
 						// there is a lot of waiting involved.  These delays vary tremendously depending on the application that currently has focus.
 						// See comments in ClipboardManager for more info.  All that matters here is that we don't block the message loop thread.
-						//
-						// It concerns me that hot key operations use the one and only clipboard manager in a seperate thread while everything else
-						// continues to use it on the main UI thread.  However, the only errors I have ever encountered have been while processing
-						// hot keys, so hopefully this is OK.
 						var clipboardThread = new Thread(AppController.ClipboardManager.ProcessHotKeyAsync);
 						clipboardThread.SetApartmentState(ApartmentState.STA);
 						clipboardThread.IsBackground = true;

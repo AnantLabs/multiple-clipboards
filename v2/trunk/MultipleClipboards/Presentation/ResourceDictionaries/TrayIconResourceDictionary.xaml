@@ -24,7 +24,7 @@
         </Border>
     </Popup>
 
-    <CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+    <CollectionViewSource x:Key="ClipboardHistoryViewSource" Source="{Binding ClipboardHistory.ObservableCollection, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
         <CollectionViewSource.SortDescriptions>
             <System:SortDescription PropertyName="TimeStamp" Direction="Descending"/>
         </CollectionViewSource.SortDescriptions>

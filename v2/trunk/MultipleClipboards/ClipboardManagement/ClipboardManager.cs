@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Interop;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
+using QuantumBitDesigns.Core;
 using log4net;
 using SendKeys = System.Windows.Forms.SendKeys;
 
@@ -38,7 +38,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.WindowHandle = windowHandle;
 			this.AllowStoreClipboardContents = true;
 			this.HotKeys = new List<HotKey>();
-			this.ClipboardHistory = new ObservableCollection<ClipboardData>();
+			this.ClipboardHistory = new ObservableList<ClipboardData>(Application.Current.Dispatcher);
 
 			this.PopulateAvailableClipboardList();
 			this.RegisterAllClipboards();
@@ -67,7 +67,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <summary>
 		/// Gets the collection that holds all the historical clipboard entries.
 		/// </summary>
-		public ObservableCollection<ClipboardData> ClipboardHistory
+		public ObservableList<ClipboardData> ClipboardHistory
 		{
 			get;
 			private set;
@@ -571,9 +571,7 @@ namespace MultipleClipboards.ClipboardManagement
 				this.SetClipboardDataForClipboard(clipboardId, RetrieveDataFromClipboard());
 
 				// Store this in the clipboard history list.
-				// This has to be done on the UI thread since it is an observable collection.
-				// TODO: Get rid of the dispatcher after I switch to the multi-threaded observable collection.
-				Application.Current.Dispatcher.Invoke(new Action<ClipboardData>(this.EnqueueHistoricalEntry), this.GetClipboardDataByClipboardId(clipboardId));
+				this.EnqueueHistoricalEntry(this.GetClipboardDataByClipboardId(clipboardId));
 			}
 			finally
 			{

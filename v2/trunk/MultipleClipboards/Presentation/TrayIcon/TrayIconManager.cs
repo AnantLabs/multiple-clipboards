@@ -48,7 +48,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		public void OnClipboardManagerInitialized()
 		{
-			AppController.ClipboardManager.ClipboardHistory.CollectionChanged += ClipboardHistoryCollectionChanged;
+			AppController.ClipboardManager.ClipboardHistory.ObservableCollection.CollectionChanged += ClipboardHistoryCollectionChanged;
 			this.InitializeContextMenu();
 		}
 
@@ -137,7 +137,6 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			};
 			var seperator = new MenuItem("-");
 			this.contextMenu = new ContextMenu(new[] { seperator, mainWindowMenuItem, exitMenuItem });
-			this.AddClipboardHistoryItemsToConextMenu(AppController.ClipboardManager.ClipboardHistory);
 
 			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
 			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));
