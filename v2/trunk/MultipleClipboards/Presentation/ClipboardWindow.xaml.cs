@@ -162,7 +162,7 @@ namespace MultipleClipboards.Presentation
 						// It concerns me that hot key operations use the one and only clipboard manager in a seperate thread while everything else
 						// continues to use it on the main UI thread.  However, the only errors I have ever encountered have been while processing
 						// hot keys, so hopefully this is OK.
-						var clipboardThread = new Thread(AppController.ClipboardManager.ProcessHotKey);
+						var clipboardThread = new Thread(AppController.ClipboardManager.ProcessHotKeyAsync);
 						clipboardThread.SetApartmentState(ApartmentState.STA);
 						clipboardThread.IsBackground = true;
 						clipboardThread.Start(arguments);
@@ -187,24 +187,15 @@ namespace MultipleClipboards.Presentation
 							// This means the user used the regular windows clipboard.
 							// Track the data on the clipboard for the history viewer.
 							// Data coppied using any additional clipboards will be tracked internally.
-							try
+							var arguments = new AsyncClipboardOperationArguments
 							{
-								log.Debug("WndProc(): System clipboard has changed.  About to store the contents of the clipboard.");
-								AppController.ClipboardManager.StoreClipboardContents();
-								log.Debug("WndProc(): Stored clipboard contents successfully.");
-							}
-							catch (Exception e)
-							{
-								log.Error("WndProc(): Error storing clipboard contents", e);
+								Callback = () => this.IsClipboardManagerInUse = false
+							};
 
-								MessageBus.Instance.Publish(new TrayNotification
-								{
-									MessageBody = "There was an error storing the contents of the clipboard.",
-									IconType = IconType.Error
-								});
-							}
-
-							this.IsClipboardManagerInUse = false;
+							var clipboardThread = new Thread(AppController.ClipboardManager.StoreClipboardContentsAsync);
+							clipboardThread.SetApartmentState(ApartmentState.STA);
+							clipboardThread.IsBackground = true;
+							clipboardThread.Start(arguments);
 						}
 					}
 

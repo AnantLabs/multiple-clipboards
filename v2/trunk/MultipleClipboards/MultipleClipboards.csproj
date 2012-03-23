@@ -121,7 +121,7 @@
     </Compile>
     <Compile Include="AppController.cs" />
     <Compile Include="ClipboardManagement\ClipboardManager.cs" />
-    <Compile Include="ClipboardManagement\ProcessHotKeyArguments.cs" />
+    <Compile Include="ClipboardManagement\AsyncClipboardOperationArguments.cs" />
     <Compile Include="Exceptions\ClipboardInUseException.cs" />
     <Compile Include="Messaging\MessageBus.cs" />
     <Compile Include="Messaging\Notifications.cs" />

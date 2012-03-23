@@ -52,7 +52,7 @@ namespace MultipleClipboards.Presentation.Tabs
 
 				foreach (ClipboardDefinition clipboard in AppController.ClipboardManager.AvailableClipboards)
 				{
-					ClipboardData data = AppController.ClipboardManager.ClipboardDataByClipboardId[clipboard.ClipboardId];
+					ClipboardData data = AppController.ClipboardManager.GetClipboardDataByClipboardId(clipboard.ClipboardId);
 
 					if (clipboard.ClipboardId != ClipboardDefinition.SystemClipboardId)
 					{

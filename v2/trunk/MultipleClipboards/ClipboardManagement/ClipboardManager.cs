@@ -24,6 +24,9 @@ namespace MultipleClipboards.ClipboardManagement
 	public class ClipboardManager : IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardManager));
+		private static readonly object clipboardDataDictionaryLock = new object();
+		private static readonly object clipboardOperationLock = new object();
+		private readonly Dictionary<int, ClipboardData> clipboardDataByClipboardId = new Dictionary<int, ClipboardData>();
 
 		/// <summary>
 		/// Constructs a new Clipboard Manager object for use with the given window handle.
@@ -33,10 +36,9 @@ namespace MultipleClipboards.ClipboardManagement
 		{
 			AppController.Settings.ClipboardDefinitions.CollectionChanged += this.ClipboardDefinitionsCollectionChanged;
 			this.WindowHandle = windowHandle;
+			this.AllowStoreClipboardContents = true;
 			this.HotKeys = new List<HotKey>();
 			this.ClipboardHistory = new ObservableCollection<ClipboardData>();
-			this.ClipboardDataByClipboardId = new Dictionary<int, ClipboardData>();
-			this.AllowStoreClipboardContents = true;
 
 			this.PopulateAvailableClipboardList();
 			this.RegisterAllClipboards();
@@ -72,16 +74,7 @@ namespace MultipleClipboards.ClipboardManagement
 		}
 
 		/// <summary>
-		/// Gets or sets the Clipboards by Index dictionary.
-		/// </summary>
-		public Dictionary<int, ClipboardData> ClipboardDataByClipboardId
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Gets or sets the collection of clipboards available to the user.
+		/// Gets the collection of clipboards available to the user.
 		/// </summary>
 		public IList<ClipboardDefinition> AvailableClipboards
 		{
@@ -123,11 +116,56 @@ namespace MultipleClipboards.ClipboardManagement
 		{
 			get
 			{
-				return this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId];
+				return this.GetClipboardDataByClipboardId(ClipboardDefinition.SystemClipboardId);
 			}
 			set
 			{
-				this.ClipboardDataByClipboardId[ClipboardDefinition.SystemClipboardId] = value;
+				this.SetClipboardDataForClipboard(ClipboardDefinition.SystemClipboardId, value);
+			}
+		}
+
+		/// <summary>
+		/// Gets the data stored on the clipboard with the given ID.
+		/// </summary>
+		/// <param name="clipboardId">The clipboard ID.</param>
+		/// <returns>The data stored on the clipboard with the given ID.</returns>
+		public ClipboardData GetClipboardDataByClipboardId(int clipboardId)
+		{
+			lock (clipboardDataDictionaryLock)
+			{
+				return this.clipboardDataByClipboardId[clipboardId];
+			}
+		}
+
+		/// <summary>
+		/// Sets the clipboard data for the clipbaord with the given ID.
+		/// </summary>
+		/// <param name="clipboardId">The clipboard ID.</param>
+		/// <param name="data">The data to store.</param>
+		protected void SetClipboardDataForClipboard(int clipboardId, ClipboardData data)
+		{
+			lock (clipboardDataDictionaryLock)
+			{
+				if (this.clipboardDataByClipboardId.ContainsKey(clipboardId))
+				{
+					this.clipboardDataByClipboardId[clipboardId] = data;
+				}
+				else
+				{
+					this.clipboardDataByClipboardId.Add(clipboardId, data);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Removes the data stored on the clipboard with the given ID.
+		/// </summary>
+		/// <param name="clipboardId">The clipboard ID.</param>
+		protected void RemoveClipboardDataFromClipboard(int clipboardId)
+		{
+			lock (clipboardDataDictionaryLock)
+			{
+				this.clipboardDataByClipboardId.Remove(clipboardId);
 			}
 		}
 
@@ -160,7 +198,7 @@ namespace MultipleClipboards.ClipboardManagement
         public void RemoveClipboard(ClipboardDefinition clipboard)
         {
 			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
-        	this.ClipboardDataByClipboardId.Remove(clipboard.ClipboardId);
+			this.RemoveClipboardDataFromClipboard(clipboard.ClipboardId);
             AppController.Settings.RemoveClipboard(clipboard);
 			log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
 			MessageBus.Instance.Publish(new MainWindowNotification
@@ -173,16 +211,49 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <summary>
 		/// Stores the current contents of the Windows clipboard in the history queue.
 		/// </summary>
-		public void StoreClipboardContents()
+		/// <param name="asyncOperationArguments">The AsyncClipboardOperationArguments.</param>
+		public void StoreClipboardContentsAsync(object asyncOperationArguments)
 		{
-			if (!this.AllowStoreClipboardContents)
+			var arguments = asyncOperationArguments as AsyncClipboardOperationArguments;
+
+			if (arguments == null)
 			{
+				log.Error("StoreClipboardContentsAsync(): Unable to store the contents of the clipboard because the arguments passed to ProcessHotKeyAsync are not of type ProcessHotKeyArguments.");
 				return;
 			}
-			
-			var clipboardData = RetrieveDataFromClipboard();
-			this.CurrentSystemClipboardData = clipboardData;
-			this.EnqueueHistoricalEntry(clipboardData);
+
+			Monitor.Enter(clipboardOperationLock);
+
+			try
+			{
+				log.Debug("StoreClipboardContents(): System clipboard has changed.  About to store the contents of the clipboard.");
+
+				if (!this.AllowStoreClipboardContents)
+				{
+					return;
+				}
+
+				WaitForExclusiveClipboardAccess();
+				var clipboardData = RetrieveDataFromClipboard();
+				this.CurrentSystemClipboardData = clipboardData;
+				this.EnqueueHistoricalEntry(clipboardData);
+				log.Debug("StoreClipboardContents(): Stored clipboard contents successfully.");
+			}
+			catch (Exception e)
+			{
+				log.Error("StoreClipboardContents(): Error storing clipboard contents", e);
+
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = "There was an error storing the contents of the clipboard.",
+					IconType = IconType.Error
+				});
+			}
+			finally
+			{
+				arguments.Callback();
+				Monitor.Exit(clipboardOperationLock);
+			}
 		}
 
 		/// <summary>
@@ -192,6 +263,8 @@ namespace MultipleClipboards.ClipboardManagement
 		/// /// <param name="clipboardDataId">The Id of the clipboard entry to place on a clipboard.</param>
 		public void PlaceHistoricalEntryOnClipboard(int clipboardId, ulong clipboardDataId)
 		{
+			Monitor.Enter(clipboardOperationLock);
+
 			try
 			{
 				this.AllowStoreClipboardContents = false;
@@ -199,8 +272,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 				if (clipboardEntry != null)
 				{
-					// Put the data on the specified clipboard.
-					this.ClipboardDataByClipboardId[clipboardId] = clipboardEntry;
+					this.SetClipboardDataForClipboard(clipboardId, clipboardEntry);
 
 					if (clipboardId == ClipboardDefinition.SystemClipboardId)
 					{
@@ -211,6 +283,7 @@ namespace MultipleClipboards.ClipboardManagement
 			finally
 			{
 				this.AllowStoreClipboardContents = true;
+				Monitor.Exit(clipboardOperationLock);
 			}
 		}
 
@@ -227,19 +300,21 @@ namespace MultipleClipboards.ClipboardManagement
 		/// Called from the form when a registered hotkey is pressed.
 		/// </summary>
 		/// <param name="processHotKeyArguments">The process hot key arguments.</param>
-		public void ProcessHotKey(object processHotKeyArguments)
+		public void ProcessHotKeyAsync(object processHotKeyArguments)
 		{
 			var arguments = processHotKeyArguments as ProcessHotKeyArguments;
 
 			if (arguments == null)
 			{
-				log.Error("ProcessHotKey(): Unable to process hot key because the arguments passed to ProcessHotKey are not of type ProcessHotKeyArguments.");
+				log.Error("ProcessHotKeyAsync(): Unable to process hot key because the arguments passed to ProcessHotKeyAsync are not of type ProcessHotKeyArguments.");
 				return;
 			}
 
+			Monitor.Enter(clipboardOperationLock);
+
 			try
 			{
-				log.DebugFormat("ProcessHotKey(): About to process HotKey: {0}", arguments.HotKey);
+				log.DebugFormat("ProcessHotKeyAsync(): About to process HotKey: {0}", arguments.HotKey);
 
 				// 1) Find the matching hotkey in the local collection to get the Clipboard ID and Operation
 				// 2) Switch on the operation for this specific key
@@ -263,7 +338,7 @@ namespace MultipleClipboards.ClipboardManagement
 						throw new InvalidOperationException(string.Format("The HotKeyType '{0}' is not supported.", hotKey.HotKeyType));
 				}
 
-				log.DebugFormat("ProcessHotKey(): Finished processing HotKey: {0}", hotKey);
+				log.DebugFormat("ProcessHotKeyAsync(): Finished processing HotKey: {0}", hotKey);
 			}
 			catch (Exception e)
 			{
@@ -278,6 +353,7 @@ namespace MultipleClipboards.ClipboardManagement
 			finally
 			{
 				arguments.Callback();
+				Monitor.Exit(clipboardOperationLock);
 			}
 		}
 
@@ -318,7 +394,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		private void RegisterAllClipboards()
 		{
-			this.ClipboardDataByClipboardId.Add(ClipboardDefinition.SystemClipboardId, null);
+			this.SetClipboardDataForClipboard(ClipboardDefinition.SystemClipboardId, null);
 			bool wasCompleteFailure = true;
 			var failedHotKeys = new List<HotKey>();
 			var errorMessageBuilder = new StringBuilder();
@@ -366,7 +442,7 @@ namespace MultipleClipboards.ClipboardManagement
 		{
 			// Create a new dictionary item for this clipboard ID.
 			// This is the local copy of the item currently stored on the clipbaord that goes with this set of hotkeys.
-			this.ClipboardDataByClipboardId.Add(clipboard.ClipboardId, null);
+			this.SetClipboardDataForClipboard(clipboard.ClipboardId, null);
 
 			HotKey cutHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Cut, clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
 			bool cutRegistrationResult = this.RegisterHotKey(cutHotKey);
@@ -492,11 +568,12 @@ namespace MultipleClipboards.ClipboardManagement
 			try
 			{
 				// Store the new data in the correct clipboard.
-				this.ClipboardDataByClipboardId[clipboardId] = RetrieveDataFromClipboard();
+				this.SetClipboardDataForClipboard(clipboardId, RetrieveDataFromClipboard());
 
 				// Store this in the clipboard history list.
 				// This has to be done on the UI thread since it is an observable collection.
-				Application.Current.Dispatcher.Invoke(new Action<ClipboardData>(this.EnqueueHistoricalEntry), this.ClipboardDataByClipboardId[clipboardId]);
+				// TODO: Get rid of the dispatcher after I switch to the multi-threaded observable collection.
+				Application.Current.Dispatcher.Invoke(new Action<ClipboardData>(this.EnqueueHistoricalEntry), this.GetClipboardDataByClipboardId(clipboardId));
 			}
 			finally
 			{
@@ -516,7 +593,7 @@ namespace MultipleClipboards.ClipboardManagement
 				bool sendPasteSignal = true;
 				
 				// Place the data from the correct clipboard onto the system clipboard.
-				if (this.ClipboardDataByClipboardId[clipboardId] == null)
+				if (this.GetClipboardDataByClipboardId(clipboardId) == null)
 				{
 					sendPasteSignal = false;
 				}
@@ -527,7 +604,7 @@ namespace MultipleClipboards.ClipboardManagement
 					// does not result in any Win32 messages that I know of.
 					WaitForExclusiveClipboardAccess();
 					log.Debug("Paste(): Now have exclusive clipboard access.");
-					PutDataOnClipboard(this.ClipboardDataByClipboardId[clipboardId]);
+					PutDataOnClipboard(this.GetClipboardDataByClipboardId(clipboardId));
 				}
 
 				// Send the system paste command.
