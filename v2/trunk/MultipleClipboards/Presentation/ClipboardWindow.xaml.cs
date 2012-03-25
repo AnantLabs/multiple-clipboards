@@ -18,6 +18,8 @@ namespace MultipleClipboards.Presentation
 	public partial class ClipboardWindow : Window, IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardWindow));
+		private static readonly object clipboardInUseFlagLock = new object();
+		private bool isClipboardInUse;
 
 		public ClipboardWindow()
 		{
@@ -66,12 +68,6 @@ namespace MultipleClipboards.Presentation
 			set;
 		}
 
-		private bool IsClipboardManagerInUse
-		{
-			get;
-			set;
-		}
-
 		private IntPtr Handle
 		{
 			get;
@@ -88,6 +84,26 @@ namespace MultipleClipboards.Presentation
 		{
 			get;
 			set;
+		}
+
+		private void SetClipboardInUseFlag(bool value)
+		{
+			lock (clipboardInUseFlagLock)
+			{
+				this.isClipboardInUse = value;
+			}
+		}
+
+		private bool GetClipboardInUseFlag()
+		{
+			bool value;
+
+			lock (clipboardInUseFlagLock)
+			{
+				value = this.isClipboardInUse;
+			}
+
+			return value;
 		}
 
 		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -128,14 +144,14 @@ namespace MultipleClipboards.Presentation
 			switch (msg)
 			{
 				case Win32API.WM_HOTKEY:
-					if (this.IsClipboardManagerInUse)
+					if (this.GetClipboardInUseFlag())
 					{
 						log.Warn("WndProc(): Unable to process hotkey message because the clipboard manager is in use by another message. Skipping.");
 					}
 					else
 					{
 						// Set the flag to indicate that the clipboard manager is in use.
-						this.IsClipboardManagerInUse = true;
+						this.SetClipboardInUseFlag(true);
 
 						// Figure out what key was pressed and send it along to the clipboard manager.
 						HotKey hotKey = HotKey.FromWindowsMessage(currentMessage);
@@ -150,7 +166,7 @@ namespace MultipleClipboards.Presentation
 						var arguments = new ProcessHotKeyArguments
 						{
 							HotKey = hotKey,
-							Callback = () => this.IsClipboardManagerInUse = false
+							Callback = () => this.SetClipboardInUseFlag(false)
 						};
 
 						// Process the hot key in a seperate thread.
@@ -170,14 +186,14 @@ namespace MultipleClipboards.Presentation
 				case Win32API.WM_DRAWCLIPBOARD:
 					if (this.HasProcessedFirstMessage)
 					{
-						if (this.IsClipboardManagerInUse)
+						if (this.GetClipboardInUseFlag())
 						{
 							log.Debug("WndProc(): System clipboard has changed, but we are currently processing another clipboard message.  Skipping.");
 						}
 						else
 						{
 							// Set the flag to indicate that the clipboard manager is in use.
-							this.IsClipboardManagerInUse = true;
+							this.SetClipboardInUseFlag(true);
 
 							// The data on the clipboard has changed.
 							// This means the user used the regular windows clipboard.
@@ -185,7 +201,7 @@ namespace MultipleClipboards.Presentation
 							// Data coppied using any additional clipboards will be tracked internally.
 							var arguments = new AsyncClipboardOperationArguments
 							{
-								Callback = () => this.IsClipboardManagerInUse = false
+								Callback = () => this.SetClipboardInUseFlag(false)
 							};
 
 							var clipboardThread = new Thread(AppController.ClipboardManager.StoreClipboardContentsAsync);

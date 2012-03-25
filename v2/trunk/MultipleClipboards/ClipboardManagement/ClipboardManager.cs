@@ -292,7 +292,10 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		public void ClearClipboardHistory()
 		{
-			this.ClipboardHistory.Clear();
+			using (this.ClipboardHistory.AcquireLock())
+			{
+				this.ClipboardHistory.Clear();
+			}
 		}
 
 		/// <summary>
@@ -531,11 +534,14 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboardData">The clipboard data to enqueue.</param>
 		private void EnqueueHistoricalEntry(ClipboardData clipboardData)
 		{
-			if (this.ClipboardHistory.Count == AppController.Settings.NumberOfClipboardHistoryRecords)
+			using (this.ClipboardHistory.AcquireLock())
 			{
-				this.ClipboardHistory.RemoveAt(0);
+				if (this.ClipboardHistory.Count == AppController.Settings.NumberOfClipboardHistoryRecords)
+				{
+					this.ClipboardHistory.RemoveAt(0);
+				}
+				this.ClipboardHistory.Add(new ClipboardData(clipboardData));
 			}
-			this.ClipboardHistory.Add(new ClipboardData(clipboardData));
 		}
 
 		/// <summary>
