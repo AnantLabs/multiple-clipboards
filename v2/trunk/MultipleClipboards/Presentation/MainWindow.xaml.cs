@@ -24,7 +24,7 @@ namespace MultipleClipboards.Presentation
 			Loaded += this.MainWindowLoaded;
 			MessageBus.Instance.Subscribe<MainWindowNotification>(NotificationRecieved);
 			notificationPopupTimer = new Timer(5000);
-			notificationPopupTimer.Elapsed += (sender, args) => Application.Current.Dispatcher.Invoke(new Action(OnNotificationTimerStop));
+			notificationPopupTimer.Elapsed += (sender, args) => AppController.ExecuteOnUiThread(OnNotificationTimerStop);
 		}
 
 		private void MainWindowLoaded(object sender, RoutedEventArgs e)

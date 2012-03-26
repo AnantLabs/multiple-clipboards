@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation.Icons;
+using QuantumBitDesigns.Core;
+using log4net;
 
 namespace MultipleClipboards.Entities
 {
@@ -17,6 +20,7 @@ namespace MultipleClipboards.Entities
 		private const string Tab = "  ";
 		private const string UnknownDataPreviewString = "Unknown";
 		private const string UnableToRetrieveDataMessage = "Unable to retrieve data in this format.";
+		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardData));
 		private static readonly object idLock = new object();
 		private static ulong _idCounter;
 		private string iconPath;
@@ -173,23 +177,55 @@ namespace MultipleClipboards.Entities
 				return;
 			}
 
+			var allFormats = sourceDataObject.GetFormats().Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
+			var validFormats = new List<string>();
 			this.DataObject = new DataObject();
-			this.Formats = sourceDataObject.GetFormats();
 
-			foreach (string format in this.Formats)
+			foreach (string format in allFormats)
 			{
 				try
 				{
-					this.DataObject.SetData(format, sourceDataObject.GetData(format));
+					var data = sourceDataObject.GetData(format);
+
+					if (data == null)
+					{
+						continue;
+					}
+
+					this.DataObject.SetData(format, data);
+					validFormats.Add(format);
 				}
-				catch (SerializationException)
+				catch (SerializationException serializationException)
 				{
 					// When IDataObjects are used to set the contents of the system clipboard the data is serialized.
 					// Since other applications can implment IDataObject, the actual data type might reside in a third party dll that this application does not reference.
 					// Therefore, the clipboard will not be able to serialize it and will throw this exception.
 					// If that happens then just swallow the exception because there is nothing we can do about it.
+					// May as well log something so I have a chance at knowing what formats cause this error.
+					log.InfoFormat(
+						"PreserveDataObject(): Unable to de-serialize data from the clipboard in the format '{0}'.  The following exception was thrown:{1}{2}",
+						format,
+						Environment.NewLine,
+						serializationException);
+				}
+				catch (COMException comException)
+				{
+					// There is a bug in the .NET framework that truncates the full type name of types on the clipboard to 127 characters.
+					// For longer type names (usually generic collections) the public key token gets truncated and the data becomes corrupt.
+					// It seems that Microsoft has fixed this in February 2012 in System.Windows.Forms.Clipboard, but not in System.Windows.Clipboard (WPF).
+					// http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why
+					// https://connect.microsoft.com/VisualStudio/feedback/details/726652/clipboard-truncates-type-name-to-127-characters
+					// Only log a warning here since there is nothing I can do about it in this app.
+					log.WarnFormat(
+						"PreserveDataObject(): Unable to preserve the data on the clipboard in the format '{0}'.  This is most likely due to the 127 character bug in the .NET frameworked discuessed here: {1}{2}The following exception was thrown:{2}{3}",
+						format,
+						"http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why",
+						Environment.NewLine,
+						comException);
 				}
 			}
+
+			this.Formats = validFormats;
 		}
 
 		private void SetDescriptionData()

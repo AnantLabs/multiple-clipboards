@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using log4net;
 
 namespace MultipleClipboards.Messaging
 {
 	public class MessageBus
 	{
 		private static MessageBus _messageBus;
-		private static readonly object listenersLock = new object();
-		private readonly IDictionary<string, IList<MessageAction>> listenersByType;
+		private static readonly ILog log = LogManager.GetLogger(typeof(MessageBus));
+		private readonly ConcurrentDictionary<string, IList<Action<object>>> listenersByType;
 
 		public static MessageBus Instance
 		{
@@ -21,36 +21,27 @@ namespace MultipleClipboards.Messaging
 
 		public MessageBus()
 		{
-			lock (listenersLock)
-			{
-				this.listenersByType = new Dictionary<string, IList<MessageAction>>();
-			}
+			this.listenersByType = new ConcurrentDictionary<string, IList<Action<object>>>();
 		}
 
 		public void Subscribe<TMessage>(Action<TMessage> listener)
 			where TMessage : class
 		{
-			Subscribe(listener, true);
-		}
-
-		public void Subscribe<TMessage>(Action<TMessage> listener, bool executeOnMainThread)
-			where TMessage : class
-		{
 			string listenerTypeName = typeof(TMessage).FullName ?? "unknown";
+			var originalCollection = this.listenersByType.GetOrAdd(listenerTypeName, new List<Action<object>>());
 
-			lock (listenersLock)
+			IList<Action<object>> messageActions;
+			if (!this.listenersByType.TryGetValue(listenerTypeName, out messageActions))
 			{
-				if (!this.listenersByType.ContainsKey(listenerTypeName))
-				{
-					this.listenersByType.Add(listenerTypeName, new List<MessageAction>());
-				}
+				log.ErrorFormat("Error subscribing to messages of the type '{0}'.  Unable to get the value out of the concurrent dictionary.", listenerTypeName);
+				return;
+			}
 
-				var messageAction = new MessageAction
-				{
-					Action = o => listener((TMessage)o),
-					ExecuteOnMainThread = executeOnMainThread
-				};
-				this.listenersByType[listenerTypeName].Add(messageAction);
+			messageActions.Add(o => listener((TMessage)o));
+			
+			if (!this.listenersByType.TryUpdate(listenerTypeName, messageActions, originalCollection))
+			{
+				log.ErrorFormat("Error subscribing to messages of the type '{0}'.  Unable to update the concurrent dictionary with the new subscription method.", listenerTypeName);
 			}
 		}
 
@@ -58,38 +49,22 @@ namespace MultipleClipboards.Messaging
 			where TMessage : class
 		{
 			string listenerTypeName = typeof(TMessage).FullName ?? "unknown";
-			IList<MessageAction> listeners;
 
-			lock (listenersLock)
+			IList<Action<object>> listeners;
+			if (!this.listenersByType.TryGetValue(listenerTypeName, out listeners))
 			{
-				if (!this.listenersByType.ContainsKey(listenerTypeName))
-				{
-					return;
-				}
-
-				listeners = this.listenersByType[listenerTypeName];
+				log.ErrorFormat("Error publishing messages of the type '{0}'.  Unable to get the listeners collection out of the concurrent dictionary.", listenerTypeName);
+				return;
 			}
 
-			Parallel.ForEach(listeners.Where(o => !o.ExecuteOnMainThread), action => action.Action(message));
-
-			foreach (var action in listeners.Where(o => o.ExecuteOnMainThread))
+			if (listeners == null || listeners.Count == 0)
 			{
-				action.Action(message);
-			}
-		}
-
-		private class MessageAction
-		{
-			public Action<object> Action
-			{
-				get;
-				set;
+				return;
 			}
 
-			public bool ExecuteOnMainThread
+			foreach (var action in listeners)
 			{
-				get;
-				set;
+				action(message);
 			}
 		}
 	}

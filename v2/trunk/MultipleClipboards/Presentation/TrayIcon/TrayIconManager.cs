@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -40,7 +41,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			this.notifyIcon = notifyIcon;
 			this.notifyIcon.MouseDoubleClick += NotifyIconMouseDoubleClick;
 			this.trayPopupTimer = new Timer(5000);
-			this.trayPopupTimer.Elapsed += (sender, args) => Application.Current.Dispatcher.Invoke(new Action(OnTrayPopupTimerStop));
+			this.trayPopupTimer.Elapsed += (sender, args) => AppController.ExecuteOnUiThread(OnTrayPopupTimerStop);
 			this.CacheTrayPopupElements();
 			this.trayPopup.CustomPopupPlacementCallback = GetPopupPlacement;
 			MessageBus.Instance.Subscribe<TrayNotification>(this.NotificationRecieved);
@@ -182,7 +183,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			return menuItem;
 		}
 
-		private void NotificationRecieved(TrayNotification mainWindowNotification)
+		private void NotificationRecieved(TrayNotification notification)
 		{
 			if (!AppController.Settings.ShowMessagesFromTray)
 			{
@@ -191,51 +192,62 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 			if (this.trayPopupBorder == null || this.trayPopupIcon == null || this.trayPopupTextBlock == null)
 			{
-				throw new NullReferenceException("Unable to show notification popup because the required UI elements could not be found.");
+				// Event though this is an exceptional case, it cannot throw.
+				// This method is called from the highest-level catch block in background threads which absolutely cannot fail.
+				log.Error("Unable to show notification popup because the required UI elements could not be found.  If an error caused this notification it should be logged as well.");
+				return;
 			}
 
-			if (mainWindowNotification.BorderBrush == null)
+			Brush brush;
+
+			if (notification.BorderBrush == null)
 			{
-				switch (mainWindowNotification.IconType)
+				switch (notification.IconType)
 				{
 					case IconType.Error:
-						this.trayPopupBorder.BorderBrush = Brushes.Red;
+						brush = Brushes.Red;
 						break;
 
 					case IconType.Warning:
-						this.trayPopupBorder.BorderBrush = Brushes.Yellow;
+						brush = Brushes.Yellow;
 						break;
 
 					case IconType.Success:
-						this.trayPopupBorder.BorderBrush = Brushes.Green;
+						brush = Brushes.Green;
 						break;
 
 					default:
-						this.trayPopupBorder.BorderBrush = Brushes.Black;
+						brush = Brushes.Black;
 						break;
 				}
 			}
 			else
 			{
-				this.trayPopupBorder.BorderBrush = mainWindowNotification.BorderBrush;
+				brush = notification.BorderBrush;
 			}
 
-			var bitmap = new BitmapImage();
-			bitmap.BeginInit();
-			bitmap.UriSource = new Uri(IconFactory.GetIconPath32(mainWindowNotification.IconType), UriKind.Relative);
-			bitmap.DecodePixelWidth = 32;
-			bitmap.EndInit();
+			AppController.ExecuteOnUiThread(
+				() =>
+				{
+					var bitmap = new BitmapImage();
+					bitmap.BeginInit();
+					bitmap.UriSource = new Uri(IconFactory.GetIconPath32(notification.IconType), UriKind.Relative);
+					bitmap.DecodePixelWidth = 32;
+					bitmap.EndInit();
 
-			this.trayPopupIcon.Source = bitmap;
-			this.trayPopupTextBlock.Text = mainWindowNotification.MessageBody;
-			this.trayPopup.IsOpen = true;
+					this.trayPopupBorder.BorderBrush = brush;
+					this.trayPopupIcon.Source = bitmap;
+					this.trayPopupTextBlock.Text = notification.MessageBody;
+					this.trayPopup.IsOpen = true;
+				});
+			
 			this.trayPopupTimer.Start();
 		}
 
 		private void OnTrayPopupTimerStop()
 		{
 			this.trayPopupTimer.Stop();
-			this.trayPopup.IsOpen = false;
+			AppController.ExecuteOnUiThread(() => this.trayPopup.IsOpen = false);
 		}
 	}
 }

@@ -57,5 +57,10 @@ namespace MultipleClipboards
 		{
 			Application.Current.Shutdown();
 		}
+
+		public static void ExecuteOnUiThread(Action action)
+		{
+			Application.Current.Dispatcher.Invoke(new Action(action));
+		}
 	}
 }

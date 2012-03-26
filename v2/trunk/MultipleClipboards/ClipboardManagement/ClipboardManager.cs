@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,9 +26,8 @@ namespace MultipleClipboards.ClipboardManagement
 	public class ClipboardManager : IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardManager));
-		private static readonly object clipboardDataDictionaryLock = new object();
 		private static readonly object clipboardOperationLock = new object();
-		private readonly Dictionary<int, ClipboardData> clipboardDataByClipboardId = new Dictionary<int, ClipboardData>();
+		private readonly ConcurrentDictionary<int, ClipboardData> clipboardDataByClipboardId = new ConcurrentDictionary<int, ClipboardData>();
 
 		/// <summary>
 		/// Constructs a new Clipboard Manager object for use with the given window handle.
@@ -131,10 +132,19 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <returns>The data stored on the clipboard with the given ID.</returns>
 		public ClipboardData GetClipboardDataByClipboardId(int clipboardId)
 		{
-			lock (clipboardDataDictionaryLock)
+			ClipboardData clipboardData;
+
+			if (!this.clipboardDataByClipboardId.TryGetValue(clipboardId, out clipboardData))
 			{
-				return this.clipboardDataByClipboardId[clipboardId];
+				log.ErrorFormat(
+					"Unable to get the data stored on the clipboard with ID {0} because we were not able to read from the concurrent dictionary.{1}{2}",
+					clipboardId,
+					Environment.NewLine,
+					new StackTrace());
+				clipboardData = null;
 			}
+
+			return clipboardData;
 		}
 
 		/// <summary>
@@ -144,17 +154,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="data">The data to store.</param>
 		protected void SetClipboardDataForClipboard(int clipboardId, ClipboardData data)
 		{
-			lock (clipboardDataDictionaryLock)
-			{
-				if (this.clipboardDataByClipboardId.ContainsKey(clipboardId))
-				{
-					this.clipboardDataByClipboardId[clipboardId] = data;
-				}
-				else
-				{
-					this.clipboardDataByClipboardId.Add(clipboardId, data);
-				}
-			}
+			this.clipboardDataByClipboardId.AddOrUpdate(clipboardId, data, (id, originalValue) => data);
 		}
 
 		/// <summary>
@@ -163,9 +163,15 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboardId">The clipboard ID.</param>
 		protected void RemoveClipboardDataFromClipboard(int clipboardId)
 		{
-			lock (clipboardDataDictionaryLock)
+			ClipboardData removedValue;
+			
+			if (!this.clipboardDataByClipboardId.TryRemove(clipboardId, out removedValue))
 			{
-				this.clipboardDataByClipboardId.Remove(clipboardId);
+				log.ErrorFormat(
+					"Unable to remove the data stored on the clipboard with ID {0} because we were not able to delete from the concurrent dictionary.{1}{2}",
+					clipboardId,
+					Environment.NewLine,
+					new StackTrace());
 			}
 		}
 
@@ -226,7 +232,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			try
 			{
-				log.Debug("StoreClipboardContents(): System clipboard has changed.  About to store the contents of the clipboard.");
+				log.Debug("StoreClipboardContentsAsync(): System clipboard has changed.  About to store the contents of the clipboard.");
 
 				if (!this.AllowStoreClipboardContents)
 				{
@@ -237,11 +243,11 @@ namespace MultipleClipboards.ClipboardManagement
 				var clipboardData = RetrieveDataFromClipboard();
 				this.CurrentSystemClipboardData = clipboardData;
 				this.EnqueueHistoricalEntry(clipboardData);
-				log.Debug("StoreClipboardContents(): Stored clipboard contents successfully.");
+				log.Debug("StoreClipboardContentsAsync(): Stored clipboard contents successfully.");
 			}
 			catch (Exception e)
 			{
-				log.Error("StoreClipboardContents(): Error storing clipboard contents", e);
+				log.Error("StoreClipboardContentsAsync(): Error storing clipboard contents", e);
 
 				MessageBus.Instance.Publish(new TrayNotification
 				{
