@@ -38,6 +38,7 @@ namespace MultipleClipboards.Persistence
 		private const string LaunchApplicationOnSystemStartupSettingKey = "LaunchApplicationOnSystemStartup";
 		private const string ShowAdvancedOptionsSettingKey = "ShowAdvancedOptions";
 		private const string ShowMessagesFromTraySettingKey = "ShowMessagesFromTray";
+		private const string ShowDetailedClipboardInformationSettingKey = "ShowDetailClipboardInformation";
 
 		// Application Settings Default Values.
 		private static readonly IDictionary<string, object> defaultSettings =
@@ -48,7 +49,8 @@ namespace MultipleClipboards.Persistence
 				{ ApplicationLogLevelSettingKey, LogLevel.Error },
 				{ LaunchApplicationOnSystemStartupSettingKey, true },
 				{ ShowAdvancedOptionsSettingKey, false },
-				{ ShowMessagesFromTraySettingKey, true }
+				{ ShowMessagesFromTraySettingKey, true },
+				{ ShowDetailedClipboardInformationSettingKey, true }
 			};
 
 		// The in memory version of the log level.
@@ -183,6 +185,21 @@ namespace MultipleClipboards.Persistence
 			set
 			{
 				this.SaveApplicationSetting(ShowMessagesFromTraySettingKey, value);
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not to show detailed clipboard information on the clipboard inspector tab.
+		/// </summary>
+		public bool ShowDetailedClipboardInformation
+		{
+			get
+			{
+				return this.GetSettingSafe(ShowDetailedClipboardInformationSettingKey);
+			}
+			set
+			{
+				this.SaveApplicationSetting(ShowDetailedClipboardInformationSettingKey, value);
 			}
 		}
 

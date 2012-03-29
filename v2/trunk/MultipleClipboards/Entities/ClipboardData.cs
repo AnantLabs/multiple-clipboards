@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Interop;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation.Icons;
-using QuantumBitDesigns.Core;
 using log4net;
 
 namespace MultipleClipboards.Entities
@@ -25,6 +24,7 @@ namespace MultipleClipboards.Entities
 		private static ulong _idCounter;
 		private string iconPath;
 		private string iconToolTip;
+		private Func<string> singleFormatDetailedDataStringProducer; 
 
 		public ClipboardData(ClipboardData clipboardData)
 			: this(clipboardData.DataObject)
@@ -80,6 +80,12 @@ namespace MultipleClipboards.Entities
 			private set;
 		}
 
+		private string SimpleDataString
+		{
+			get;
+			set;
+		}
+
 		public string IconPath
 		{
 			get
@@ -96,7 +102,7 @@ namespace MultipleClipboards.Entities
 			}
 		}
 
-		public string ToShortDisplayString()
+		public string ToLogString()
 		{
 			if (this.DataObject == null)
 			{
@@ -120,10 +126,19 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
-		/// Returns a long, descriptive string representation of this IDataObject.
+		/// Returns a single, usually human readable representation of this IDataObject.
 		/// </summary>
-		/// <returns>A long, descriptive string representation of this IDataObject.</returns>
-		public string ToLongDisplayString()
+		/// <returns>A single, usually human readable representation of this IDataObject.</returns>
+		public string ToSimpleDisplayString()
+		{
+			return this.SimpleDataString;
+		}
+
+		/// <summary>
+		/// Returns a descriptive string representation of this IDataObject.
+		/// </summary>
+		/// <returns>A descriptive string representation of this IDataObject.</returns>
+		public string ToDisplayString()
 		{
 			if (this.DataObject == null)
 			{
@@ -132,33 +147,49 @@ namespace MultipleClipboards.Entities
 
 			StringBuilder displayStringBuilder = new StringBuilder();
 
-			foreach (string format in this.Formats)
+			if (AppController.Settings.ShowDetailedClipboardInformation)
 			{
-				object data = this.DataObject.GetData(format);
-				string dataString;
-
-				if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap)
+				foreach (string format in this.Formats)
 				{
-					dataString = this.DataPreview;
-				}
-				else if (format == DataFormats.FileDrop)
-				{
-					StringBuilder fileDropBuilder = new StringBuilder();
-					IEnumerable<string> filePaths = data as IEnumerable<string>;
+					object data = this.DataObject.GetData(format);
+					string dataString;
 
-					foreach (string filePath in filePaths ?? Enumerable.Empty<string>())
+					if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap)
 					{
-						fileDropBuilder.AppendLine(string.Concat(Tab, filePath));
+						dataString = this.DataPreview;
+					}
+					else if (format == DataFormats.FileDrop)
+					{
+						dataString = GetFileDropDisplayString(data);
+					}
+					else
+					{
+						if (data == null)
+						{
+							dataString = UnableToRetrieveDataMessage;
+						}
+						else
+						{
+							try
+							{
+								dataString = data.ToString();
+							}
+							catch (InvalidOperationException invalidOperationException)
+							{
+								// This can be thrown when the data we are trying to call ToString() on was created on a different thread.
+								// This happens when .NET reference type are coppied from other WPF applicationed.
+								log.WarnFormat("Unable to call ToString() on this data object for the format '{0}'.{1}{2}", format, Environment.NewLine, invalidOperationException);
+								dataString = UnknownDataPreviewString;
+							}
+						}
 					}
 
-					dataString = fileDropBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+					displayStringBuilder.Append(string.Format("{1}:{0}{2}{0}{0}", Environment.NewLine, format, dataString));
 				}
-				else
-				{
-					dataString = data != null ? data.ToString() : UnableToRetrieveDataMessage;
-				}
-
-				displayStringBuilder.Append(string.Format("{1}:{0}{2}{0}{0}", Environment.NewLine, format, dataString));
+			}
+			else
+			{
+				displayStringBuilder.Append(this.singleFormatDetailedDataStringProducer());
 			}
 
 			return displayStringBuilder.ToString();
@@ -232,19 +263,18 @@ namespace MultipleClipboards.Entities
 		{
 			if (this.Formats.Contains(DataFormats.Html))
 			{
-				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconType = IconType.Html;
+				this.SetTextDescriptionData(IconType.Html);
 			}
 			else if (this.Formats.Contains(DataFormats.Rtf))
 			{
-				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconType = IconType.Rtf;
+				this.SetTextDescriptionData(IconType.Rtf);
 			}
 			else if (this.Formats.Contains(DataFormats.WaveAudio))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.WaveAudio);
 				Stream audioStream = dataObject as Stream;
 				this.DataPreview = audioStream != null ? string.Format("Audio stream ({0} bytes)", audioStream.Length) : dataObject.ToString();
+				this.singleFormatDetailedDataStringProducer = () => this.DataPreview;
 				this.IconType = IconType.Audio;
 			}
 			else if (this.Formats.Contains(DataFormats.Bitmap))
@@ -266,26 +296,49 @@ namespace MultipleClipboards.Entities
 					this.DataPreview = dataObject.ToString();
 				}
 
+				this.singleFormatDetailedDataStringProducer = () => this.DataPreview;
 				this.IconType = IconType.Image;
 			}
 			else if (this.Formats.Contains(DataFormats.FileDrop))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.FileDrop);
 				IEnumerable<string> filePaths = dataObject as IEnumerable<string>;
-				string data = string.Join(", ", filePaths ?? Enumerable.Empty<string>());
-				this.DataPreview = FormatDataPreviewString(data);
+				string dataString = string.Join(", ", filePaths ?? Enumerable.Empty<string>());
+				this.DataPreview = FormatDataPreviewString(dataString);
+				this.singleFormatDetailedDataStringProducer = () => string.Format("File Drop List:{0}{1}", Environment.NewLine, GetFileDropDisplayString(dataObject));
 				this.IconType = IconType.FileDrop;
 			}
 			else if (this.Formats.Contains(DataFormats.Text))
 			{
-				this.DataPreview = FormatDataPreviewString(this.DataObject.GetData(DataFormats.Text));
-				this.IconType = IconType.Text;
+				this.SetTextDescriptionData(IconType.Text);
 			}
 			else
 			{
+				this.singleFormatDetailedDataStringProducer = () => UnknownDataPreviewString;
 				this.DataPreview = FormatDataPreviewString(UnknownDataPreviewString);
 				this.IconType = IconType.Unknown;
 			}
+		}
+
+		private void SetTextDescriptionData(IconType iconType)
+		{
+			var textData = this.DataObject.GetData(DataFormats.Text);
+			this.singleFormatDetailedDataStringProducer = textData.ToString;
+			this.DataPreview = FormatDataPreviewString(textData);
+			this.IconType = iconType;
+		}
+
+		private static string GetFileDropDisplayString(object data)
+		{
+			StringBuilder fileDropBuilder = new StringBuilder();
+			IEnumerable<string> filePaths = data as IEnumerable<string>;
+
+			foreach (string filePath in filePaths ?? Enumerable.Empty<string>())
+			{
+				fileDropBuilder.AppendLine(string.Concat(Tab, filePath));
+			}
+
+			return fileDropBuilder.ToString().TrimEnd(Environment.NewLine.ToCharArray());
 		}
 
 		private static string FormatDataPreviewString(object data)

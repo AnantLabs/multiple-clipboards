@@ -654,13 +654,13 @@ namespace MultipleClipboards.ClipboardManagement
 		private static void PutDataOnClipboard(ClipboardData clipboardData)
 		{
 			Clipboard.SetDataObject(clipboardData.DataObject, true);
-			log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
+			log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 		}
 
 		private static ClipboardData RetrieveDataFromClipboard()
 		{
 			ClipboardData clipboardData = new ClipboardData(Clipboard.GetDataObject());
-			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToShortDisplayString());
+			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 			return clipboardData;
 		}
 

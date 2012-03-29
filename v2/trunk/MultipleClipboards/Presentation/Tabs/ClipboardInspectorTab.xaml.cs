@@ -67,7 +67,7 @@ namespace MultipleClipboards.Presentation.Tabs
 
 					TextBox dataTextBox = new TextBox
 					{
-						Text = data == null ? string.Empty : data.ToLongDisplayString(),
+						Text = data == null ? string.Empty : data.ToDisplayString(),
 						HorizontalAlignment = HorizontalAlignment.Stretch,
 						VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
 						HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -92,6 +92,11 @@ namespace MultipleClipboards.Presentation.Tabs
 					IconType = IconType.Error
 				});
 			}
+		}
+
+		private void ShowDetailedClipboardInformationCheckBoxClicked(object sender, RoutedEventArgs e)
+		{
+			this.Refresh();
 		}
 	}
 }
