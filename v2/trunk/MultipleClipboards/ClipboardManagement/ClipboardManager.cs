@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Input;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Exceptions;
 using MultipleClipboards.GlobalResources;
@@ -45,7 +46,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.RegisterAllClipboards();
 			this.PreserveClipboardData();
 
-			if (this.CurrentSystemClipboardData.Formats.Count() > 0)
+			if (this.CurrentSystemClipboardData.Formats.Any())
 			{
 				this.EnqueueHistoricalEntry(this.CurrentSystemClipboardData);
 			}
@@ -58,7 +59,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// </summary>
 		public void Dispose()
 		{
-			foreach (short hotKeyId in this.HotKeys.Select(hk => hk.HotKeyId))
+			foreach (short hotKeyId in this.HotKeys.Select(hk => hk.HotKeyId).ToList())
 			{
 				this.UnRegisterHotKey(hotKeyId);
 			}
@@ -164,7 +165,7 @@ namespace MultipleClipboards.ClipboardManagement
 		protected void RemoveClipboardDataFromClipboard(int clipboardId)
 		{
 			ClipboardData removedValue;
-			
+
 			if (!this.clipboardDataByClipboardId.TryRemove(clipboardId, out removedValue))
 			{
 				log.ErrorFormat(
@@ -181,7 +182,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboard">The clipboard to add.</param>
 		public void AddClipboard(ClipboardDefinition clipboard)
 		{
-			if (AppController.Settings.ClipboardDefinitions.Any(c => c == clipboard))
+			if (this.AvailableClipboards.Contains(clipboard))
 			{
 				MessageBus.Instance.Publish(new MainWindowNotification
 				{
@@ -191,28 +192,55 @@ namespace MultipleClipboards.ClipboardManagement
 				return;
 			}
 
-            AppController.Settings.AddNewClipboard(clipboard);
-			log.InfoFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
-			this.RegisterClipboard(clipboard);
+			string message;
+			clipboard.ClipboardId = AppController.Settings.ClipboardDefinitions.Max(cd => cd.ClipboardId + 1);
+			var result = this.RegisterClipboard(clipboard);
+
+			if (result.WasCompleteFailure)
+			{
+				message = string.Format("Failed to register the clipboard '{0}'.", clipboard.ToDisplayString());
+			}
+			else
+			{
+				AppController.Settings.AddNewClipboard(clipboard);
+				log.InfoFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
+				message = result.HadFailures
+					? result.HotKeyRegistrationErrorMessage
+					: string.Format("The clipboard '{0}' has been registered successfully!", clipboard.ToDisplayString());
+			}
+
 			MessageBus.Instance.Publish(new MainWindowNotification
 			{
-				MessageBody = string.Format("The clipboard '{0}' has been registered successfully!.", clipboard.ToDisplayString()),
-				IconType = IconType.Success
+				MessageBody = message,
+				IconType = result.ResultIcon
 			});
 		}
 
-        public void RemoveClipboard(ClipboardDefinition clipboard)
-        {
-			this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
-			this.RemoveClipboardDataFromClipboard(clipboard.ClipboardId);
-            AppController.Settings.RemoveClipboard(clipboard);
-			log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
-			MessageBus.Instance.Publish(new MainWindowNotification
+		public void RemoveClipboard(ClipboardDefinition clipboard)
+		{
+			try
 			{
-				MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard.ToDisplayString()),
-				IconType = IconType.Success
-			});
-        }
+				this.UnRegisterHotKeysForClipboard(clipboard.ClipboardId);
+				this.RemoveClipboardDataFromClipboard(clipboard.ClipboardId);
+				AppController.Settings.RemoveClipboard(clipboard);
+				log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
+				MessageBus.Instance.Publish(new MainWindowNotification
+				{
+					MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard.ToDisplayString()),
+					IconType = IconType.Success
+				});
+			}
+			catch (Exception e)
+			{
+				string errorMessage = string.Format("There was an error removing the clipboard '{0}'.", clipboard.ToDisplayString());
+				log.Error(errorMessage, e);
+				MessageBus.Instance.Publish(new MainWindowNotification
+				{
+					MessageBody = errorMessage,
+					IconType = IconType.Error
+				});
+			}
+		}
 
 		/// <summary>
 		/// Stores the current contents of the Windows clipboard in the history queue.
@@ -232,13 +260,16 @@ namespace MultipleClipboards.ClipboardManagement
 
 			try
 			{
-				log.Debug("StoreClipboardContentsAsync(): System clipboard has changed.  About to store the contents of the clipboard.");
-
 				if (!this.AllowStoreClipboardContents)
 				{
+					// When the user places historical data on the system clipboard a DrawClipboard message is sent to the clipboard window,
+					// which will immediately call this method and try to store the data.  In this case we already have the data preserved
+					// so we don't want to do anything.
+					this.AllowStoreClipboardContents = true;
 					return;
 				}
 
+				log.Debug("StoreClipboardContentsAsync(): System clipboard has changed.  About to store the contents of the clipboard.");
 				WaitForExclusiveClipboardAccess();
 				var clipboardData = RetrieveDataFromClipboard();
 				this.CurrentSystemClipboardData = clipboardData;
@@ -274,7 +305,7 @@ namespace MultipleClipboards.ClipboardManagement
 			try
 			{
 				this.AllowStoreClipboardContents = false;
-				ClipboardData clipboardEntry = this.ClipboardHistory.FirstOrDefault(data => data.Id == clipboardDataId);
+				var clipboardEntry = this.ClipboardHistory.FirstOrDefault(data => data.Id == clipboardDataId);
 
 				if (clipboardEntry != null)
 				{
@@ -288,7 +319,6 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 			finally
 			{
-				this.AllowStoreClipboardContents = true;
 				Monitor.Exit(clipboardOperationLock);
 			}
 		}
@@ -392,7 +422,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			this.AvailableClipboards.Add(ClipboardDefinition.SystemClipboardDefinition);
 
-			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
+			foreach (var clipboard in AppController.Settings.ClipboardDefinitions)
 			{
 				this.AvailableClipboards.Add(clipboard);
 			}
@@ -404,65 +434,65 @@ namespace MultipleClipboards.ClipboardManagement
 		private void RegisterAllClipboards()
 		{
 			this.SetClipboardDataForClipboard(ClipboardDefinition.SystemClipboardId, null);
+			var result = this.RegisterClipboards(AppController.Settings.ClipboardDefinitions);
+
+			if (result.HadFailures)
+			{
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = result.WasCompleteFailure
+						? "FATAL ERROR:\r\n\r\nNone of the clipboard hot keys could be registered."
+						: result.HotKeyRegistrationErrorMessage,
+					IconType = result.ResultIcon
+				});
+			}
+		}
+
+		private RegisterClipboardsResult RegisterClipboard(ClipboardDefinition clipboard)
+		{
+			return this.RegisterClipboards(new[] { clipboard });
+		}
+
+		private RegisterClipboardsResult RegisterClipboards(IEnumerable<ClipboardDefinition> clipboards)
+		{
 			bool wasCompleteFailure = true;
 			var failedHotKeys = new List<HotKey>();
-			var errorMessageBuilder = new StringBuilder();
 
-			foreach (ClipboardDefinition clipboard in AppController.Settings.ClipboardDefinitions)
+			foreach (var clipboard in clipboards)
 			{
-				var result = this.RegisterClipboard(clipboard);
-				wasCompleteFailure &= result.WasCompleteFailure;
-				
-				if (result.WasCutRegistrationError)
+				HotKey cutHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Cut, clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
+				bool cutRegistrationSuccess = this.RegisterHotKey(cutHotKey);
+
+				HotKey copyHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Copy, clipboard.CopyKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
+				bool copyRegistrationSuccess = this.RegisterHotKey(copyHotKey);
+
+				HotKey pasteHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Paste, clipboard.PasteKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
+				bool pasteRegistrationSuccess = this.RegisterHotKey(pasteHotKey);
+
+				wasCompleteFailure &= !cutRegistrationSuccess && !copyRegistrationSuccess && !pasteRegistrationSuccess;
+
+				if (!cutRegistrationSuccess)
 				{
 					failedHotKeys.Add(new HotKey(clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
 				}
-				if (result.WasCopyRegistrationError)
+				if (!copyRegistrationSuccess)
 				{
 					failedHotKeys.Add(new HotKey(clipboard.CopyKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
 				}
-				if (result.WasPasteRegistrationError)
+				if (!pasteRegistrationSuccess)
 				{
 					failedHotKeys.Add(new HotKey(clipboard.PasteKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey));
 				}
+
+				if (!wasCompleteFailure)
+				{
+					// Create a new dictionary item for this clipboard ID.
+					// This is the local copy of the item currently stored on the clipbaord that goes with this set of hotkeys.
+					this.SetClipboardDataForClipboard(clipboard.ClipboardId, null);
+				}
 			}
 
-			if (failedHotKeys.Count == 0)
-			{
-				return;
-			}
-			
-			errorMessageBuilder.AppendLine("There was an error registering the following hot keys:");
-
-			foreach (var hotKey in failedHotKeys)
-			{
-				errorMessageBuilder.AppendFormat("\t{0}", hotKey);
-				errorMessageBuilder.AppendLine();
-			}
-
-			MessageBus.Instance.Publish(new TrayNotification
-			{
-				MessageBody = errorMessageBuilder.ToString(),
-				IconType = wasCompleteFailure ? IconType.Error : IconType.Warning
-			});
-		}
-
-		private RegisterClipboardReportCard RegisterClipboard(ClipboardDefinition clipboard)
-		{
-			// Create a new dictionary item for this clipboard ID.
-			// This is the local copy of the item currently stored on the clipbaord that goes with this set of hotkeys.
-			this.SetClipboardDataForClipboard(clipboard.ClipboardId, null);
-
-			HotKey cutHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Cut, clipboard.CutKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			bool cutRegistrationResult = this.RegisterHotKey(cutHotKey);
-
-			HotKey copyHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Copy, clipboard.CopyKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			bool copyRegistrationResult = this.RegisterHotKey(copyHotKey);
-
-			HotKey pasteHotKey = new HotKey(clipboard.ClipboardId, HotKeyType.Paste, clipboard.PasteKey, clipboard.ModifierOneKey, clipboard.ModifierTwoKey);
-			bool pasteRegistrationResult = this.RegisterHotKey(pasteHotKey);
-
-			return new RegisterClipboardReportCard(cutRegistrationResult, copyRegistrationResult, pasteRegistrationResult);
+			return new RegisterClipboardsResult(wasCompleteFailure, failedHotKeys);
 		}
 
 		/// <summary>
@@ -472,6 +502,11 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <returns>A value indicating whether or not the HotKey was registered successfully.</returns>
 		private bool RegisterHotKey(HotKey hotKey)
 		{
+			if (this.HotKeys.Contains(hotKey) || HotKey.ReservedHotKeys.Contains(hotKey))
+			{
+				return false;
+			}
+
 			try
 			{
 				// Use the GlobalAddAtom API to get a unique ID (as suggested by MSDN docs).
@@ -493,6 +528,7 @@ namespace MultipleClipboards.ClipboardManagement
 				if (Win32API.RegisterHotKey(this.WindowHandle, hotKeyId, modifierBitmask, hotKey.KeyCode) == 0)
 				{
 					log.ErrorFormat("RegisterHotKey(): Unable to register hotkey combination: {0}.  ErrorCode: {1}", hotKey, Marshal.GetLastWin32Error());
+					this.UnRegisterHotKey(hotKey.HotKeyId);
 					return false;
 				}
 
@@ -515,7 +551,8 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboardId">The ID of the clipboard whose hot keys to un-register.</param>
 		private void UnRegisterHotKeysForClipboard(int clipboardId)
 		{
-			foreach (short hotKeyId in this.HotKeys.Where(hk => hk.ClipboardId  == clipboardId).Select(hk => hk.HotKeyId))
+			// The .ToList() is required because the UnRegisterHotKey method modifies the HotKeys collection.
+			foreach (short hotKeyId in this.HotKeys.Where(hk => hk.ClipboardId == clipboardId).Select(hk => hk.HotKeyId).ToList())
 			{
 				this.UnRegisterHotKey(hotKeyId);
 			}
@@ -527,11 +564,9 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="hotKeyId">The hot key to unregister.</param>
 		private void UnRegisterHotKey(short hotKeyId)
 		{
-			if (hotKeyId != 0)
-			{
-				Win32API.UnregisterHotKey(this.WindowHandle, hotKeyId);
-				Win32API.GlobalDeleteAtom(hotKeyId);
-			}
+			this.HotKeys.RemoveAll(hk => hk.HotKeyId == hotKeyId);
+			Win32API.UnregisterHotKey(this.WindowHandle, hotKeyId);
+			Win32API.GlobalDeleteAtom(hotKeyId);
 		}
 
 		/// <summary>
@@ -587,7 +622,7 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 			finally
 			{
-				this.RestoreClipboardData();	 
+				this.RestoreClipboardData();
 			}
 		}
 
@@ -601,7 +636,7 @@ namespace MultipleClipboards.ClipboardManagement
 			try
 			{
 				bool sendPasteSignal = true;
-				
+
 				// Place the data from the correct clipboard onto the system clipboard.
 				if (this.GetClipboardDataByClipboardId(clipboardId) == null)
 				{
@@ -694,28 +729,43 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 		}
 
-		private class RegisterClipboardReportCard
+		private class RegisterClipboardsResult
 		{
-			public RegisterClipboardReportCard(bool cutRegistrationResult, bool copyRegistrationResult, bool pasteRegistrationResult)
+			public RegisterClipboardsResult(bool wasCompleteFailure, IList<HotKey> failedHotKeys)
 			{
-				this.WasCutRegistrationError = !copyRegistrationResult;
-				this.WasCopyRegistrationError = !cutRegistrationResult;
-				this.WasPasteRegistrationError = !pasteRegistrationResult;
+				this.WasCompleteFailure = wasCompleteFailure;
+				this.HadFailures = failedHotKeys.Any();
+
+				if (this.WasCompleteFailure)
+				{
+					this.ResultIcon = IconType.Error;
+				}
+				else if (this.HadFailures)
+				{
+					this.ResultIcon = IconType.Warning;
+				}
+				else
+				{
+					this.ResultIcon = IconType.Success;
+				}
+
+				if (!this.HadFailures)
+				{
+					return;
+				}
+
+				var errorMessageBuilder = new StringBuilder();
+				errorMessageBuilder.AppendLine("There was an error registering the following hot keys:");
+
+				foreach (var hotKey in failedHotKeys)
+				{
+					errorMessageBuilder.AppendLine(string.Format("\t{0}", hotKey));
+				}
+
+				this.HotKeyRegistrationErrorMessage = errorMessageBuilder.ToString();
 			}
 
-			public bool WasCopyRegistrationError
-			{
-				get;
-				private set;
-			}
-
-			public bool WasCutRegistrationError
-			{
-				get;
-				private set;
-			}
-
-			public bool WasPasteRegistrationError
+			public IconType ResultIcon
 			{
 				get;
 				private set;
@@ -723,10 +773,20 @@ namespace MultipleClipboards.ClipboardManagement
 
 			public bool WasCompleteFailure
 			{
-				get
-				{
-					return this.WasCopyRegistrationError && this.WasCutRegistrationError && this.WasPasteRegistrationError;
-				}
+				get;
+				private set;
+			}
+
+			public bool HadFailures
+			{
+				get;
+				private set;
+			}
+
+			public string HotKeyRegistrationErrorMessage
+			{
+				get;
+				private set;
 			}
 		}
 	}

@@ -209,7 +209,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 						break;
 
 					case IconType.Warning:
-						brush = Brushes.Yellow;
+						brush = Brushes.Orange;
 						break;
 
 					case IconType.Success:

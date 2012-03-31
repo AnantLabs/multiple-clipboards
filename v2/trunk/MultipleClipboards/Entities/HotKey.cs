@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using ApplicationBasics;
 
 namespace MultipleClipboards.Entities
 {
@@ -15,32 +15,14 @@ namespace MultipleClipboards.Entities
 		private int modifierBitMask;
 
 		/// <summary>
-		/// Initializes and returns a new HotKey object from the give WindowsMessage.
+		/// The collection of HotKeys that are reserved and cannot be used by users.
 		/// </summary>
-		/// <param name="windowsMessage">The WindowsMessage object.</param>
-		/// <returns>The new HotKey.</returns>
-		public static HotKey FromWindowsMessage(WindowsMessage windowsMessage)
+		public static readonly ReadOnlyCollection<HotKey> ReservedHotKeys = new ReadOnlyCollection<HotKey>(new List<HotKey>
 		{
-			int modifierBitMask = (int)((uint)windowsMessage.LParam & 0x0000FFFF);
-			int keyCode = (int)(((uint)windowsMessage.LParam & 0xFFFF0000) >> 16);
-
-			HotKey hotKey = new HotKey
-			{
-				HotKeyType = HotKeyType.Undefined,
-				Key = KeyInterop.KeyFromVirtualKey(keyCode),
-				ModifierKeys = new List<ModifierKeys>()
-			};
-			
-			foreach (Enum<ModifierKeys> modifierKey in Enum<ModifierKeys>.GetValues())
-			{
-				if (modifierKey != System.Windows.Input.ModifierKeys.None && (modifierBitMask & modifierKey) == modifierKey)
-				{
-					hotKey.ModifierKeys.Add(modifierKey);
-				}
-			}
-
-			return hotKey;
-		}
+			new HotKey(Key.X, System.Windows.Input.ModifierKeys.Control),
+			new HotKey(Key.C, System.Windows.Input.ModifierKeys.Control),
+			new HotKey(Key.V, System.Windows.Input.ModifierKeys.Control)
+		});
 
 		/// <summary>
 		/// Constructs a new HotKey object.
@@ -219,6 +201,17 @@ namespace MultipleClipboards.Entities
 		public bool Equals(HotKey other)
 		{
 			return this == other;
+		}
+
+		/// <summary>
+		/// Indicates whether or not the given key and modifier key collection is the same as this HotKey instance.
+		/// </summary>
+		/// <param name="key">The key to compare.</param>
+		/// <param name="modifierKeys">The collection of modifier keys for the compare.</param>
+		/// <returns>True if the given key and modifiers match this HotKey, false otherwise.</returns>
+		public bool Equals(Key key, params ModifierKeys[] modifierKeys)
+		{
+			return this == new HotKey(key, modifierKeys);
 		}
 
 		/// <summary>

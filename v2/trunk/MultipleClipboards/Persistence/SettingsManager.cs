@@ -221,7 +221,6 @@ namespace MultipleClipboards.Persistence
 		/// <returns>The ID of the new clipboard.</returns>
 		public int AddNewClipboard(ClipboardDefinition clipboard)
 		{
-			clipboard.ClipboardId = this.DataStore.ClipboardDefinitions.Count + 1;
 			this.DataStore.ClipboardDefinitions.Add(clipboard);
 			this.SaveSettings();
 			return clipboard.ClipboardId;

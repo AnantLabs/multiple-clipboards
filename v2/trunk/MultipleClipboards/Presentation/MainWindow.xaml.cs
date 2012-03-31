@@ -63,7 +63,7 @@ namespace MultipleClipboards.Presentation
 						break;
 
 					case IconType.Warning:
-						this.NotificationPresenterBorder.BorderBrush = Brushes.Yellow;
+						this.NotificationPresenterBorder.BorderBrush = Brushes.Orange;
 						break;
 
 					case IconType.Success:

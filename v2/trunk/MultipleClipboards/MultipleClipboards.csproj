@@ -219,6 +219,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Presentation\Icons\48\Clipboard.png" />
     <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clipboard.png" />
     <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Exit.png" />
     <Resource Include="Presentation\Icons\32\Error.png" />

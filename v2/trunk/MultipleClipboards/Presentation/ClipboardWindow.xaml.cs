@@ -153,9 +153,6 @@ namespace MultipleClipboards.Presentation
 						// Set the flag to indicate that the clipboard manager is in use.
 						this.SetClipboardInUseFlag(true);
 
-						// Figure out what key was pressed and send it along to the clipboard manager.
-						HotKey hotKey = HotKey.FromWindowsMessage(currentMessage);
-
 						// Wait while there are any modifier keys held down.
 						// This causes unpredictable results when the user has setup a combination of different hotkeys.
 						while (ModifierKeysPressed())
@@ -165,7 +162,7 @@ namespace MultipleClipboards.Presentation
 
 						var arguments = new ProcessHotKeyArguments
 						{
-							HotKey = hotKey,
+							HotKey = currentMessage.ToHotKey(),
 							Callback = () => this.SetClipboardInUseFlag(false)
 						};
 

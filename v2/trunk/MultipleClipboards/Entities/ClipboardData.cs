@@ -24,7 +24,7 @@ namespace MultipleClipboards.Entities
 		private static ulong _idCounter;
 		private string iconPath;
 		private string iconToolTip;
-		private Func<string> singleFormatDetailedDataStringProducer; 
+		private Func<string> singleFormatDetailedDataStringProducer;
 
 		public ClipboardData(ClipboardData clipboardData)
 			: this(clipboardData.DataObject)
@@ -80,12 +80,6 @@ namespace MultipleClipboards.Entities
 			private set;
 		}
 
-		private string SimpleDataString
-		{
-			get;
-			set;
-		}
-
 		public string IconPath
 		{
 			get
@@ -126,15 +120,6 @@ namespace MultipleClipboards.Entities
 		}
 
 		/// <summary>
-		/// Returns a single, usually human readable representation of this IDataObject.
-		/// </summary>
-		/// <returns>A single, usually human readable representation of this IDataObject.</returns>
-		public string ToSimpleDisplayString()
-		{
-			return this.SimpleDataString;
-		}
-
-		/// <summary>
 		/// Returns a descriptive string representation of this IDataObject.
 		/// </summary>
 		/// <returns>A descriptive string representation of this IDataObject.</returns>
@@ -145,51 +130,49 @@ namespace MultipleClipboards.Entities
 				return string.Empty;
 			}
 
+			if (!AppController.Settings.ShowDetailedClipboardInformation)
+			{
+				return this.singleFormatDetailedDataStringProducer();
+			}
+
 			StringBuilder displayStringBuilder = new StringBuilder();
 
-			if (AppController.Settings.ShowDetailedClipboardInformation)
+			foreach (string format in this.Formats)
 			{
-				foreach (string format in this.Formats)
-				{
-					object data = this.DataObject.GetData(format);
-					string dataString;
+				object data = this.DataObject.GetData(format);
+				string dataString;
 
-					if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap)
+				if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap)
+				{
+					dataString = this.DataPreview;
+				}
+				else if (format == DataFormats.FileDrop)
+				{
+					dataString = GetFileDropDisplayString(data);
+				}
+				else
+				{
+					if (data == null)
 					{
-						dataString = this.DataPreview;
-					}
-					else if (format == DataFormats.FileDrop)
-					{
-						dataString = GetFileDropDisplayString(data);
+						dataString = UnableToRetrieveDataMessage;
 					}
 					else
 					{
-						if (data == null)
+						try
 						{
-							dataString = UnableToRetrieveDataMessage;
+							dataString = data.ToString();
 						}
-						else
+						catch (InvalidOperationException invalidOperationException)
 						{
-							try
-							{
-								dataString = data.ToString();
-							}
-							catch (InvalidOperationException invalidOperationException)
-							{
-								// This can be thrown when the data we are trying to call ToString() on was created on a different thread.
-								// This happens when .NET reference type are coppied from other WPF applicationed.
-								log.WarnFormat("Unable to call ToString() on this data object for the format '{0}'.{1}{2}", format, Environment.NewLine, invalidOperationException);
-								dataString = UnknownDataPreviewString;
-							}
+							// This can be thrown when the data we are trying to call ToString() on was created on a different thread.
+							// This happens when .NET reference type are coppied from other WPF applications.
+							log.WarnFormat("Unable to call ToString() on this data object for the format '{0}'.{1}{2}", format, Environment.NewLine, invalidOperationException);
+							dataString = UnknownDataPreviewString;
 						}
 					}
-
-					displayStringBuilder.Append(string.Format("{1}:{0}{2}{0}{0}", Environment.NewLine, format, dataString));
 				}
-			}
-			else
-			{
-				displayStringBuilder.Append(this.singleFormatDetailedDataStringProducer());
+
+				displayStringBuilder.Append(string.Format("{1}:{0}{2}{0}{0}", Environment.NewLine, format, dataString));
 			}
 
 			return displayStringBuilder.ToString();

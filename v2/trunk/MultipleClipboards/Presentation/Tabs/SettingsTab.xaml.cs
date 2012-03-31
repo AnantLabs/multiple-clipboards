@@ -50,16 +50,18 @@ namespace MultipleClipboards.Presentation.Tabs
 				return;
 			}
 
+			this.AddNewClipboardButton.IsEnabled = false;
 			ClipboardDefinition clipboard = new ClipboardDefinition
 			{
-				ModifierOneKey = Enum<ModifierKeys>.Parse(this.ModifierKeyOneComboBox.SelectedValue.ToString()),
-				ModifierTwoKey = Enum<ModifierKeys>.Parse(this.ModifierKeyTwoComboBox.SelectedValue.ToString()),
-				CopyKey = Enum<Key>.Parse(this.CopyKeyTextBox.Text),
-				CutKey = Enum<Key>.Parse(this.CutKeyTextBox.Text),
-				PasteKey = Enum<Key>.Parse(this.PasteKeyTextBox.Text)
+				ModifierOneKey = Enum<ModifierKeys>.Parse(this.ModifierKeyOneComboBox.SelectedValue.ToString(), true),
+				ModifierTwoKey = Enum<ModifierKeys>.Parse(this.ModifierKeyTwoComboBox.SelectedValue.ToString(), true),
+				CopyKey = Enum<Key>.Parse(this.CopyKeyTextBox.Text, true),
+				CutKey = Enum<Key>.Parse(this.CutKeyTextBox.Text, true),
+				PasteKey = Enum<Key>.Parse(this.PasteKeyTextBox.Text, true)
 			};
 
 			AppController.ClipboardManager.AddClipboard(clipboard);
+			this.AddNewClipboardButton.IsEnabled = true;
 		}
 
 		private void DeleteButtonClick(object sender, RoutedEventArgs e)

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
+using ApplicationBasics;
 using MultipleClipboards.Interop;
 
 namespace MultipleClipboards.Entities
@@ -180,6 +183,33 @@ namespace MultipleClipboards.Entities
 			builder.AppendFormat("LParam: 0x{0}\r\n", this.LParam.ToString("X8"));
 			builder.AppendFormat("Message Time: {0}", this.MessageTime.ToString("MM-dd-yyyy hh:mm:ss.fff"));
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Initializes and returns a new HotKey object from this WindowsMessage.
+		/// </summary>
+		/// <returns>The new HotKey.</returns>
+		public HotKey ToHotKey()
+		{
+			int modifierBitMask = (int)((uint)this.LParam & 0x0000FFFF);
+			int keyCode = (int)(((uint)this.LParam & 0xFFFF0000) >> 16);
+
+			HotKey hotKey = new HotKey
+			{
+				HotKeyType = HotKeyType.Undefined,
+				Key = KeyInterop.KeyFromVirtualKey(keyCode),
+				ModifierKeys = new List<ModifierKeys>()
+			};
+
+			foreach (Enum<ModifierKeys> modifierKey in Enum<ModifierKeys>.GetValues())
+			{
+				if (modifierKey != ModifierKeys.None && (modifierBitMask & modifierKey) == modifierKey)
+				{
+					hotKey.ModifierKeys.Add(modifierKey);
+				}
+			}
+
+			return hotKey;
 		}
 	}
 }
