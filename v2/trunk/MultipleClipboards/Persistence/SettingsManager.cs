@@ -50,7 +50,7 @@ namespace MultipleClipboards.Persistence
 				{ LaunchApplicationOnSystemStartupSettingKey, true },
 				{ ShowAdvancedOptionsSettingKey, false },
 				{ ShowMessagesFromTraySettingKey, true },
-				{ ShowDetailedClipboardInformationSettingKey, true }
+				{ ShowDetailedClipboardInformationSettingKey, false }
 			};
 
 		// The in memory version of the log level.

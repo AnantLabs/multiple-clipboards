@@ -23,6 +23,18 @@ namespace MultipleClipboards.CustomInstallerActions
 
 		public override void Install(IDictionary stateSaver)
 		{
+			if (EnvironmentHelper.IsMultipleClipboardsRunning())
+			{
+				const string message = "There is already an instance of Multiple Clipboards running.\r\n\r\nWould you like us to terminate the running instance and proceed with the install?";
+
+				if (MessageBox.Show(message, "Multiple Clipboards Already Running", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+				{
+					throw new InstallException("Unable to install.  Multiple Clipboards is already running.");
+				}
+
+				EnvironmentHelper.KillRunningMultipleClipboardsInstances();
+			}
+
 			base.Install(stateSaver);
 
 			// Save the target directory for use in later stages of the installer.

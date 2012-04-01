@@ -14,6 +14,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="60" />
@@ -43,12 +45,19 @@
 
         <TextBlock Grid.Row="3" Grid.Column="1" Text="Project Links:" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="5" />
 
-        <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" Margin="20,0,5,5">
+        <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="20,0,5,5">
             <Hyperlink NavigateUri="http://code.google.com/p/multiple-clipboards" RequestNavigate="OnRequestNavigate">Project Home on Google Code</Hyperlink>
         </TextBlock>
 
-        <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" Margin="20,0,5,5">
+        <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="20,0,5,5">
             <Hyperlink NavigateUri="https://trello.com/board/multiple-clipboards/4f2d46929b7c4ed7365b0b15" RequestNavigate="OnRequestNavigate">Project Road Map</Hyperlink>
+        </TextBlock>
+        
+        <TextBlock Grid.Row="6" Grid.Column="1" Text="Found a bug?  Have a feature request?" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" Margin="5,10,5,2" />
+
+        <TextBlock Grid.Row="7" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Margin="5,0,5,5">
+            Create an issue on this projects 
+            <Hyperlink NavigateUri="http://code.google.com/p/multiple-clipboards/issues/list" RequestNavigate="OnRequestNavigate">issue tracker</Hyperlink>.
         </TextBlock>
     </Grid>
 </UserControl>

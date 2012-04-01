@@ -57,26 +57,26 @@ namespace MultipleClipboards.GlobalResources
 			{
 				if (string.IsNullOrWhiteSpace(_applicationDirectory))
 				{
-				    try
-				    {
-				        var assembly = Assembly.GetEntryAssembly();
+					try
+					{
+						var assembly = Assembly.GetEntryAssembly();
 					
-				        if (assembly.ManifestModule.Name == ApplicationExecutableName)
-				        {
-				            FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
-				            _applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
-				        }
-				        else
-				        {
-				            _applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-				        }
-				    }
-				    catch
-				    {
-				        // This code is used in my installer custom actions, and this property throws an exception.
-                        // Maybe some day I will make this better.
-				        _applicationDirectory = string.Empty;
-				    }
+						if (assembly.ManifestModule.Name == ApplicationExecutableName)
+						{
+							FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
+							_applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
+						}
+						else
+						{
+							_applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
+						}
+					}
+					catch
+					{
+						// This code is used in my installer custom actions, and this property throws an exception.
+						// Maybe some day I will make this better.
+						_applicationDirectory = string.Empty;
+					}
 				}
 
 				return _applicationDirectory;

@@ -57,7 +57,7 @@ namespace MultipleClipboards
 			// Make sure the static constructor has done it's thing.
 			staticInitializationComplete.WaitOne();
 
-			if (Process.GetProcessesByName(Constants.ProcessName).Any(p => p.Id != Process.GetCurrentProcess().Id))
+			if (EnvironmentHelper.IsMultipleClipboardsRunning())
 			{
 				MessageBox.Show(
 					"There is already an instance of Multiple Clipboards running.\r\n\r\nThere can only be one instance of this application running at a time.",
