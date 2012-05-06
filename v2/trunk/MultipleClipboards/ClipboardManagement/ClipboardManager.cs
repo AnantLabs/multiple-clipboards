@@ -193,7 +193,7 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 
 			string message;
-			clipboard.ClipboardId = AppController.Settings.ClipboardDefinitions.Max(cd => cd.ClipboardId + 1);
+			clipboard.ClipboardId = AppController.Settings.GetNextClipboardId();
 			var result = this.RegisterClipboard(clipboard);
 
 			if (result.WasCompleteFailure)

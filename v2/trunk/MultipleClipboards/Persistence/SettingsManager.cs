@@ -215,6 +215,20 @@ namespace MultipleClipboards.Persistence
 		}
 
 		/// <summary>
+		/// Gets the next available clipboard ID.
+		/// </summary>
+		/// <returns></returns>
+		public int GetNextClipboardId()
+		{
+			if (this.ClipboardDefinitions == null || !this.ClipboardDefinitions.Any())
+			{
+				return 1;
+			}
+
+			return this.ClipboardDefinitions.Max(cd => cd.ClipboardId + 1);
+		}
+
+		/// <summary>
 		/// Adds a new clipboard to the data store.
 		/// </summary>
 		/// <param name="clipboard">The clipboard to add.</param>
