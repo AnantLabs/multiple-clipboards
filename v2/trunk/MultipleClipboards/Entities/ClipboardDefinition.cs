@@ -63,7 +63,7 @@ namespace MultipleClipboards.Entities
 			set;
 		}
 
-		public string ToDisplayString()
+		public override string ToString()
 		{
 			if (!string.IsNullOrWhiteSpace(this.DisplayStringOverride))
 			{
@@ -124,7 +124,7 @@ namespace MultipleClipboards.Entities
 			return this == other;
 		}
 
-		public override string ToString()
+		public string ToLogString()
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.AppendFormat("Clipboard ID: {0}\r\n", this.ClipboardId);

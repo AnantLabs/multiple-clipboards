@@ -24,7 +24,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 	public sealed class TrayIconManager : IDisposable
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(TrayIconManager));
-		private readonly IDictionary<ulong, MenuItem> menuItemsByClipboardId;
+		private readonly IDictionary<ulong, MenuItem> menuItemsByClipboardDataId;
 		private readonly NotifyIcon notifyIcon;
 		private readonly VistaMenu menuHelper;
 		private readonly Timer trayPopupTimer;
@@ -37,7 +37,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		public TrayIconManager(NotifyIcon notifyIcon)
 		{
 			this.menuHelper = new VistaMenu();
-			this.menuItemsByClipboardId = new Dictionary<ulong, MenuItem>();
+			this.menuItemsByClipboardDataId = new Dictionary<ulong, MenuItem>();
 			this.notifyIcon = notifyIcon;
 			this.notifyIcon.MouseDoubleClick += NotifyIconMouseDoubleClick;
 			this.trayPopupTimer = new Timer(5000);
@@ -94,16 +94,20 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		{
 			try
 			{
+				if (e.Action == NotifyCollectionChangedAction.Reset)
+				{
+					foreach (ulong clipboardDataId in this.menuItemsByClipboardDataId.Keys.ToList())
+					{
+						this.RemoveClipboardHistoryMenuItem(clipboardDataId);
+					}
+				}
+
 				// First, remove all items from the menu that have been cleared from the history queue.
 				if (e.OldItems != null)
 				{
 					foreach (var clipboardData in e.OldItems.Cast<ClipboardData>())
 					{
-						var menuItem = this.menuItemsByClipboardId[clipboardData.Id];
-						this.contextMenu.MenuItems.Remove(menuItem);
-						this.menuItemsByClipboardId.Remove(clipboardData.Id);
-						this.menuHelper.RemoveMenuItem(menuItem);
-						menuItem.Dispose();
+						this.RemoveClipboardHistoryMenuItem(clipboardData.Id);
 					}
 				}
 
@@ -136,11 +140,13 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			{
 				DefaultItem = true
 			};
+			var clearHistoryMenuItem = new MenuItem("Clear History", (sender, args) => AppController.ClipboardManager.ClearClipboardHistory());
 			var seperator = new MenuItem("-");
-			this.contextMenu = new ContextMenu(new[] { seperator, mainWindowMenuItem, exitMenuItem });
+			this.contextMenu = new ContextMenu(new[] { seperator, clearHistoryMenuItem, mainWindowMenuItem, exitMenuItem });
 
 			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
 			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));
+			this.menuHelper.SetImage(clearHistoryMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clear));
 			this.menuHelper.Refresh();
 
 			this.notifyIcon.ContextMenu = this.contextMenu;
@@ -153,10 +159,19 @@ namespace MultipleClipboards.Presentation.TrayIcon
 				var menuItem = BuildClipboardHistoryMenuItem(clipboardData);
 				this.contextMenu.MenuItems.Add(0, menuItem);
 				this.menuHelper.SetImage(menuItem, IconFactory.GetTrayContextMenuBitmap(clipboardData.IconType));
-				this.menuItemsByClipboardId.Add(clipboardData.Id, menuItem);
+				this.menuItemsByClipboardDataId.Add(clipboardData.Id, menuItem);
 			}
 
 			this.menuHelper.Refresh();
+		}
+
+		private void RemoveClipboardHistoryMenuItem(ulong clipboardDataId)
+		{
+			var menuItem = this.menuItemsByClipboardDataId[clipboardDataId];
+			this.contextMenu.MenuItems.Remove(menuItem);
+			this.menuItemsByClipboardDataId.Remove(clipboardDataId);
+			this.menuHelper.RemoveMenuItem(menuItem);
+			menuItem.Dispose();
 		}
 
 		private static MenuItem BuildClipboardHistoryMenuItem(ClipboardData clipboardData)

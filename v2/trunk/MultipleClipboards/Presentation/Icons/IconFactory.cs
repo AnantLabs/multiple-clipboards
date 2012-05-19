@@ -10,6 +10,7 @@ namespace MultipleClipboards.Presentation.Icons
 		About,
 		Add,
 		Audio,
+		Clear,
 		Clipboard,
 		Delete,
 		Error,
@@ -34,10 +35,8 @@ namespace MultipleClipboards.Presentation.Icons
 
 	public enum IconSize
 	{
-		// ReSharper disable InconsistentNaming
 		_16 = 16,
 		_32 = 32
-		// ReSharper restore InconsistentNaming
 	}
 
 	public sealed class IconFactory
@@ -51,6 +50,7 @@ namespace MultipleClipboards.Presentation.Icons
 			{ IconType.About, "About" },
 			{ IconType.Add, "Add" },
 			{ IconType.Audio, "Audio stream" },
+			{ IconType.Clear, "Clear" },
 			{ IconType.Clipboard, "Clipboard" },
 			{ IconType.Delete, "Delete" },
 			{ IconType.Exit, "Exit" },

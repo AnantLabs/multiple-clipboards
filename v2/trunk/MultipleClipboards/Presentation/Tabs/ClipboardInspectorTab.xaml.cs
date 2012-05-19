@@ -58,7 +58,7 @@ namespace MultipleClipboards.Presentation.Tabs
 					{
 						TextBlock labelTextBlock = new TextBlock
 						{
-							Text = clipboard.ToDisplayString(),
+							Text = clipboard.ToString(),
 							Margin = new Thickness(5, 0, 0, 0),
 							FontWeight = FontWeights.SemiBold
 						};

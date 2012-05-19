@@ -5,8 +5,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
-    mc:Ignorable="d" 
+    xmlns:System="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+    xmlns:Commands="clr-namespace:MultipleClipboards.Presentation.Commands" mc:Ignorable="d" 
     d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="AvailableClipboardsViewSource" Source="{Binding AvailableClipboards, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
+            <CollectionViewSource.SortDescriptions>
+                <System:SortDescription PropertyName="ClipboardId" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <Style TargetType="MenuItem">
+            <EventSetter Event="Click" Handler="GridMenuItemClick" />
+        </Style>
+    </UserControl.Resources>
 
     <Grid Margin="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -15,22 +29,18 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="150" />
             <ColumnDefinition Width="135" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Text="Select a row and desired clipboard." Height="25" VerticalAlignment="Bottom"></TextBlock>
-        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="25" Width="140" Name="ClipboardSelectComboBox" DisplayMemberPath="DisplayString" SelectedValuePath="ClipboardId"
-                  ToolTip="Selects the clipboard to place the selected data on.">
-        </ComboBox>
-        <Local:IconButton Grid.Row="0" Grid.Column="2" x:Name="PasteButton" HorizontalAlignment="Right" Icon="Paste" Text="Place on Clipboard" Click="PasteButtonClick"
-                          ToolTip="When clicked, the data on the selected row will be placed on the selected clipboard." />
+        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Text="Right click a row for options." Height="25" VerticalAlignment="Bottom"></TextBlock>
+        <Local:IconButton Grid.Row="0" Grid.Column="2" x:Name="ClearButton" HorizontalAlignment="Right" Icon="Clear" Text="Clear History" Click="ClearButtonClick"
+                          ToolTip="Removes all items from the clipboard history." />
 
         <DataGrid
             Name="ClipboardHistoryDataGrid"
             Grid.Row="1" 
             Grid.Column="0" 
-            Grid.ColumnSpan="3" 
+            Grid.ColumnSpan="2" 
             Margin="0,5,0,0"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 
@@ -47,6 +57,18 @@
             SelectionMode="Extended"
             HorizontalScrollBarVisibility="Hidden"
             VerticalScrollBarVisibility="Auto">
+            
+            <DataGrid.ContextMenu>
+                <ContextMenu Opened="ContextMenuOpened">
+                    <ContextMenu.ItemsSource>
+                        <CompositeCollection>
+                            <MenuItem Header="Place data on..." FontWeight="Bold" IsEnabled="False" />
+                            <Separator />
+                            <CollectionContainer Collection="{Binding Source={StaticResource AvailableClipboardsViewSource}}" />
+                        </CompositeCollection>
+                    </ContextMenu.ItemsSource>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
 
             <DataGrid.RowHeaderStyle>
                 <Style TargetType="DataGridRowHeader">

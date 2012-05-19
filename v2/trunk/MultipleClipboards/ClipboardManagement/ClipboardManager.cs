@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Input;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Exceptions;
 using MultipleClipboards.GlobalResources;
@@ -42,7 +42,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.HotKeys = new List<HotKey>();
 			this.ClipboardHistory = new ObservableList<ClipboardData>(Application.Current.Dispatcher);
 
-			this.PopulateAvailableClipboardList();
+			this.CreateAvailableClipboardCollection();
 			this.RegisterAllClipboards();
 			this.PreserveClipboardData();
 
@@ -78,7 +78,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <summary>
 		/// Gets the collection of clipboards available to the user.
 		/// </summary>
-		public IList<ClipboardDefinition> AvailableClipboards
+		public ObservableCollection<ClipboardDefinition> AvailableClipboards
 		{
 			get;
 			private set;
@@ -186,7 +186,7 @@ namespace MultipleClipboards.ClipboardManagement
 			{
 				MessageBus.Instance.Publish(new MainWindowNotification
 				{
-					MessageBody = string.Format("The clipboard '{0}' already exists.", clipboard.ToDisplayString()),
+					MessageBody = string.Format("The clipboard '{0}' already exists.", clipboard),
 					IconType = IconType.Error
 				});
 				return;
@@ -198,7 +198,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			if (result.WasCompleteFailure)
 			{
-				message = string.Format("Failed to register the clipboard '{0}'.", clipboard.ToDisplayString());
+				message = string.Format("Failed to register the clipboard '{0}'.", clipboard);
 			}
 			else
 			{
@@ -206,7 +206,7 @@ namespace MultipleClipboards.ClipboardManagement
 				log.InfoFormat("AddClipboard(): New clipboard added:\r\n{0}", clipboard);
 				message = result.HadFailures
 					? result.HotKeyRegistrationErrorMessage
-					: string.Format("The clipboard '{0}' has been registered successfully!", clipboard.ToDisplayString());
+					: string.Format("The clipboard '{0}' has been registered successfully!", clipboard);
 			}
 
 			MessageBus.Instance.Publish(new MainWindowNotification
@@ -226,13 +226,13 @@ namespace MultipleClipboards.ClipboardManagement
 				log.InfoFormat("RemoveClipboard(): Clipboard removed:\r\n{0}", clipboard);
 				MessageBus.Instance.Publish(new MainWindowNotification
 				{
-					MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard.ToDisplayString()),
+					MessageBody = string.Format("The clipboard '{0}' has been removed.", clipboard),
 					IconType = IconType.Success
 				});
 			}
 			catch (Exception e)
 			{
-				string errorMessage = string.Format("There was an error removing the clipboard '{0}'.", clipboard.ToDisplayString());
+				string errorMessage = string.Format("There was an error removing the clipboard '{0}'.", clipboard);
 				log.Error(errorMessage, e);
 				MessageBus.Instance.Publish(new MainWindowNotification
 				{
@@ -403,29 +403,39 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="e"></param>
 		private void ClipboardDefinitionsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			this.PopulateAvailableClipboardList();
+			if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				this.AvailableClipboards.Clear();
+				return;
+			}
+
+			if (e.OldItems != null)
+			{
+				foreach (var clipboard in e.OldItems.Cast<ClipboardDefinition>())
+				{
+					this.AvailableClipboards.Remove(clipboard);
+				}
+			}
+
+			if (e.NewItems != null)
+			{
+				foreach (var clipboard in e.NewItems.Cast<ClipboardDefinition>())
+				{
+					this.AvailableClipboards.Add(clipboard);
+				}
+			}
 		}
 
 		/// <summary>
 		/// Fills the available clipboard list with all the clipboard definitions currently available to the user.
 		/// </summary>
-		private void PopulateAvailableClipboardList()
+		private void CreateAvailableClipboardCollection()
 		{
-			if (this.AvailableClipboards == null)
-			{
-				this.AvailableClipboards = new List<ClipboardDefinition>();
-			}
-			else
-			{
-				this.AvailableClipboards.Clear();
-			}
+			var tempList = new List<ClipboardDefinition>();
+			tempList.Add(ClipboardDefinition.SystemClipboardDefinition);
+			tempList.AddRange(AppController.Settings.ClipboardDefinitions);
 
-			this.AvailableClipboards.Add(ClipboardDefinition.SystemClipboardDefinition);
-
-			foreach (var clipboard in AppController.Settings.ClipboardDefinitions)
-			{
-				this.AvailableClipboards.Add(clipboard);
-			}
+			this.AvailableClipboards = new ObservableCollection<ClipboardDefinition>(tempList);
 		}
 
 		/// <summary>
