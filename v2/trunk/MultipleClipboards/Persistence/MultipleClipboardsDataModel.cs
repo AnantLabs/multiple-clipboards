@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
-using ApplicationBasics.Collections.Generic;
 using MultipleClipboards.Entities;
 
 namespace MultipleClipboards.Persistence

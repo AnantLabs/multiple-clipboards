@@ -63,7 +63,6 @@
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
                             <MenuItem Header="Place data on..." FontWeight="Bold" IsEnabled="False" />
-                            <Separator />
                             <CollectionContainer Collection="{Binding Source={StaticResource AvailableClipboardsViewSource}}" />
                         </CompositeCollection>
                     </ContextMenu.ItemsSource>

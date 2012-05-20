@@ -255,7 +255,7 @@ namespace MultipleClipboards.Entities
 			else if (this.Formats.Contains(DataFormats.WaveAudio))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.WaveAudio);
-				Stream audioStream = dataObject as Stream;
+				var audioStream = dataObject as Stream;
 				this.DataPreview = audioStream != null ? string.Format("Audio stream ({0} bytes)", audioStream.Length) : dataObject.ToString();
 				this.singleFormatDetailedDataStringProducer = () => this.DataPreview;
 				this.IconType = IconType.Audio;
@@ -263,8 +263,8 @@ namespace MultipleClipboards.Entities
 			else if (this.Formats.Contains(DataFormats.Bitmap))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.Bitmap);
-				Bitmap bitmap = dataObject as Bitmap;
-				InteropBitmap interopBitmap = dataObject as InteropBitmap;
+				var bitmap = dataObject as Bitmap;
+				var interopBitmap = dataObject as InteropBitmap;
 
 				if (interopBitmap != null)
 				{
@@ -285,7 +285,7 @@ namespace MultipleClipboards.Entities
 			else if (this.Formats.Contains(DataFormats.FileDrop))
 			{
 				object dataObject = this.DataObject.GetData(DataFormats.FileDrop);
-				IEnumerable<string> filePaths = dataObject as IEnumerable<string>;
+				var filePaths = dataObject as IEnumerable<string>;
 				string dataString = string.Join(", ", filePaths ?? Enumerable.Empty<string>());
 				this.DataPreview = FormatDataPreviewString(dataString);
 				this.singleFormatDetailedDataStringProducer = () => string.Format("File Drop List:{0}{1}", Environment.NewLine, GetFileDropDisplayString(dataObject));
@@ -313,8 +313,8 @@ namespace MultipleClipboards.Entities
 
 		private static string GetFileDropDisplayString(object data)
 		{
-			StringBuilder fileDropBuilder = new StringBuilder();
-			IEnumerable<string> filePaths = data as IEnumerable<string>;
+			var fileDropBuilder = new StringBuilder();
+			var filePaths = data as IEnumerable<string>;
 
 			foreach (string filePath in filePaths ?? Enumerable.Empty<string>())
 			{

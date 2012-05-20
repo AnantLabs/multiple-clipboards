@@ -46,7 +46,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.RegisterAllClipboards();
 			this.PreserveClipboardData();
 
-			if (this.CurrentSystemClipboardData.Formats.Any())
+			if (this.CurrentSystemClipboardData != null && this.CurrentSystemClipboardData.Formats.Any())
 			{
 				this.EnqueueHistoricalEntry(this.CurrentSystemClipboardData);
 			}
@@ -162,7 +162,7 @@ namespace MultipleClipboards.ClipboardManagement
 		/// Removes the data stored on the clipboard with the given ID.
 		/// </summary>
 		/// <param name="clipboardId">The clipboard ID.</param>
-		protected void RemoveClipboardDataFromClipboard(int clipboardId)
+		private void RemoveClipboardDataFromClipboard(int clipboardId)
 		{
 			ClipboardData removedValue;
 
@@ -331,6 +331,52 @@ namespace MultipleClipboards.ClipboardManagement
 			using (this.ClipboardHistory.AcquireLock())
 			{
 				this.ClipboardHistory.Clear();
+			}
+		}
+
+		/// <summary>
+		/// Removes the data stored on the clipboard with the given ID.
+		/// </summary>
+		/// <param name="clipboardId">The clipboard ID.</param>
+		/// <param name="isCalledFromUi">A flag indicating whether or not this method was called from the UI.</param>
+		public void ClearClipboardContents(int clipboardId, bool isCalledFromUi = false)
+		{
+			this.SetClipboardDataForClipboard(clipboardId, null);
+
+			if (clipboardId != ClipboardDefinition.SystemClipboardId)
+			{
+				return;
+			}
+
+			Monitor.Enter(clipboardOperationLock);
+
+			try
+			{
+				WaitForExclusiveClipboardAccess();
+				Clipboard.Clear();
+			}
+			catch (Exception exception)
+			{
+				const string errorMessage = "There was an error clearing the contents of the system clipboard.";
+				log.Error(errorMessage, exception);
+				NotificationBase message;
+
+				if (isCalledFromUi)
+				{
+					message = new MainWindowNotification();
+				}
+				else
+				{
+					message = new TrayNotification();
+				}
+
+				message.MessageBody = errorMessage;
+				message.IconType = IconType.Error;
+				MessageBus.Instance.Publish(message);
+			}
+			finally
+			{
+				Monitor.Exit(clipboardOperationLock);
 			}
 		}
 
@@ -585,6 +631,11 @@ namespace MultipleClipboards.ClipboardManagement
 		/// <param name="clipboardData">The clipboard data to enqueue.</param>
 		private void EnqueueHistoricalEntry(ClipboardData clipboardData)
 		{
+			if (clipboardData == null)
+			{
+				return;
+			}
+
 			using (this.ClipboardHistory.AcquireLock())
 			{
 				if (this.ClipboardHistory.Count == AppController.Settings.NumberOfClipboardHistoryRecords)
@@ -698,13 +749,26 @@ namespace MultipleClipboards.ClipboardManagement
 
 		private static void PutDataOnClipboard(ClipboardData clipboardData)
 		{
+			if (clipboardData == null)
+			{
+				return;
+			}
+
 			Clipboard.SetDataObject(clipboardData.DataObject, true);
 			log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 		}
 
 		private static ClipboardData RetrieveDataFromClipboard()
 		{
-			ClipboardData clipboardData = new ClipboardData(Clipboard.GetDataObject());
+			var dataObject = Clipboard.GetDataObject();
+
+			if (dataObject == null || !dataObject.GetFormats().Any())
+			{
+				log.Debug("RetrieveDataFromClipboard(): The clipboard is empty.  Returnning null.");
+				return null;
+			}
+
+			var clipboardData = new ClipboardData(dataObject);
 			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 			return clipboardData;
 		}

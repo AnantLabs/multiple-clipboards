@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using ApplicationBasics;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
@@ -50,14 +49,16 @@ namespace MultipleClipboards.Presentation.Tabs
 				return;
 			}
 
+			var modifierKeysType = typeof(ModifierKeys);
+			var keysType = typeof(Key);
 			this.AddNewClipboardButton.IsEnabled = false;
 			ClipboardDefinition clipboard = new ClipboardDefinition
 			{
-				ModifierOneKey = Enum<ModifierKeys>.Parse(this.ModifierKeyOneComboBox.SelectedValue.ToString(), true),
-				ModifierTwoKey = Enum<ModifierKeys>.Parse(this.ModifierKeyTwoComboBox.SelectedValue.ToString(), true),
-				CopyKey = Enum<Key>.Parse(this.CopyKeyTextBox.Text, true),
-				CutKey = Enum<Key>.Parse(this.CutKeyTextBox.Text, true),
-				PasteKey = Enum<Key>.Parse(this.PasteKeyTextBox.Text, true)
+				ModifierOneKey = (ModifierKeys)Enum.Parse(modifierKeysType, this.ModifierKeyOneComboBox.SelectedValue.ToString(), true),
+				ModifierTwoKey = (ModifierKeys)Enum.Parse(modifierKeysType, this.ModifierKeyTwoComboBox.SelectedValue.ToString(), true),
+				CopyKey = (Key)Enum.Parse(keysType, this.CopyKeyTextBox.Text, true),
+				CutKey = (Key)Enum.Parse(keysType, this.CutKeyTextBox.Text, true),
+				PasteKey = (Key)Enum.Parse(keysType, this.PasteKeyTextBox.Text, true)
 			};
 
 			AppController.ClipboardManager.AddClipboard(clipboard);

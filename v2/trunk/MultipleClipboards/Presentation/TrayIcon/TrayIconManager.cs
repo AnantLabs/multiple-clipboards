@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,12 +22,14 @@ namespace MultipleClipboards.Presentation.TrayIcon
 {
 	public sealed class TrayIconManager : IDisposable
 	{
+		private const string ClipboardEmptyMenuItemText = "Clipboard is empty";
 		private static readonly ILog log = LogManager.GetLogger(typeof(TrayIconManager));
 		private readonly IDictionary<ulong, MenuItem> menuItemsByClipboardDataId;
 		private readonly NotifyIcon notifyIcon;
 		private readonly VistaMenu menuHelper;
 		private readonly Timer trayPopupTimer;
 		private ContextMenu contextMenu;
+		private MenuItem clipboardsMenuItem;
 		private Popup trayPopup;
 		private Border trayPopupBorder;
 		private Image trayPopupIcon;
@@ -50,7 +51,9 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		public void OnClipboardManagerInitialized()
 		{
 			AppController.ClipboardManager.ClipboardHistory.ObservableCollection.CollectionChanged += ClipboardHistoryCollectionChanged;
+			AppController.ClipboardManager.AvailableClipboards.CollectionChanged += (sender, args) => this.RebuildClipboardsMenuItem();
 			this.InitializeContextMenu();
+			this.RebuildClipboardsMenuItem();
 		}
 
 		public void ShowTrayIcon()
@@ -100,6 +103,8 @@ namespace MultipleClipboards.Presentation.TrayIcon
 					{
 						this.RemoveClipboardHistoryMenuItem(clipboardDataId);
 					}
+
+					return;
 				}
 
 				// First, remove all items from the menu that have been cleared from the history queue.
@@ -141,8 +146,9 @@ namespace MultipleClipboards.Presentation.TrayIcon
 				DefaultItem = true
 			};
 			var clearHistoryMenuItem = new MenuItem("Clear History", (sender, args) => AppController.ClipboardManager.ClearClipboardHistory());
+			this.clipboardsMenuItem = new MenuItem("Clipboards");
 			var seperator = new MenuItem("-");
-			this.contextMenu = new ContextMenu(new[] { seperator, clearHistoryMenuItem, mainWindowMenuItem, exitMenuItem });
+			this.contextMenu = new ContextMenu(new[] { seperator, clipboardsMenuItem, clearHistoryMenuItem, mainWindowMenuItem, exitMenuItem });
 
 			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
 			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));
@@ -150,6 +156,56 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			this.menuHelper.Refresh();
 
 			this.notifyIcon.ContextMenu = this.contextMenu;
+		}
+
+		private void RebuildClipboardsMenuItem()
+		{
+			foreach (var menuItem in this.clipboardsMenuItem.MenuItems.Cast<MenuItem>())
+			{
+				menuItem.Popup -= OnClipboardMenuItemPopup;
+
+				foreach (var subMenuItem in menuItem.MenuItems.Cast<MenuItem>().ToList())
+				{
+					menuItem.MenuItems.Remove(subMenuItem);
+					this.menuHelper.RemoveMenuItem(menuItem);
+					menuItem.Dispose();
+				}
+			}
+
+			this.clipboardsMenuItem.MenuItems.Clear();
+
+			foreach (var clipborad in AppController.ClipboardManager.AvailableClipboards)
+			{
+				int clipboardId = clipborad.ClipboardId;
+				var clearClipboardMenuItem = new MenuItem("Clear Clipboard", (sender, args) => AppController.ClipboardManager.ClearClipboardContents(clipboardId));
+				var clipboardMenuItem = new ClipboardMenuItem(clipborad.ToString(), clipboardId, new[] { clearClipboardMenuItem });
+				clipboardMenuItem.Popup += OnClipboardMenuItemPopup;
+				this.clipboardsMenuItem.MenuItems.Add(clipboardMenuItem);
+				this.menuHelper.SetImage(clearClipboardMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clear));
+			}
+		}
+
+		private void OnClipboardMenuItemPopup(object sender, EventArgs args)
+		{
+			var parentMenuItem = (ClipboardMenuItem)sender;
+
+			if (parentMenuItem.MenuItems.Count > 1)
+			{
+				var itemToRemove = parentMenuItem.MenuItems[0];
+				parentMenuItem.MenuItems.Remove(itemToRemove);
+				this.menuHelper.RemoveMenuItem(itemToRemove);
+				itemToRemove.Dispose();
+			}
+
+			var data = AppController.ClipboardManager.GetClipboardDataByClipboardId(parentMenuItem.ClipboardId);
+			var dataPreviewMenuItem = new MenuItem(data == null ? ClipboardEmptyMenuItemText : data.DataPreview);
+			dataPreviewMenuItem.Enabled = false;
+			parentMenuItem.MenuItems.Add(0, dataPreviewMenuItem);
+
+			if (data != null)
+			{
+				this.menuHelper.SetImage(dataPreviewMenuItem, IconFactory.GetTrayContextMenuBitmap(data.IconType));
+			}
 		}
 
 		private void AddClipboardHistoryItemsToConextMenu(IEnumerable<ClipboardData> clipboardDataItems)
@@ -168,6 +224,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 		private void RemoveClipboardHistoryMenuItem(ulong clipboardDataId)
 		{
 			var menuItem = this.menuItemsByClipboardDataId[clipboardDataId];
+			menuItem.Click -= OnClipboardHistoryMenuItemClick;
 			this.contextMenu.MenuItems.Remove(menuItem);
 			this.menuItemsByClipboardDataId.Remove(clipboardDataId);
 			this.menuHelper.RemoveMenuItem(menuItem);
@@ -176,26 +233,28 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		private static MenuItem BuildClipboardHistoryMenuItem(ClipboardData clipboardData)
 		{
-			var menuItem = new MenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")));
-			menuItem.Click +=
-				(sender, args) =>
-				{
-					try
-					{
-						AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardData.Id);
-					}
-					catch (Exception exception)
-					{
-						const string errorMessage = "An unexpected error occured while placing data on the system clipboard.";
-						log.Error(errorMessage, exception);
-						MessageBus.Instance.Publish(new TrayNotification
-						{
-							MessageBody = errorMessage,
-							IconType = IconType.Error
-						});
-					}
-				};
+			var menuItem = new ClipboardHistoryMenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")), clipboardData.Id);
+			menuItem.Click += OnClipboardHistoryMenuItemClick;
 			return menuItem;
+		}
+
+		private static void OnClipboardHistoryMenuItemClick(object sender, EventArgs args)
+		{
+			try
+			{
+				ulong clipboardDataId = ((ClipboardHistoryMenuItem)sender).ClipboardDataId;
+				AppController.ClipboardManager.PlaceHistoricalEntryOnClipboard(ClipboardDefinition.SystemClipboardId, clipboardDataId);
+			}
+			catch (Exception exception)
+			{
+				const string errorMessage = "An unexpected error occured while placing data on the system clipboard.";
+				log.Error(errorMessage, exception);
+				MessageBus.Instance.Publish(new TrayNotification
+				{
+					MessageBody = errorMessage,
+					IconType = IconType.Error
+				});
+			}
 		}
 
 		private void NotificationRecieved(TrayNotification notification)
@@ -207,7 +266,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 			if (this.trayPopupBorder == null || this.trayPopupIcon == null || this.trayPopupTextBlock == null)
 			{
-				// Event though this is an exceptional case, it cannot throw.
+				// Even though this is an exceptional case, it cannot throw.
 				// This method is called from the highest-level catch block in background threads which absolutely cannot fail.
 				log.Error("Unable to show notification popup because the required UI elements could not be found.  If an error caused this notification it should be logged as well.");
 				return;

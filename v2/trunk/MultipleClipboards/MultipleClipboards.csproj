@@ -74,10 +74,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ApplicationBasics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\ApplicationBasics.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\References\log4net.dll</HintPath>
     </Reference>
@@ -130,6 +126,7 @@
     <Compile Include="Messaging\MessageBus.cs" />
     <Compile Include="Messaging\Notifications.cs" />
     <Compile Include="Persistence\LogHelper.cs" />
+    <Compile Include="Persistence\SerializableDictionary.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
     </Compile>
@@ -205,6 +202,12 @@
     </Compile>
     <Compile Include="Presentation\Tabs\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\TrayIcon\ClipboardHistoryMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Presentation\TrayIcon\ClipboardMenuItem.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Presentation\TrayIcon\TrayIconManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

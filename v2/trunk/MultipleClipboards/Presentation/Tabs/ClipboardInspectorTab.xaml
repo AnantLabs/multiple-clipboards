@@ -20,7 +20,9 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" FontWeight="SemiBold" Text="System Clipboard" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" FontWeight="SemiBold" Text="System Clipboard    " HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <Hyperlink NavigateUri="http://fake/-1" RequestNavigate="OnClearButtonClick">Clear</Hyperlink>
+        </TextBlock>
         <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Target="{Binding ElementName=ShowDetailClipboardInformationCheckBox}">
             <AccessText>Show Detailed Clipboard Data:</AccessText>
         </Label>

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
@@ -15,6 +18,8 @@ namespace MultipleClipboards.Presentation.Tabs
 	public partial class ClipboardInspectorTab : UserControl
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardInspectorTab));
+		private const string ClearLinkFakeUrlPrefix = "http://fake/";
+		private readonly List<Hyperlink> clearLinks = new List<Hyperlink>();
 
 		// TODO: Do this dynamically somehow.
 		private const int ContainerHeight = 520;
@@ -42,6 +47,12 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			try
 			{
+				foreach (var clearLink in this.clearLinks)
+				{
+					clearLink.RequestNavigate -= this.OnClearButtonClick;
+				}
+
+				this.clearLinks.Clear();
 				this.ClipboardInspectorStackPanel.Children.Clear();
 				int textBoxHeight = (ContainerHeight / AppController.ClipboardManager.AvailableClipboards.Count) - TextBoxPadding;
 
@@ -50,22 +61,30 @@ namespace MultipleClipboards.Presentation.Tabs
 					textBoxHeight = MinTextBoxHeight;
 				}
 
-				foreach (ClipboardDefinition clipboard in AppController.ClipboardManager.AvailableClipboards)
+				foreach (var clipboard in AppController.ClipboardManager.AvailableClipboards)
 				{
-					ClipboardData data = AppController.ClipboardManager.GetClipboardDataByClipboardId(clipboard.ClipboardId);
+					var data = AppController.ClipboardManager.GetClipboardDataByClipboardId(clipboard.ClipboardId);
 
 					if (clipboard.ClipboardId != ClipboardDefinition.SystemClipboardId)
 					{
-						TextBlock labelTextBlock = new TextBlock
+						var labelTextBlock = new TextBlock
 						{
-							Text = clipboard.ToString(),
+							Text = string.Concat(clipboard.ToString(), "    "),
 							Margin = new Thickness(5, 0, 0, 0),
 							FontWeight = FontWeights.SemiBold
 						};
+
+						var clearLink = new Hyperlink();
+						clearLink.NavigateUri = new Uri(string.Concat(ClearLinkFakeUrlPrefix, clipboard.ClipboardId));
+						clearLink.RequestNavigate += this.OnClearButtonClick;
+						clearLink.Inlines.Add("Clear");
+						clearLinks.Add(clearLink);
+
+						labelTextBlock.Inlines.Add(clearLink);
 						this.ClipboardInspectorStackPanel.Children.Add(labelTextBlock);
 					}
 
-					TextBox dataTextBox = new TextBox
+					var dataTextBox = new TextBox
 					{
 						Text = data == null ? string.Empty : data.ToDisplayString(),
 						HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -96,6 +115,13 @@ namespace MultipleClipboards.Presentation.Tabs
 
 		private void ShowDetailedClipboardInformationCheckBoxClicked(object sender, RoutedEventArgs e)
 		{
+			this.Refresh();
+		}
+
+		private void OnClearButtonClick(object sender, RequestNavigateEventArgs e)
+		{
+			int clipboardId = int.Parse(e.Uri.ToString().Replace(ClearLinkFakeUrlPrefix, string.Empty));
+			AppController.ClipboardManager.ClearClipboardContents(clipboardId, isCalledFromUi: true);
 			this.Refresh();
 		}
 	}

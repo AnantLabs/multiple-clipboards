@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using ApplicationBasics;
 using MultipleClipboards.Interop;
 
 namespace MultipleClipboards.Entities
@@ -201,9 +201,11 @@ namespace MultipleClipboards.Entities
 				ModifierKeys = new List<ModifierKeys>()
 			};
 
-			foreach (Enum<ModifierKeys> modifierKey in Enum<ModifierKeys>.GetValues())
+			foreach (var modifierKey in Enum.GetValues(typeof(ModifierKeys)).Cast<ModifierKeys>())
 			{
-				if (modifierKey != ModifierKeys.None && (modifierBitMask & modifierKey) == modifierKey)
+				int intModifierKey = (int)modifierKey;
+
+				if (modifierKey != ModifierKeys.None && (modifierBitMask & intModifierKey) == intModifierKey)
 				{
 					hotKey.ModifierKeys.Add(modifierKey);
 				}
