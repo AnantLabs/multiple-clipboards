@@ -1,0 +1,284 @@
+﻿<UserControl x:Class="MultipleClipboards.Presentation.Tabs.SettingsTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:Layout="clr-namespace:MultipleClipboards.Presentation.Layout"
+             xmlns:Converters="clr-namespace:MultipleClipboards.Presentation.Converters"
+             xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
+             xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+             xmlns:Persistence="clr-namespace:MultipleClipboards.Persistence"
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="ModifierKeysEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ModifierKeys" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="LogLevelEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Persistence:LogLevel" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <Converters:EnumToStringConverter x:Key="EnumToStringConverter" />
+        <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid HorizontalAlignment="Stretch" Layout:MarginSetter.Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Settings Tab Grid - Row 0 -->
+        <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Name="ProgramSettingsGroupBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Header="Program Settings">
+            <StackPanel>
+                <!-- Basic Settings Grid -->
+                <Grid Layout:MarginSetter.Margin="2,5,2,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="142" Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Basic Settings Grid - Row 0 -->
+                    <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=NumberOfHistoricalRecordsTextBox}">
+                        <AccessText>Clipboard History Size:</AccessText>
+                    </Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                             Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                             ToolTip="Sets the maximum number of items that will be stored in the clipboard history list.">
+                    </TextBox>
+
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LaunchApplicationOnStarupCheckBox}">
+                        <AccessText>Launch Application on Starup:</AccessText>
+                    </Label>
+                    <CheckBox Grid.Row="0" Grid.Column="3" Name="LaunchApplicationOnStarupCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding LaunchApplicationOnSystemStartup, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="When checked the application will automatically launch when your computer starts up.">
+                    </CheckBox>
+
+                    <!-- Basic Settings Grid - Row 1 -->
+                    <Label Grid.Row="1" Grid.Column="0" Target="{Binding ElementName=ShowTrayNotificationsCheckBox}">
+                        <AccessText>Show Tray Notifications:</AccessText>
+                    </Label>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Name="ShowTrayNotificationsCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding ShowMessagesFromTray, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="When checked the application will be allowed to show notification popups from the system tray.">
+                    </CheckBox>
+                    
+                    <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
+                        <AccessText>Show Advanced Options:</AccessText>
+                    </Label>
+                    <CheckBox Grid.Row="1" Grid.Column="3" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding ShowAdvancedOptions, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="Shows / hides the advanced options for the application.">
+                    </CheckBox>
+                </Grid>
+
+                <!-- Advanced Settings Grid -->
+                <Grid Visibility="{Binding Path=IsChecked, ElementName=ShowAdvancedOptionsCheckBox, Converter={StaticResource BooleanToVisibilityConverter}}" Layout:MarginSetter.Margin="2,5,2,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="142" Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Advanced Settings Grid - Row 0 -->
+                    <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=ThreadDelayTimeTextBox}">
+                        <AccessText>Thread Delay Time (ms):</AccessText>
+                    </Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                             Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}">
+                        <TextBox.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    Sets the amount of time (in milliseconds) that the application will pause to allow for a clipboard operation to complete.
+                                    <LineBreak />
+                                    It is recommended that you leave this at the default value (250).
+                                    <LineBreak />
+                                    Values that are too low may cause inconsistent benhavior and values that are too high may cause poor performance.
+                                </TextBlock>
+                            </ToolTip>
+                        </TextBox.ToolTip>
+                    </TextBox>
+
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LogLevelComboBox}">
+                        <AccessText>Application Log Level:</AccessText>
+                    </Label>
+                    <ComboBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox"
+                              ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}"
+                              SelectedItem="{Binding ApplicationLogLevel, Source={x:Static MultipleClipboards:AppController.Settings}}">
+                        <ComboBox.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    Selects the verbosity of the application log.
+                                    <LineBreak />
+                                    Debug is most verbose and Fatal is least verbose.
+                                    <LineBreak />
+                                    It is recommended that you only use the Debug level when gathering detailed information for bug reports.
+                                </TextBlock>
+                            </ToolTip>
+                        </ComboBox.ToolTip>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Settings Tab Grid - Row 1 -->
+        <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="ClipboardDefinitionGroupBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" Header="Clipboard Definition">
+            <Grid Layout:MarginSetter.Margin="2,5,2,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Clipboard Definition Grid - Row 0 -->
+                <TextBlock Grid.Row="0" Grid.Column="0"></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Modifier Key 1"></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Modifier Key 2"></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="Copy Key"></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="4" Text="Cut Key"></TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" Text="Paste Key"></TextBlock>
+
+                <!-- Clipboard Definition Grid - Row 1 -->
+                <TextBlock Grid.Row="1" Grid.Column="0"></TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" ToolTip="The first modifier key. (Required)" />
+                <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ToolTip="The second modifier key. (Optional)" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" />
+                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CopyKeyTextBox" ToolTip="The key (A-Z) to use for the copy command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CutKeyTextBox" ToolTip="The key (A-Z) to use for the cut command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="PasteKeyTextBox" ToolTip="The key (A-Z) to use for the paste command of a new clipboard."></TextBox>
+                <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" ToolTip="Creates a new clipboard using the selected values." />
+
+                <!-- Clipboard Definition Grid - Row 2 -->
+                <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="7" AutoGenerateColumns="False" ItemsSource="{Binding ClipboardDefinitions, Source={x:Static MultipleClipboards:AppController.Settings}}" Name="ClipboardDefinitionDataGrid" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserSortColumns="False" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="False" CanUserResizeRows="False" UseLayoutRounding="False" IsReadOnly="True" HorizontalScrollBarVisibility="Hidden">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.RowHeaderStyle>
+                        <Style TargetType="DataGridRowHeader">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style>
+                    </DataGrid.RowHeaderStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Foreground" Value="Black" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="{x:Null}" />
+                                    <Setter Property="BorderBrush" Value="{x:Null}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="20">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ClipboardId}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ModifierOneKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ModifierTwoKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding CopyKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding CutKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding PasteKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Delete" Click="DeleteButtonClick" Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <TextBlock TextDecorations="Underline">
+													<ContentPresenter />
+                                                </TextBlock>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Foreground" Value="Blue" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Foreground" Value="Red" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Button.ToolTip>
+                                            <ToolTip>
+                                                <TextBlock>
+                                                    Permenantly deletes this clipboard.
+                                                    <LineBreak />
+                                                    Any data currently on this clipboard will be lost.
+                                                </TextBlock>
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
