@@ -245,24 +245,7 @@
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Delete" Click="DeleteButtonClick" Cursor="Hand">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <TextBlock TextDecorations="Underline">
-													<ContentPresenter />
-                                                </TextBlock>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="Foreground" Value="Blue" />
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="true">
-                                                        <Setter Property="Foreground" Value="Red" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
+                                    <Button Content="Delete" Style="{StaticResource LinkButtonNoUnderline}" Click="DeleteButtonClick">
                                         <Button.ToolTip>
                                             <ToolTip>
                                                 <TextBlock>

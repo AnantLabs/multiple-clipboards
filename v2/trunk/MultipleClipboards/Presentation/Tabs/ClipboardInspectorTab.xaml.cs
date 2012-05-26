@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Messaging;
+using MultipleClipboards.Presentation.Commands;
 using MultipleClipboards.Presentation.Icons;
 using log4net;
 
@@ -18,8 +16,8 @@ namespace MultipleClipboards.Presentation.Tabs
 	public partial class ClipboardInspectorTab : UserControl
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardInspectorTab));
-		private const string ClearLinkFakeUrlPrefix = "http://fake/";
-		private readonly List<Hyperlink> clearLinks = new List<Hyperlink>();
+		private readonly ClearClipboardCommand clearClipboardCommand = new ClearClipboardCommand();
+		private readonly Lazy<Style> linkButtonStyle;
 
 		// TODO: Do this dynamically somehow.
 		private const int ContainerHeight = 520;
@@ -29,11 +27,13 @@ namespace MultipleClipboards.Presentation.Tabs
 		public ClipboardInspectorTab()
 		{
 			InitializeComponent();
-			this.Loaded += this.ClipboardInspectorTabLoaded;
+			this.linkButtonStyle = new Lazy<Style>(() => (Style)this.FindResource("LinkButton"));
+			this.Loaded += this.ClipboardInspectorTabLoaded;			
 		}
 
 		private void ClipboardInspectorTabLoaded(object sender, RoutedEventArgs e)
 		{
+			this.clearSystemClipboardButton.CommandParameter = new ClearClipboardCommandArguments(ClipboardDefinition.SystemClipboardId, this.Refresh);
 			this.Refresh();
 		}
 
@@ -47,12 +47,6 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			try
 			{
-				foreach (var clearLink in this.clearLinks)
-				{
-					clearLink.RequestNavigate -= this.OnClearButtonClick;
-				}
-
-				this.clearLinks.Clear();
 				this.ClipboardInspectorStackPanel.Children.Clear();
 				int textBoxHeight = (ContainerHeight / AppController.ClipboardManager.AvailableClipboards.Count) - TextBoxPadding;
 
@@ -67,21 +61,33 @@ namespace MultipleClipboards.Presentation.Tabs
 
 					if (clipboard.ClipboardId != ClipboardDefinition.SystemClipboardId)
 					{
+						var horizontalPanel = new StackPanel
+						{
+							Orientation = Orientation.Horizontal,
+							MinHeight = 17
+						};
+
 						var labelTextBlock = new TextBlock
 						{
-							Text = string.Concat(clipboard.ToString(), "    "),
+							Text = clipboard.ToString(),
 							Margin = new Thickness(5, 0, 0, 0),
 							FontWeight = FontWeights.SemiBold
 						};
 
-						var clearLink = new Hyperlink();
-						clearLink.NavigateUri = new Uri(string.Concat(ClearLinkFakeUrlPrefix, clipboard.ClipboardId));
-						clearLink.RequestNavigate += this.OnClearButtonClick;
-						clearLink.Inlines.Add("Clear");
-						clearLinks.Add(clearLink);
+						var clearButton = new Button
+						{
+							Margin = new Thickness(10, 0, 0, 0),
+							HorizontalAlignment = HorizontalAlignment.Left,
+							VerticalAlignment = VerticalAlignment.Bottom,
+							Content = "Clear",
+							Style = this.linkButtonStyle.Value,
+							Command = this.clearClipboardCommand,
+							CommandParameter = new ClearClipboardCommandArguments(clipboard.ClipboardId, this.Refresh)
+						};
 
-						labelTextBlock.Inlines.Add(clearLink);
-						this.ClipboardInspectorStackPanel.Children.Add(labelTextBlock);
+						horizontalPanel.Children.Add(labelTextBlock);
+						horizontalPanel.Children.Add(clearButton);
+						this.ClipboardInspectorStackPanel.Children.Add(horizontalPanel);
 					}
 
 					var dataTextBox = new TextBox
@@ -115,13 +121,6 @@ namespace MultipleClipboards.Presentation.Tabs
 
 		private void ShowDetailedClipboardInformationCheckBoxClicked(object sender, RoutedEventArgs e)
 		{
-			this.Refresh();
-		}
-
-		private void OnClearButtonClick(object sender, RequestNavigateEventArgs e)
-		{
-			int clipboardId = int.Parse(e.Uri.ToString().Replace(ClearLinkFakeUrlPrefix, string.Empty));
-			AppController.ClipboardManager.ClearClipboardContents(clipboardId, isCalledFromUi: true);
 			this.Refresh();
 		}
 	}

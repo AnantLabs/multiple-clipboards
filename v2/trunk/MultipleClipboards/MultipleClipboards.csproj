@@ -131,6 +131,7 @@
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Presentation\Commands\ApplicationCommand.cs" />
+    <Compile Include="Presentation\Commands\ClearClipboardCommand.cs" />
     <Compile Include="Presentation\Commands\PasteCommand.cs" />
     <Compile Include="Presentation\Commands\CommandExtension.cs" />
     <Compile Include="Presentation\Controls\IconButton.cs" />
