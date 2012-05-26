@@ -761,14 +761,52 @@ namespace MultipleClipboards.ClipboardManagement
 		private static ClipboardData RetrieveDataFromClipboard()
 		{
 			var dataObject = Clipboard.GetDataObject();
+			var formats = new List<string>();
 
-			if (dataObject == null || !dataObject.GetFormats().Any())
+			if (dataObject != null)
+			{
+				try
+				{
+					formats = dataObject.GetFormats().ToList();
+				}
+				catch (OutOfMemoryException memoryException)
+				{
+					// First, log the original error as a warning, since we will try and recover.
+					log.Warn("RetrieveDataFromClipboard(): Unable to get the collection of formats from the retrieved data object.", memoryException);
+
+					// Although I have never seen this error personally, it has been reported.
+					// My theory is that you can only reliably call GetFormats() on an IDataObject once,
+					// especially when the data is failarly large, like an image.
+					// That's why I am now reading the formats once here, instead of once here to check
+					// to see if it's empty and then again in the constructor of ClipboardData.
+					// Even so, if this exception occurs then try to look for a few known types
+					// and build a limited format collection.
+					if (Clipboard.ContainsImage())
+					{
+						formats.Add(DataFormats.Bitmap);
+					}
+					else if (Clipboard.ContainsAudio())
+					{
+						formats.Add(DataFormats.WaveAudio);
+					}
+					else if (Clipboard.ContainsFileDropList())
+					{
+						formats.Add(DataFormats.FileDrop);
+					}
+					else if (Clipboard.ContainsText())
+					{
+						formats.Add(DataFormats.Text);
+					}
+				}
+			}
+
+			if (dataObject == null || !formats.Any())
 			{
 				log.Debug("RetrieveDataFromClipboard(): The clipboard is empty.  Returnning null.");
 				return null;
 			}
 
-			var clipboardData = new ClipboardData(dataObject);
+			var clipboardData = new ClipboardData(dataObject, formats);
 			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 			return clipboardData;
 		}

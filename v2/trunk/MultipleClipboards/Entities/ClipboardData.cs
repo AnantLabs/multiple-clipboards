@@ -27,13 +27,13 @@ namespace MultipleClipboards.Entities
 		private Func<string> singleFormatDetailedDataStringProducer;
 
 		public ClipboardData(ClipboardData clipboardData)
-			: this(clipboardData.DataObject)
+			: this(clipboardData.DataObject, clipboardData.Formats)
 		{
 		}
 
-		public ClipboardData(IDataObject dataObject)
+		public ClipboardData(IDataObject dataObject, IEnumerable<string> formats)
 		{
-			this.PreserveDataObject(dataObject);
+			this.PreserveDataObject(dataObject, formats);
 			this.SetDescriptionData();
 			this.TimeStamp = DateTime.Now;
 
@@ -182,7 +182,8 @@ namespace MultipleClipboards.Entities
 		/// Clones the given IDataObject instance and preserves it in this ClipboardData instance for future use.
 		/// </summary>
 		/// <param name="sourceDataObject">The source data object.</param>
-		private void PreserveDataObject(IDataObject sourceDataObject)
+		/// <param name="formats">The collection of formats for the source data object.</param>
+		private void PreserveDataObject(IDataObject sourceDataObject, IEnumerable<string> formats)
 		{
 			if (sourceDataObject == null)
 			{
@@ -191,7 +192,7 @@ namespace MultipleClipboards.Entities
 				return;
 			}
 
-			var allFormats = sourceDataObject.GetFormats().Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
+			var allFormats = formats.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
 			var validFormats = new List<string>();
 			this.DataObject = new DataObject();
 
