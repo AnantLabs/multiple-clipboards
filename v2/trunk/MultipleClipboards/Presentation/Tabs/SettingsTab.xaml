@@ -45,6 +45,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition MinWidth="142" Width="Auto" />
@@ -78,11 +79,20 @@
                               IsChecked="{Binding ShowMessagesFromTray, Source={x:Static MultipleClipboards:AppController.Settings}}"
                               ToolTip="When checked the application will be allowed to show notification popups from the system tray.">
                     </CheckBox>
-                    
-                    <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
+
+                    <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=PersistClipboardHistoryCheckBox}">
+                        <AccessText>Persist Clipboard History:</AccessText>
+                    </Label>
+                    <CheckBox Grid.Row="1" Grid.Column="3" Name="PersistClipboardHistoryCheckBox" VerticalAlignment="Center"
+                              IsChecked="{Binding PersistClipboardHistory, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                              ToolTip="When checked the application will preserve the contents of the clipboard history list when the program exits.">
+                    </CheckBox>
+
+                    <!-- Basic Settings Grid - Row 2 -->
+                    <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Target="{Binding ElementName=ShowAdvancedOptionsCheckBox}">
                         <AccessText>Show Advanced Options:</AccessText>
                     </Label>
-                    <CheckBox Grid.Row="1" Grid.Column="3" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center"
+                    <CheckBox Grid.Row="2" Grid.Column="1" Name="ShowAdvancedOptionsCheckBox" VerticalAlignment="Center"
                               IsChecked="{Binding ShowAdvancedOptions, Source={x:Static MultipleClipboards:AppController.Settings}}"
                               ToolTip="Shows / hides the advanced options for the application.">
                     </CheckBox>

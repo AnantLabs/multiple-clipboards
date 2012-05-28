@@ -50,7 +50,6 @@ namespace MultipleClipboards
 				Debugger.Launch();
 			}
 #endif
-
 			base.OnStartup(e);
 			this.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
@@ -93,11 +92,26 @@ namespace MultipleClipboards
 
 		protected override void OnExit(ExitEventArgs e)
 		{
+            AppController.ClipboardManager.SaveClipboardHistory();
 			this.ClipboardWindow.Dispose();
 			this.trayIconManager.Dispose();
 			log.DebugFormat("Application exiting with exit code {0}.", e.ApplicationExitCode);
 			base.OnExit(e);
 		}
+
+        protected override void OnSessionEnding(SessionEndingCancelEventArgs e)
+        {
+            try
+            {
+                AppController.ClipboardManager.SaveClipboardHistory();
+            }
+            catch (Exception ex)
+            {
+                log.Error("The session is ending and therefore the application is closing, but there was an error saving the clipboard history to disk.", ex);
+            }
+
+            base.OnSessionEnding(e);
+        }
 
 		private static void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{

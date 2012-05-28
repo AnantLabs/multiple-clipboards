@@ -46,6 +46,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			this.CreateAvailableClipboardCollection();
 			this.RegisterAllClipboards();
+            this.LoadClipboardHistory();
 			this.PreserveClipboardData();
 
 			if (this.CurrentSystemClipboardData != null && this.CurrentSystemClipboardData.ContainsData)
@@ -128,29 +129,52 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 		}
 
-		public byte[] GetSerializedClipboardHistory()
+        /// <summary>
+        /// Saves the clipboard history data to disk if the setting to do so is enabled.
+        /// </summary>
+        public void SaveClipboardHistory()
+        {
+            if (!AppController.Settings.PersistClipboardHistory)
+            {
+                return;
+            }
+
+            byte[] serializedData;
+            List<ClipboardData> preservedHistory;
+
+            using (this.ClipboardHistory.AcquireLock())
+            {
+                preservedHistory = this.ClipboardHistory.ToList();
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(stream, preservedHistory);
+                serializedData = stream.ToArray();
+                stream.Close();
+            }
+
+            AppController.Settings.SaveClipboardHistory(serializedData);
+        }
+
+        /// <summary>
+        /// Loads the persisted clipboard history from disk and adds all items to the current in-memory history collection if the setting to do so is enabled.
+        /// </summary>
+		protected void LoadClipboardHistory()
 		{
-			byte[] serializedData;
-			List<ClipboardData> preservedHistory;
+            if (!AppController.Settings.PersistClipboardHistory)
+            {
+                return;
+            }
 
-			using (this.ClipboardHistory.AcquireLock())
-			{
-				preservedHistory = this.ClipboardHistory.ToList();
-			}
+            var serializedData = AppController.Settings.LoadClipboardHistory();
 
-			using (var stream = new MemoryStream())
-			{
-				var formatter = new BinaryFormatter();
-				formatter.Serialize(stream, preservedHistory);
-				serializedData = stream.ToArray();
-				stream.Close();
-			}
+            if (serializedData == null)
+            {
+                return;
+            }
 
-			return serializedData;
-		}
-
-		public void SetClipboardHistory(byte[] serializedData)
-		{
 			List<ClipboardData> preservedHistory;
 
 			using (var stream = new MemoryStream(serializedData))
