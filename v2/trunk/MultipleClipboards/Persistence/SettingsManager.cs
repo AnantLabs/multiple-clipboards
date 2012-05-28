@@ -257,6 +257,29 @@ namespace MultipleClipboards.Persistence
 			this.SaveSettings();
 		}
 
+		public void SaveClipboardHistory(byte[] serializedData)
+		{
+			using (var fileStream = File.OpenWrite(Constants.PersistedHistoryFilePath))
+			{
+				fileStream.Write(serializedData, 0, serializedData.Length);
+				fileStream.Close();
+			}
+		}
+
+		public byte[] LoadClipboardHistory()
+		{
+			byte[] serializedData;
+
+			using (var fileStream = File.OpenRead(Constants.PersistedHistoryFilePath))
+			{
+				serializedData = new byte[fileStream.Length];
+				fileStream.Read(serializedData, 0, (int)fileStream.Length);
+				fileStream.Close();
+			}
+
+			return serializedData;
+		}
+
 		/// <summary>
 		/// Loads the settings that have been saved, or the defaults if there is no settings file.
 		/// </summary>
@@ -264,8 +287,8 @@ namespace MultipleClipboards.Persistence
 		{
 			if (File.Exists(Constants.SettingsFilePath))
 			{
-				XmlSerializer serializer = new XmlSerializer(typeof(MultipleClipboardsDataModel));
-				using (FileStream fileStream = new FileStream(Constants.SettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				var serializer = new XmlSerializer(typeof(MultipleClipboardsDataModel));
+				using (var fileStream = new FileStream(Constants.SettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					this.DataStore = (MultipleClipboardsDataModel)serializer.Deserialize(fileStream);
 				}
@@ -284,8 +307,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		private void SaveSettings()
 		{
-			XmlSerializer serializer = new XmlSerializer(typeof(MultipleClipboardsDataModel));
-			using (StreamWriter writer = new StreamWriter(Constants.SettingsFilePath))
+			var serializer = new XmlSerializer(typeof(MultipleClipboardsDataModel));
+			using (var writer = new StreamWriter(Constants.SettingsFilePath))
 			{
 				serializer.Serialize(writer, this.DataStore);
 			}

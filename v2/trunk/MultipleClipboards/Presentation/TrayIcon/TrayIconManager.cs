@@ -145,10 +145,15 @@ namespace MultipleClipboards.Presentation.TrayIcon
 			{
 				DefaultItem = true
 			};
+
+			// TEMP DEBUG CODE
+			var loadHistoryMenuItem = new MenuItem("Load History", (sender, args) => AppController.ClipboardManager.SetClipboardHistory(AppController.Settings.LoadClipboardHistory()));
+			var saveHistoryMenuItem = new MenuItem("Save History", (sender, args) => AppController.Settings.SaveClipboardHistory(AppController.ClipboardManager.GetSerializedClipboardHistory()));
+
 			var clearHistoryMenuItem = new MenuItem("Clear History", (sender, args) => AppController.ClipboardManager.ClearClipboardHistory());
 			this.clipboardsMenuItem = new MenuItem("Clipboards");
 			var seperator = new MenuItem("-");
-			this.contextMenu = new ContextMenu(new[] { seperator, clipboardsMenuItem, clearHistoryMenuItem, mainWindowMenuItem, exitMenuItem });
+			this.contextMenu = new ContextMenu(new[] { seperator, loadHistoryMenuItem, saveHistoryMenuItem, clipboardsMenuItem, clearHistoryMenuItem, mainWindowMenuItem, exitMenuItem });
 
 			this.menuHelper.SetImage(exitMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Exit));
 			this.menuHelper.SetImage(mainWindowMenuItem, IconFactory.GetTrayContextMenuBitmap(IconType.Clipboard));

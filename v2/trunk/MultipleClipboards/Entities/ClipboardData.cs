@@ -14,46 +14,53 @@ using log4net;
 
 namespace MultipleClipboards.Entities
 {
-	public class ClipboardData
+	[Serializable]
+	public class ClipboardData : ISerializable
 	{
 		private const string Tab = "  ";
 		private const string UnknownDataPreviewString = "Unknown";
 		private const string UnableToRetrieveDataMessage = "Unable to retrieve data in this format.";
 		private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardData));
 		private static readonly object idLock = new object();
+		private static readonly string alternateBitmapFormat = typeof(Bitmap).ToString();
+		private static readonly Type dataByFormatType = typeof(Dictionary<string, object>);
 		private static ulong _idCounter;
 		private string iconPath;
 		private string iconToolTip;
 		private Func<string> singleFormatDetailedDataStringProducer;
 
 		public ClipboardData(ClipboardData clipboardData)
-			: this(clipboardData.DataObject, clipboardData.Formats)
 		{
+			this.DataByFormat = clipboardData.DataByFormat.ToDictionary(pair => pair.Key, pair => pair.Value);
+			this.Initialize(clipboardData.TimeStamp);
 		}
 
 		public ClipboardData(IDataObject dataObject, IEnumerable<string> formats)
 		{
 			this.PreserveDataObject(dataObject, formats);
-			this.SetDescriptionData();
-			this.TimeStamp = DateTime.Now;
+			this.Initialize(DateTime.Now);
+		}
+
+		private ClipboardData(SerializationInfo info, StreamingContext context)
+		{
+			this.DataByFormat = (Dictionary<string, object>)info.GetValue("DataByFormat", dataByFormatType);
+			this.Initialize(info.GetDateTime("TimeStamp"), false);
+		}
+
+		public void Initialize(DateTime timeStamp, bool setDescriptionData = true)
+		{
+			if (setDescriptionData)
+			{
+				this.SetDescriptionData();
+			}
+
+			this.TimeStamp = timeStamp;
 
 			lock (idLock)
 			{
 				_idCounter++;
 				this.Id = _idCounter;
 			}
-		}
-
-		public IDataObject DataObject
-		{
-			get;
-			private set;
-		}
-
-		public IEnumerable<string> Formats
-		{
-			get;
-			private set;
 		}
 
 		public ulong Id
@@ -96,22 +103,74 @@ namespace MultipleClipboards.Entities
 			}
 		}
 
+		private Dictionary<string, object> DataByFormat
+		{
+			get;
+			set;
+		}
+
+		public bool ContainsData
+		{
+			get
+			{
+				return DataByFormat.Any();
+			}
+		}
+		
+		public DataObject GetDataObject()
+		{
+			var dataObject = new DataObject();
+
+			foreach (var format in this.DataByFormat.Keys)
+			{
+				dataObject.SetData(format, this.DataByFormat[format]);
+			}
+
+			return dataObject;
+		}
+
+		/// <summary>
+		/// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+		/// </summary>
+		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+		/// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+		/// <exception cref="T:System.Security.SecurityException">The caller does not have the required permission.</exception>
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			// When serializing clipboard data all we want to preserve is the original time and the collection of data by format.
+			// Then, when deserializing, we will re-construct the other properties.
+			// IMPORTANT: Some data formats (bitmaps) are not marked as serializable.  We must filter those types out here.
+			info.AddValue("TimeStamp", this.TimeStamp);
+			info.AddValue("DataByFormat",
+				this.DataByFormat.Where(pair => Attribute.IsDefined(pair.Value.GetType(), typeof(SerializableAttribute))).ToDictionary(pair => pair.Key, pair => pair.Value),
+				dataByFormatType);
+		}
+
 		public string ToLogString()
 		{
-			if (this.DataObject == null)
+			if (!this.DataByFormat.Any())
 			{
 				return string.Empty;
 			}
 
-			if (this.Formats.Contains(DataFormats.Text))
+			if (this.DataByFormat.ContainsKey(DataFormats.Text))
 			{
-				string data = this.DataObject.GetData(DataFormats.Text).ToString();
+				string data = this.DataByFormat[DataFormats.Text].ToString();
 				return data.Length > 1000 ? data.Substring(0, 1000) : data;
 			}
-			else if (this.Formats.Count() > 0)
+			else if (this.DataByFormat.Keys.Count() > 0)
 			{
-				object data = this.DataObject.GetData(this.Formats.ElementAt(0));
-				return data == null ? string.Empty : data.ToString();
+				// There is a chance that the data we are trying to retrieve is owned by another thread (bitmaps),
+				// which means calling .ToString() will throw an exception.
+				try
+				{
+					object data = this.DataByFormat[this.DataByFormat.Keys.ElementAt(0)];
+					return data == null ? string.Empty : data.ToString();
+				}
+				catch (InvalidOperationException)
+				{
+					return string.Empty;
+				}
 			}
 			else
 			{
@@ -125,7 +184,7 @@ namespace MultipleClipboards.Entities
 		/// <returns>A descriptive string representation of this IDataObject.</returns>
 		public string ToDisplayString()
 		{
-			if (this.DataObject == null)
+			if (!this.DataByFormat.Any())
 			{
 				return string.Empty;
 			}
@@ -137,12 +196,12 @@ namespace MultipleClipboards.Entities
 
 			StringBuilder displayStringBuilder = new StringBuilder();
 
-			foreach (string format in this.Formats)
+			foreach (string format in this.DataByFormat.Keys)
 			{
-				object data = this.DataObject.GetData(format);
+				object data = this.DataByFormat[format];
 				string dataString;
 
-				if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap)
+				if (format == DataFormats.WaveAudio || format == DataFormats.Bitmap || format == alternateBitmapFormat)
 				{
 					dataString = this.DataPreview;
 				}
@@ -185,18 +244,14 @@ namespace MultipleClipboards.Entities
 		/// <param name="formats">The collection of formats for the source data object.</param>
 		private void PreserveDataObject(IDataObject sourceDataObject, IEnumerable<string> formats)
 		{
+			this.DataByFormat = new Dictionary<string, object>();
+
 			if (sourceDataObject == null)
 			{
-				this.DataObject = null;
-				this.Formats = Enumerable.Empty<string>();
 				return;
 			}
 
-			var allFormats = formats.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-			var validFormats = new List<string>();
-			this.DataObject = new DataObject();
-
-			foreach (string format in allFormats)
+			foreach (string format in formats.Where(f => !string.IsNullOrWhiteSpace(f)))
 			{
 				try
 				{
@@ -207,8 +262,7 @@ namespace MultipleClipboards.Entities
 						continue;
 					}
 
-					this.DataObject.SetData(format, data);
-					validFormats.Add(format);
+					this.DataByFormat.Add(format, data);
 				}
 				catch (SerializationException serializationException)
 				{
@@ -239,31 +293,29 @@ namespace MultipleClipboards.Entities
 						comException);
 				}
 			}
-
-			this.Formats = validFormats;
 		}
 
-		private void SetDescriptionData()
+		public void SetDescriptionData()
 		{
-			if (this.Formats.Contains(DataFormats.Html))
+			if (this.DataByFormat.ContainsKey(DataFormats.Html))
 			{
 				this.SetTextDescriptionData(IconType.Html);
 			}
-			else if (this.Formats.Contains(DataFormats.Rtf))
+			else if (this.DataByFormat.ContainsKey(DataFormats.Rtf))
 			{
 				this.SetTextDescriptionData(IconType.Rtf);
 			}
-			else if (this.Formats.Contains(DataFormats.WaveAudio))
+			else if (this.DataByFormat.ContainsKey(DataFormats.WaveAudio))
 			{
-				object dataObject = this.DataObject.GetData(DataFormats.WaveAudio);
+				object dataObject = this.DataByFormat[DataFormats.WaveAudio];
 				var audioStream = dataObject as Stream;
 				this.DataPreview = audioStream != null ? string.Format("Audio stream ({0} bytes)", audioStream.Length) : dataObject.ToString();
 				this.singleFormatDetailedDataStringProducer = () => this.DataPreview;
 				this.IconType = IconType.Audio;
 			}
-			else if (this.Formats.Contains(DataFormats.Bitmap))
+			else if (this.DataByFormat.ContainsKey(DataFormats.Bitmap) || this.DataByFormat.ContainsKey(alternateBitmapFormat))
 			{
-				object dataObject = this.DataObject.GetData(DataFormats.Bitmap);
+				object dataObject = this.DataByFormat[this.DataByFormat.Keys.First(k => k == DataFormats.Bitmap || k == alternateBitmapFormat)];
 				var bitmap = dataObject as Bitmap;
 				var interopBitmap = dataObject as InteropBitmap;
 
@@ -283,16 +335,16 @@ namespace MultipleClipboards.Entities
 				this.singleFormatDetailedDataStringProducer = () => this.DataPreview;
 				this.IconType = IconType.Image;
 			}
-			else if (this.Formats.Contains(DataFormats.FileDrop))
+			else if (this.DataByFormat.ContainsKey(DataFormats.FileDrop))
 			{
-				object dataObject = this.DataObject.GetData(DataFormats.FileDrop);
+				object dataObject = this.DataByFormat[DataFormats.FileDrop];
 				var filePaths = dataObject as IEnumerable<string>;
 				string dataString = string.Join(", ", filePaths ?? Enumerable.Empty<string>());
 				this.DataPreview = FormatDataPreviewString(dataString);
 				this.singleFormatDetailedDataStringProducer = () => string.Format("File Drop List:{0}{1}", Environment.NewLine, GetFileDropDisplayString(dataObject));
 				this.IconType = IconType.FileDrop;
 			}
-			else if (this.Formats.Contains(DataFormats.Text))
+			else if (this.DataByFormat.ContainsKey(DataFormats.Text))
 			{
 				this.SetTextDescriptionData(IconType.Text);
 			}
@@ -306,7 +358,7 @@ namespace MultipleClipboards.Entities
 
 		private void SetTextDescriptionData(IconType iconType)
 		{
-			var textData = this.DataObject.GetData(DataFormats.Text);
+			var textData = this.DataByFormat[DataFormats.Text];
 			this.singleFormatDetailedDataStringProducer = textData.ToString;
 			this.DataPreview = FormatDataPreviewString(textData);
 			this.IconType = iconType;

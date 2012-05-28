@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
@@ -46,7 +48,7 @@ namespace MultipleClipboards.ClipboardManagement
 			this.RegisterAllClipboards();
 			this.PreserveClipboardData();
 
-			if (this.CurrentSystemClipboardData != null && this.CurrentSystemClipboardData.Formats.Any())
+			if (this.CurrentSystemClipboardData != null && this.CurrentSystemClipboardData.ContainsData)
 			{
 				this.EnqueueHistoricalEntry(this.CurrentSystemClipboardData);
 			}
@@ -123,6 +125,45 @@ namespace MultipleClipboards.ClipboardManagement
 			set
 			{
 				this.SetClipboardDataForClipboard(ClipboardDefinition.SystemClipboardId, value);
+			}
+		}
+
+		public byte[] GetSerializedClipboardHistory()
+		{
+			byte[] serializedData;
+			List<ClipboardData> preservedHistory;
+
+			using (this.ClipboardHistory.AcquireLock())
+			{
+				preservedHistory = this.ClipboardHistory.ToList();
+			}
+
+			using (var stream = new MemoryStream())
+			{
+				var formatter = new BinaryFormatter();
+				formatter.Serialize(stream, preservedHistory);
+				serializedData = stream.ToArray();
+				stream.Close();
+			}
+
+			return serializedData;
+		}
+
+		public void SetClipboardHistory(byte[] serializedData)
+		{
+			List<ClipboardData> preservedHistory;
+
+			using (var stream = new MemoryStream(serializedData))
+			{
+				var formatter = new BinaryFormatter();
+				preservedHistory = (List<ClipboardData>)formatter.Deserialize(stream);
+				stream.Close();
+			}
+
+			foreach (var clipboardData in preservedHistory)
+			{
+				clipboardData.SetDescriptionData();
+				this.EnqueueHistoricalEntry(clipboardData, false);
 			}
 		}
 
@@ -629,7 +670,8 @@ namespace MultipleClipboards.ClipboardManagement
 		/// Enqueues the given entry in the clipboard history queue.
 		/// </summary>
 		/// <param name="clipboardData">The clipboard data to enqueue.</param>
-		private void EnqueueHistoricalEntry(ClipboardData clipboardData)
+		/// <param name="cloneClipboardData">A flag to determine whether or not to clone the given CliboardData object before adding it to the history collection.</param>
+		private void EnqueueHistoricalEntry(ClipboardData clipboardData, bool cloneClipboardData = true)
 		{
 			if (clipboardData == null)
 			{
@@ -642,7 +684,7 @@ namespace MultipleClipboards.ClipboardManagement
 				{
 					this.ClipboardHistory.RemoveAt(0);
 				}
-				this.ClipboardHistory.Add(new ClipboardData(clipboardData));
+				this.ClipboardHistory.Add(cloneClipboardData ? new ClipboardData(clipboardData) : clipboardData);
 			}
 		}
 
@@ -754,8 +796,12 @@ namespace MultipleClipboards.ClipboardManagement
 				return;
 			}
 
-			Clipboard.SetDataObject(clipboardData.DataObject, true);
-			log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToLogString());
+			Clipboard.SetDataObject(clipboardData.GetDataObject(), true);
+			
+			if (log.IsDebugEnabled)
+			{
+				log.DebugFormat("PutDataOnClipboard(): The following data was just placed on the clipboard:\r\n\t{0}", clipboardData.ToLogString());
+			}
 		}
 
 		private static ClipboardData RetrieveDataFromClipboard()
@@ -807,7 +853,12 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 
 			var clipboardData = new ClipboardData(dataObject, formats);
-			log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
+			
+			if (log.IsDebugEnabled)
+			{
+				log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
+			}
+			
 			return clipboardData;
 		}
 

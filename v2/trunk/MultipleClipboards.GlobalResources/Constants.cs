@@ -10,6 +10,7 @@ namespace MultipleClipboards.GlobalResources
 
 		// File names.  These will never change without a new build.
 		private const string SettingsFileName = "MultipleClipboardsSettings.xml";
+		private const string PersistedHistoryFileName = "ClipboardHistory.dat";
 		private const string LogFileName = "MultipleClipboardsLog.log";
 		private const string AboutTextFileName = "AboutText.rtf";
 		private const string ShortcutFileName = "Multiple Clipboards.lnk";
@@ -21,6 +22,7 @@ namespace MultipleClipboards.GlobalResources
 		public static readonly string BaseDataPath = string.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\MultipleClipboards\");
 		public static readonly string BackupDataPath = string.Concat(BaseDataPath, @"Backup\");
 		public static readonly string SettingsFilePath = GetFilePath(SettingsFileName);
+		public static readonly string PersistedHistoryFilePath = GetFilePath(PersistedHistoryFileName);
 		public static readonly string LogFilePath = GetFilePath(LogFileName);
 		public static readonly string AboutTextFilePath = GetFilePath(AboutTextFileName);
 		public static readonly string ShortcutPath = string.Concat(BaseApplicationDirectory, ShortcutFileName);
