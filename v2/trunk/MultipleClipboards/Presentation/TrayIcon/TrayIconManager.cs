@@ -161,16 +161,20 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		private void RebuildClipboardsMenuItem()
 		{
-            foreach (var menuItem in this.clipboardsMenuItem.MenuItems.Cast<MenuItem>().Where(mi => mi != null))
+            while (this.clipboardsMenuItem.MenuItems.Count > 0)
 			{
+                var menuItem = this.clipboardsMenuItem.MenuItems[0];
 				menuItem.Popup -= OnClipboardMenuItemPopup;
 
-				foreach (var subMenuItem in menuItem.MenuItems.Cast<MenuItem>().Where(mi => mi != null).ToList())
+                while (menuItem.MenuItems.Count > 0)
 				{
+                    var subMenuItem = menuItem.MenuItems[0];
 					menuItem.MenuItems.Remove(subMenuItem);
-					this.menuHelper.RemoveMenuItem(menuItem);
-					menuItem.Dispose();
+                    this.menuHelper.RemoveMenuItem(subMenuItem);
+                    subMenuItem.Dispose();
 				}
+
+                menuItem.Dispose();
 			}
 
 			this.clipboardsMenuItem.MenuItems.Clear();

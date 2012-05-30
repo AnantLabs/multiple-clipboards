@@ -8,9 +8,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
+using log4net;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation.Icons;
-using log4net;
 
 namespace MultipleClipboards.Entities
 {
@@ -321,11 +321,11 @@ namespace MultipleClipboards.Entities
 
 				if (interopBitmap != null)
 				{
-					this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2} DPI", interopBitmap.PixelWidth, interopBitmap.PixelHeight, interopBitmap.DpiX);
+                    this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", interopBitmap.PixelWidth, interopBitmap.PixelHeight, interopBitmap.Format.BitsPerPixel);
 				}
 				else if (bitmap != null)
 				{
-					this.DataPreview = string.Format("Bitmap image - Size: {0}x{1} - Format: {2}", bitmap.Width, bitmap.Height, bitmap.PixelFormat);
+					this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", bitmap.Width, bitmap.Height, bitmap.PixelFormat);
 				}
 				else
 				{
