@@ -147,6 +147,12 @@ namespace MultipleClipboards.ClipboardManagement
 				preservedHistory = this.ClipboardHistory.ToList();
 			}
 
+			if (!preservedHistory.Any())
+			{
+				AppController.Settings.DeleteClipboardHistory();
+				return;
+			}
+
 			using (var stream = new MemoryStream())
 			{
 				var formatter = new BinaryFormatter();
@@ -397,6 +403,8 @@ namespace MultipleClipboards.ClipboardManagement
 			{
 				this.ClipboardHistory.Clear();
 			}
+
+			AppController.Settings.DeleteClipboardHistory();
 		}
 
 		/// <summary>
@@ -880,6 +888,8 @@ namespace MultipleClipboards.ClipboardManagement
 			
 			if (log.IsDebugEnabled)
 			{
+				// I usually don't like checking IsLogLevelEnabled flags because it makes the code ugly, but in this case
+				// ToLogString() actually does some work, so there's no point to do it if we're not going to log it.
 				log.DebugFormat("RetrieveDataFromClipboard(): The following data was just retrieved from the clipboard:\r\n\t{0}", clipboardData.ToLogString());
 			}
 			

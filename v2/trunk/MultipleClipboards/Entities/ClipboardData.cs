@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
@@ -140,10 +141,14 @@ namespace MultipleClipboards.Entities
 			// When serializing clipboard data all we want to preserve is the original time and the collection of data by format.
 			// Then, when deserializing, we will re-construct the other properties.
 			// IMPORTANT: Some data formats (bitmaps) are not marked as serializable.  We must filter those types out here.
+			// NOTE: Attribute.IsDefined isn't good enough here.  For some reason string[] returns false from that method.
+			var serializableData = this.DataByFormat
+				.Where(pair => pair.Value.GetType().GetCustomAttributesData()
+				               	.Any(t => typeof(SerializableAttribute).GetConstructors().Contains(t.Constructor)))
+				.ToDictionary(pair => pair.Key, pair => pair.Value);
+			
 			info.AddValue("TimeStamp", this.TimeStamp);
-			info.AddValue("DataByFormat",
-				this.DataByFormat.Where(pair => Attribute.IsDefined(pair.Value.GetType(), typeof(SerializableAttribute))).ToDictionary(pair => pair.Key, pair => pair.Value),
-				dataByFormatType);
+			info.AddValue("DataByFormat", serializableData, dataByFormatType);
 		}
 
 		public string ToLogString()
@@ -315,17 +320,18 @@ namespace MultipleClipboards.Entities
 			}
 			else if (this.DataByFormat.ContainsKey(DataFormats.Bitmap) || this.DataByFormat.ContainsKey(alternateBitmapFormat))
 			{
+				const string bitmapFormatString = "Bitmap image - {0}x{1} - {2} DPI";
 				object dataObject = this.DataByFormat[this.DataByFormat.Keys.First(k => k == DataFormats.Bitmap || k == alternateBitmapFormat)];
 				var bitmap = dataObject as Bitmap;
 				var interopBitmap = dataObject as InteropBitmap;
 
 				if (interopBitmap != null)
 				{
-					this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", interopBitmap.PixelWidth, interopBitmap.PixelHeight, interopBitmap.Format.BitsPerPixel);
+					this.DataPreview = string.Format(bitmapFormatString, interopBitmap.PixelWidth, interopBitmap.PixelHeight, (int)interopBitmap.DpiX);
 				}
 				else if (bitmap != null)
 				{
-					this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", bitmap.Width, bitmap.Height, bitmap.PixelFormat);
+					this.DataPreview = string.Format(bitmapFormatString, bitmap.Width, bitmap.Height, (int)bitmap.HorizontalResolution);
 				}
 				else
 				{

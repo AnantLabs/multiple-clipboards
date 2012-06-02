@@ -311,6 +311,17 @@ namespace MultipleClipboards.Persistence
 		}
 
 		/// <summary>
+		/// Deletes any persisted clipboard history data that may exist.
+		/// </summary>
+		public void DeleteClipboardHistory()
+		{
+			if (File.Exists(Constants.PersistedHistoryFilePath))
+			{
+				File.Delete(Constants.PersistedHistoryFilePath);
+			}
+		}
+
+		/// <summary>
 		/// Loads the settings that have been saved, or the defaults if there is no settings file.
 		/// </summary>
 		private void LoadSettings()
