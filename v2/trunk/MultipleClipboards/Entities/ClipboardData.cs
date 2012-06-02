@@ -321,7 +321,7 @@ namespace MultipleClipboards.Entities
 
 				if (interopBitmap != null)
 				{
-                    this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", interopBitmap.PixelWidth, interopBitmap.PixelHeight, interopBitmap.Format.BitsPerPixel);
+					this.DataPreview = string.Format("Bitmap image - {0}x{1} - {2}", interopBitmap.PixelWidth, interopBitmap.PixelHeight, interopBitmap.Format.BitsPerPixel);
 				}
 				else if (bitmap != null)
 				{

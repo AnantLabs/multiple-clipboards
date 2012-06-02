@@ -46,7 +46,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			this.CreateAvailableClipboardCollection();
 			this.RegisterAllClipboards();
-            this.LoadClipboardHistory();
+			this.LoadClipboardHistory();
 			this.PreserveClipboardData();
 
 			if (this.CurrentSystemClipboardData != null && this.CurrentSystemClipboardData.ContainsData)
@@ -129,51 +129,51 @@ namespace MultipleClipboards.ClipboardManagement
 			}
 		}
 
-        /// <summary>
-        /// Saves the clipboard history data to disk if the setting to do so is enabled.
-        /// </summary>
-        public void SaveClipboardHistory()
-        {
-            if (!AppController.Settings.PersistClipboardHistory)
-            {
-                return;
-            }
+		/// <summary>
+		/// Saves the clipboard history data to disk if the setting to do so is enabled.
+		/// </summary>
+		public void SaveClipboardHistory()
+		{
+			if (!AppController.Settings.PersistClipboardHistory)
+			{
+				return;
+			}
 
-            byte[] serializedData;
-            List<ClipboardData> preservedHistory;
+			byte[] serializedData;
+			List<ClipboardData> preservedHistory;
 
-            using (this.ClipboardHistory.AcquireLock())
-            {
-                preservedHistory = this.ClipboardHistory.ToList();
-            }
+			using (this.ClipboardHistory.AcquireLock())
+			{
+				preservedHistory = this.ClipboardHistory.ToList();
+			}
 
-            using (var stream = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, preservedHistory);
-                serializedData = stream.ToArray();
-                stream.Close();
-            }
+			using (var stream = new MemoryStream())
+			{
+				var formatter = new BinaryFormatter();
+				formatter.Serialize(stream, preservedHistory);
+				serializedData = stream.ToArray();
+				stream.Close();
+			}
 
-            AppController.Settings.SaveClipboardHistory(serializedData);
-        }
+			AppController.Settings.SaveClipboardHistory(serializedData);
+		}
 
-        /// <summary>
-        /// Loads the persisted clipboard history from disk and adds all items to the current in-memory history collection if the setting to do so is enabled.
-        /// </summary>
+		/// <summary>
+		/// Loads the persisted clipboard history from disk and adds all items to the current in-memory history collection if the setting to do so is enabled.
+		/// </summary>
 		protected void LoadClipboardHistory()
 		{
-            if (!AppController.Settings.PersistClipboardHistory)
-            {
-                return;
-            }
+			if (!AppController.Settings.PersistClipboardHistory)
+			{
+				return;
+			}
 
-            var serializedData = AppController.Settings.LoadClipboardHistory();
+			var serializedData = AppController.Settings.LoadClipboardHistory();
 
-            if (serializedData == null)
-            {
-                return;
-            }
+			if (serializedData == null)
+			{
+				return;
+			}
 
 			List<ClipboardData> preservedHistory;
 

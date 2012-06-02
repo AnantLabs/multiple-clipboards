@@ -39,7 +39,7 @@ namespace MultipleClipboards.Persistence
 		private const string ShowAdvancedOptionsSettingKey = "ShowAdvancedOptions";
 		private const string ShowMessagesFromTraySettingKey = "ShowMessagesFromTray";
 		private const string ShowDetailedClipboardInformationSettingKey = "ShowDetailClipboardInformation";
-        private const string PersistClipboardHistorySettingKey = "PersistClipboardHistory";
+		private const string PersistClipboardHistorySettingKey = "PersistClipboardHistory";
 
 		// Application Settings Default Values.
 		private static readonly IDictionary<string, object> defaultSettings =
@@ -52,7 +52,7 @@ namespace MultipleClipboards.Persistence
 				{ ShowAdvancedOptionsSettingKey, false },
 				{ ShowMessagesFromTraySettingKey, true },
 				{ ShowDetailedClipboardInformationSettingKey, false },
-                { PersistClipboardHistorySettingKey, true }
+				{ PersistClipboardHistorySettingKey, true }
 			};
 
 		// The in memory version of the log level.
@@ -205,20 +205,20 @@ namespace MultipleClipboards.Persistence
 			}
 		}
 
-        /// <summary>
-        /// Gets or sets a value indicating whether or not to persist the clipboard history content to disk when the application exits or the user logs off.
-        /// </summary>
-        public bool PersistClipboardHistory
-        {
-            get
-            {
-                return this.GetSettingSafe(PersistClipboardHistorySettingKey);
-            }
-            set
-            {
-                this.SaveApplicationSetting(PersistClipboardHistorySettingKey, value);
-            }
-        }
+		/// <summary>
+		/// Gets or sets a value indicating whether or not to persist the clipboard history content to disk when the application exits or the user logs off.
+		/// </summary>
+		public bool PersistClipboardHistory
+		{
+			get
+			{
+				return this.GetSettingSafe(PersistClipboardHistorySettingKey);
+			}
+			set
+			{
+				this.SaveApplicationSetting(PersistClipboardHistorySettingKey, value);
+			}
+		}
 
 		/// <summary>
 		/// Gets the list of all the defined clipboard.
@@ -274,10 +274,10 @@ namespace MultipleClipboards.Persistence
 			this.SaveSettings();
 		}
 
-        /// <summary>
-        /// Writes the given serialized clipboard history data to disk.
-        /// </summary>
-        /// <param name="serializedData">The serialized clipboard history collection.</param>
+		/// <summary>
+		/// Writes the given serialized clipboard history data to disk.
+		/// </summary>
+		/// <param name="serializedData">The serialized clipboard history collection.</param>
 		public void SaveClipboardHistory(byte[] serializedData)
 		{
 			using (var fileStream = File.OpenWrite(Constants.PersistedHistoryFilePath))
@@ -287,16 +287,16 @@ namespace MultipleClipboards.Persistence
 			}
 		}
 
-        /// <summary>
-        /// Loads and returns the serialized clipboard history data from disk.
-        /// </summary>
-        /// <returns>The serialized clipboard history data loaded from disk.</returns>
+		/// <summary>
+		/// Loads and returns the serialized clipboard history data from disk.
+		/// </summary>
+		/// <returns>The serialized clipboard history data loaded from disk.</returns>
 		public byte[] LoadClipboardHistory()
 		{
-            if (!File.Exists(Constants.PersistedHistoryFilePath))
-            {
-                return null;
-            }
+			if (!File.Exists(Constants.PersistedHistoryFilePath))
+			{
+				return null;
+			}
 
 			byte[] serializedData;
 
