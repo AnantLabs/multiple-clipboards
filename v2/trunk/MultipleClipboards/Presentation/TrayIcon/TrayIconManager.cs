@@ -238,7 +238,7 @@ namespace MultipleClipboards.Presentation.TrayIcon
 
 		private static MenuItem BuildClipboardHistoryMenuItem(ClipboardData clipboardData)
 		{
-			var menuItem = new ClipboardHistoryMenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("T")), clipboardData.Id);
+			var menuItem = new ClipboardHistoryMenuItem(string.Format("{0}\t{1}", clipboardData.DataPreview, clipboardData.TimeStamp.ToString("M/d h:mm:ss tt")), clipboardData.Id);
 			menuItem.Click += OnClipboardHistoryMenuItemClick;
 			return menuItem;
 		}

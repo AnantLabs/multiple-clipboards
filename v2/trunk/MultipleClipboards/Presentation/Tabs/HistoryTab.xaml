@@ -7,8 +7,7 @@
     xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
     xmlns:System="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
-    xmlns:Commands="clr-namespace:MultipleClipboards.Presentation.Commands" mc:Ignorable="d" 
-    d:DesignHeight="300" d:DesignWidth="300">
+    mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="300">
     
     <UserControl.Resources>
         <CollectionViewSource x:Key="AvailableClipboardsViewSource" Source="{Binding AvailableClipboards, Source={x:Static MultipleClipboards:AppController.ClipboardManager}}">
@@ -64,6 +63,8 @@
                         <CompositeCollection>
                             <MenuItem Header="Place data on..." FontWeight="Bold" IsEnabled="False" />
                             <CollectionContainer Collection="{Binding Source={StaticResource AvailableClipboardsViewSource}}" />
+                            <Separator />
+                            <MenuItem Header="Remove from History" Click="RemoveMenuItemClick" />
                         </CompositeCollection>
                     </ContextMenu.ItemsSource>
                 </ContextMenu>
@@ -124,7 +125,7 @@
                 <DataGridTemplateColumn Header="Time" MinWidth="70">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Margin="5" Text="{Binding Path=TimeStamp, StringFormat=T}" />
+                            <TextBlock Margin="5" Text="{Binding Path=TimeStamp, StringFormat='M/d h:mm:ss tt'}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -45,6 +45,7 @@ namespace MultipleClipboards.Presentation.Tabs
 
 		private void GridMenuItemClick(object sender, RoutedEventArgs e)
 		{
+			e.Handled = true;
 			int? clipboardId = null;
 
 			try
@@ -68,6 +69,12 @@ namespace MultipleClipboards.Presentation.Tabs
 					IconType = IconType.Error
 				});
 			}
+		}
+
+		private void RemoveMenuItemClick(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+			AppController.ClipboardManager.RemoveItemFromHistory(this.selectedClipboardDataId);
 		}
 	}
 }

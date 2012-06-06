@@ -198,6 +198,23 @@ namespace MultipleClipboards.ClipboardManagement
 		}
 
 		/// <summary>
+		/// Removes the items with the given id from the clipboard history collection.
+		/// </summary>
+		/// <param name="itemId">The id of the item to remove.</param>
+		public void RemoveItemFromHistory(ulong itemId)
+		{
+			using (this.ClipboardHistory.AcquireLock())
+			{
+				var data = this.ClipboardHistory.SingleOrDefault(d => d.Id == itemId);
+
+				if (data != null)
+				{
+					this.ClipboardHistory.Remove(data);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets the data stored on the clipboard with the given ID.
 		/// </summary>
 		/// <param name="clipboardId">The clipboard ID.</param>
