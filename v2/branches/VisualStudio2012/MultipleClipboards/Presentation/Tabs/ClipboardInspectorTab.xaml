@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="MultipleClipboards.Presentation.Tabs.ClipboardInspectorTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Local="clr-namespace:MultipleClipboards.Presentation.Controls"
+             xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
+             xmlns:Commands="clr-namespace:MultipleClipboards.Presentation.Commands" mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" FontWeight="SemiBold" Text="System Clipboard" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+        <Button Grid.Row="0" Grid.Column="1" x:Name="clearSystemClipboardButton"
+                Margin="10,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Content="Clear"
+                Style="{StaticResource LinkButton}"
+                Command="{Commands:ClearClipboardCommand}" />
+        
+        <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Target="{Binding ElementName=ShowDetailClipboardInformationCheckBox}">
+            <AccessText>Show Detailed Clipboard Data:</AccessText>
+        </Label>
+        <CheckBox Grid.Row="0" Grid.Column="3" Name="ShowDetailClipboardInformationCheckBox" Click="ShowDetailedClipboardInformationCheckBoxClicked"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,20,0"
+                  IsChecked="{Binding ShowDetailedClipboardInformation, Source={x:Static MultipleClipboards:AppController.Settings}}"
+                  ToolTip="When checked, detailed information about the data on each clipboard will be displayed.">
+        </CheckBox>
+        <Local:IconButton Grid.Row="0" Grid.Column="4" x:Name="RefreshButton" HorizontalAlignment="Right" Margin="0,0,5,0" Icon="Refresh" Text="Refresh" Click="RefreshButtonClick"
+                          ToolTip="Refreshes this view with the current data on all clipboards." />
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+            <StackPanel Name="ClipboardInspectorStackPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

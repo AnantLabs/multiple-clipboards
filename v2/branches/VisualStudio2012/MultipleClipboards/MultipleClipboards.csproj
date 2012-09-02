@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MultipleClipboards</RootNamespace>
+    <AssemblyName>MultipleClipboards</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Presentation\Icons\TrayContextMenu\Clipboard.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\MultipleClipboards.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\MultipleClipboards.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\References\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantumBitDesigns.Core">
+      <HintPath>..\References\QuantumBitDesigns.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="VistaMenu, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\VistaMenu.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Presentation\ClipboardWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AppController.cs" />
+    <Compile Include="ClipboardManagement\ClipboardManager.cs" />
+    <Compile Include="ClipboardManagement\AsyncClipboardOperationArguments.cs" />
+    <Compile Include="Exceptions\ClipboardInUseException.cs" />
+    <Compile Include="Messaging\MessageBus.cs" />
+    <Compile Include="Messaging\Notifications.cs" />
+    <Compile Include="Persistence\LogHelper.cs" />
+    <Compile Include="Persistence\SerializableDictionary.cs" />
+    <Compile Include="Presentation\ClipboardWindow.xaml.cs">
+      <DependentUpon>ClipboardWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Commands\ApplicationCommand.cs" />
+    <Compile Include="Presentation\Commands\ClearClipboardCommand.cs" />
+    <Compile Include="Presentation\Commands\PasteCommand.cs" />
+    <Compile Include="Presentation\Commands\CommandExtension.cs" />
+    <Compile Include="Presentation\Controls\IconButton.cs" />
+    <Compile Include="Presentation\Controls\HighlightButton.cs" />
+    <Compile Include="Presentation\Controls\Masking.cs" />
+    <Compile Include="Presentation\Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Presentation\Converters\EnumToStringConverter.cs" />
+    <Compile Include="Entities\ClipboardDataType.cs" />
+    <Compile Include="Entities\ClipboardDefinition.cs" />
+    <Compile Include="Entities\ClipboardData.cs" />
+    <Compile Include="Entities\HotKey.cs" />
+    <Compile Include="Entities\WindowsMessage.cs" />
+    <Compile Include="Entities\HotKeyType.cs" />
+    <Compile Include="Presentation\Icons\IconFactory.cs" />
+    <Compile Include="Presentation\Layout\FadeOutAnimation.cs" />
+    <Compile Include="Presentation\Layout\MarginSetter.cs" />
+    <Compile Include="Presentation\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Presentation\ResourceDictionaries\HighlightButtonDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Presentation\ResourceDictionaries\MainWindowDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\ResourceDictionaries\TrayIconResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Tabs\AboutTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Tabs\ClipboardInspectorTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Tabs\ApplicationLogTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Tabs\HistoryTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Presentation\Tabs\SettingsTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Persistence\MultipleClipboardsDataModel.cs" />
+    <Compile Include="Persistence\SettingsManager.cs" />
+    <Compile Include="Interop\Win32API.cs" />
+    <Compile Include="Presentation\Tabs\AboutTab.xaml.cs">
+      <DependentUpon>AboutTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Tabs\ClipboardInspectorTab.xaml.cs">
+      <DependentUpon>ClipboardInspectorTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Tabs\ApplicationLogTab.xaml.cs">
+      <DependentUpon>ApplicationLogTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Tabs\HistoryTab.xaml.cs">
+      <DependentUpon>HistoryTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Tabs\SettingsTab.xaml.cs">
+      <DependentUpon>SettingsTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\TrayIcon\ClipboardHistoryMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Presentation\TrayIcon\ClipboardMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Presentation\TrayIcon\TrayIconManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clear.png" />
+    <Resource Include="Presentation\Icons\16\Clear.png" />
+    <Resource Include="Presentation\Icons\48\Clipboard.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clipboard.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Exit.png" />
+    <Resource Include="Presentation\Icons\32\Error.png" />
+    <Resource Include="Presentation\Icons\32\Success.png" />
+    <Resource Include="Presentation\Icons\32\Warning.png" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Presentation\Icons\16\About.png" />
+    <Resource Include="Presentation\Icons\16\Clipboard.png" />
+    <Resource Include="Presentation\Icons\16\Find.png" />
+    <Resource Include="Presentation\Icons\16\Gear.png" />
+    <Resource Include="Presentation\Icons\16\History.png" />
+    <Resource Include="Presentation\Icons\16\Preferences.png" />
+    <Resource Include="Presentation\Icons\32\About.png" />
+    <Resource Include="Presentation\Icons\32\Clipboard.png" />
+    <Resource Include="Presentation\Icons\32\Find.png" />
+    <Resource Include="Presentation\Icons\32\History.png" />
+    <Resource Include="Presentation\Icons\32\Preferences.png" />
+    <Resource Include="Presentation\Icons\32\Gear.png" />
+    <Resource Include="Presentation\Icons\16\Add.png" />
+    <Resource Include="Presentation\Icons\16\Refresh.png" />
+    <Resource Include="Presentation\Icons\16\Paste.png" />
+    <Resource Include="Presentation\Icons\16\Audio.png" />
+    <Resource Include="Presentation\Icons\16\FileDrop.png" />
+    <Resource Include="Presentation\Icons\16\Image.png" />
+    <Resource Include="Presentation\Icons\16\Text.png" />
+    <Resource Include="Presentation\Icons\16\Html.png" />
+    <Resource Include="Presentation\Icons\16\Rtf.png" />
+    <Resource Include="Presentation\Icons\16\Unknown.png" />
+    <Resource Include="Presentation\Icons\16\Delete.png" />
+    <Resource Include="Presentation\Icons\32\Exit.png" />
+    <Resource Include="Presentation\Icons\32\Log.png" />
+    <Resource Include="Presentation\Icons\16\Exit.png" />
+    <Resource Include="Presentation\Icons\16\Log.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Audio.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\FileDrop.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Image.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Text.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Html.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Rtf.png" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Unknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Presentation\Icons\Clipboard.ico" />
+    <EmbeddedResource Include="Presentation\Icons\TrayContextMenu\Clipboard.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MultipleClipboards.GlobalResources\MultipleClipboards.GlobalResources.csproj">
+      <Project>{1309D2C2-9634-40F6-9533-14F26EE99DED}</Project>
+      <Name>MultipleClipboards.GlobalResources</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
