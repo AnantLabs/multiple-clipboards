@@ -20,8 +20,9 @@
         </UI>
         
         <!-- Define properties -->
+        <Property Id="ARPPRODUCTICON" Value="Clipboard.ico" />
         <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-        <Property Id="APP_RUNNING" Value="0" />
+        <!--<Property Id="APP_RUNNING" Value="0" />-->
         
         <PropertyRef Id="NETFRAMEWORK40CLIENT"/>
         <Condition Message="Multiple Clipboards requires the .NET Framework 4.0 Client Profile.">
@@ -29,17 +30,12 @@
         </Condition>
 
         <!-- Configure upgrade scenarios -->
-        <Upgrade Id="867A0B01-5CB2-414A-A05A-474ED838BDED">
-            <UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="2.0.0" IncludeMinimum="yes" Maximum="2.0.0" IncludeMaximum="yes" />
-            <UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="2.0.0" IncludeMinimum="no" />
-        </Upgrade>
+        <MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
         
         <!-- Setup any custom actions -->
         <CustomAction Id="LaunchApp" FileKey="MultipleClipboardsEXE" ExeCommand="-fromShortcut" Return="asyncNoWait" />
-        <CustomAction Id='AlreadyUpdated' Error="[ProductName] is already up to date." />
-        <CustomAction Id='NoDowngrade' Error="A later version of [ProductName] is already installed." />
-        <CustomAction Id="CheckingForRunningInstances" BinaryKey="CheckForRunningInstances" DllEntry="CheckForRunningInstances" />
-        <CustomAction Id="AlreadyRunning" Error="Unable to install.  Multiple Clipboards is already running." />
+        <!--<CustomAction Id="CheckingForRunningInstances" BinaryKey="MultipleClipboardsCustomActions" DllEntry="CheckForRunningInstances" />
+        <CustomAction Id="PurgeExistingAppData" BinaryKey="MultipleClipboardsCustomActions" DllEntry="PurgeExistingAppData" />-->
 
         <!-- Configure the actual installation -->
         <Directory Id="TARGETDIR" Name="SourceDir">
@@ -97,13 +93,11 @@
         </Feature>
 
         <InstallExecuteSequence>
-            <Custom Action='AlreadyUpdated' After='FindRelatedProducts'>SELFFOUND</Custom>
-            <Custom Action='NoDowngrade' After='FindRelatedProducts'>NEWERFOUND</Custom>
-            <Custom Action='CheckingForRunningInstances' After='CostFinalize'></Custom>
-            <Custom Action='AlreadyRunning' After='CheckingForRunningInstances'>APP_RUNNING = "1" AND NOT Installed</Custom>
+            <!--<Custom Action='CheckingForRunningInstances' After='CostFinalize'></Custom>
+            <Custom Action='PurgeExistingAppData' After='CostFinalize'></Custom>-->
             <Custom Action="LaunchApp" After="InstallFinalize">Not Installed</Custom>
         </InstallExecuteSequence>
 
-        <Binary Id="CheckForRunningInstances" SourceFile="MultipleClipboards.WixCustomActionsPackage.dll" />
+        <!--<Binary Id="MultipleClipboardsCustomActions" SourceFile="MultipleClipboards.WixCustomActionsPackage.dll" />-->
     </Product>
 </Wix>
