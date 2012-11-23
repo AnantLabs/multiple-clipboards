@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+    <?define ProductName = "Multiple Clipbaords" ?>
+    <?define Version = "2.0.0" ?>
+    <?define UpgradeCode = "867A0B01-5CB2-414A-A05A-474ED838BDED" ?>
+    <?define Manufacturer = "Eric Coonradt"?>
+    <?define MsiFileName = "MultipleClipboards.Installer.msi"?>
+</Include>

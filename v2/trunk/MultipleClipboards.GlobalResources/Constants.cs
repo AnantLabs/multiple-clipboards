@@ -57,7 +57,7 @@ namespace MultipleClipboards.GlobalResources
 		{
 			get
 			{
-				if (string.IsNullOrWhiteSpace(_applicationDirectory))
+				if (string.IsNullOrEmpty(_applicationDirectory))
 				{
 					try
 					{

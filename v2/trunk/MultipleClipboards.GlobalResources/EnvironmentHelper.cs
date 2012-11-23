@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 
 namespace MultipleClipboards.GlobalResources
 {
@@ -10,7 +9,23 @@ namespace MultipleClipboards.GlobalResources
 		{
 			try
 			{
-				return Process.GetProcessesByName(Constants.ProcessName).Any(p => p.Id != Process.GetCurrentProcess().Id);
+                Process thisProcess = Process.GetCurrentProcess();
+                Process[] processes = Process.GetProcessesByName(Constants.ProcessName);
+
+                if (processes.Length == 0)
+                {
+                    return false;
+                }
+
+                foreach (var process in processes)
+                {
+                    if (process.Id != thisProcess.Id)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
 			}
 			catch (Exception e)
 			{
@@ -23,10 +38,18 @@ namespace MultipleClipboards.GlobalResources
 		{
 			try
 			{
-				Process.GetProcessesByName(Constants.ProcessName)
-					.Where(p => p.Id != Process.GetCurrentProcess().Id)
-					.ToList()
-					.ForEach(p => p.Kill());
+                Process thisProcess = Process.GetCurrentProcess();
+                Process[] processes = Process.GetProcessesByName(Constants.ProcessName);
+
+                foreach (var process in processes)
+                {
+                    if (process.Id == thisProcess.Id)
+                    {
+                        continue;
+                    }
+
+                    process.Kill();
+                }
 			}
 			catch (Exception e)
 			{
