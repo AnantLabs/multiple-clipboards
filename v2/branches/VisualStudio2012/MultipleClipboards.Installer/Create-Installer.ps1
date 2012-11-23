@@ -1,15 +1,20 @@
 ﻿Param
 (
-    [boolean]$useReleaseMode = $false,
-    [boolean]$includeCustomActions = $false,
-    [string]$wixSdkPath = "C:\Program Files (x86)\WiX Toolset v3.6\SDK\",
-    [string]$installerRelativePath = ".\MultipleClipboards.Installer",
-    [string]$inputWxsFile = "Installer.wxs",
-    [string]$objectFileName = "MultipleClipboards.Installer.wixobj",
-    [string]$msiFileName = "MultipleClipboards.Installer.msi"
+    [switch]$useReleaseMode,
+    [switch]$includeCustomActions,
+    [switch]$buildBootstrapper
 )
 
 [System.IO.Directory]::SetCurrentDirectory(((Get-Location -PSProvider FileSystem).ProviderPath))
+
+$wixSdkPath = "C:\Program Files (x86)\WiX Toolset v3.6\SDK\"
+$installerRelativePath = ".\MultipleClipboards.Installer"
+$wixInstallerFile = "Installer.wxs"
+$wixBootstrapperFile = "Bootstrapper.wxs"
+$wixIncludeFile = "Variables.wxi"
+$installerObjectFileName = "MultipleClipboards.Installer.wixobj"
+$bootstrapperObjectFileName = "MultipleClipbaords.Installer.Bootstrapper.wixobj"
+$msiFileName = "MultipleClipboards.Installer.msi"
 
 function WriteErrorAndExit ($message, $popLocation = $false)
 {
@@ -43,25 +48,25 @@ if (!(Test-Path "MultipleClipboards.sln"))
 }
 
 Write-Host "Cleaning old installer" -ForegroundColor Cyan
-$outputObjPath = [System.IO.Path]::Combine($installerRelativePath, "obj")
-$outputBinPath = [System.IO.Path]::Combine($installerRelativePath, "bin")
+$installerObjOutput = [System.IO.Path]::Combine($installerRelativePath, "obj")
+$installerBinOutput = [System.IO.Path]::Combine($installerRelativePath, "bin")
 
-if (Test-Path $outputObjPath)
+if (Test-Path $installerObjOutput)
 {
-    Get-ChildItem $outputObjPath -Recurse | foreach ($_) { Remove-Item $_.FullName }
+    Get-ChildItem $installerObjOutput -Recurse | foreach ($_) { Remove-Item $_.FullName }
 }
 else
 {
-    New-Item $outputObjPath -ItemType Directory | Out-Null
+    New-Item $installerObjOutput -ItemType Directory | Out-Null
 }
 
-if (Test-Path $outputBinPath)
+if (Test-Path $installerBinOutput)
 {
-    Get-ChildItem $outputBinPath -Recurse | foreach ($_) { Remove-Item $_.FullName }
+    Get-ChildItem $installerBinOutput -Recurse | foreach ($_) { Remove-Item $_.FullName }
 }
 else
 {
-    New-Item $outputBinPath -ItemType Directory | Out-Null
+    New-Item $installerBinOutput -ItemType Directory | Out-Null
 }
 
 Push-Location
@@ -87,8 +92,8 @@ else
 }
 
 $inputFolderAbsolutePath = [System.IO.Path]::GetFullPath($installerRelativePath)
-$outputObjFolderAbsolutePath = [System.IO.Path]::GetFullPath($outputObjPath)
-$outputBinFolderAbsolutePath = [System.IO.Path]::GetFullPath($outputBinPath)
+$outputObjFolderAbsolutePath = [System.IO.Path]::GetFullPath($installerObjOutput)
+$outputBinFolderAbsolutePath = [System.IO.Path]::GetFullPath($installerBinOutput)
 
 Write-Host "Using the $mode mode build of Multiple Clipboards" -ForegroundColor Cyan
 
@@ -116,18 +121,34 @@ if ($includeCustomActions)
     }
 }
 
-$inputFilePath = [System.IO.Path]::Combine($inputFolderAbsolutePath, $inputWxsFile)
-$outputObjPath = [System.IO.Path]::Combine($outputObjFolderAbsolutePath, $objectFileName)
-$outputBinPath = [System.IO.Path]::Combine($outputBinFolderAbsolutePath, $msiFileName)
+$wixInstallerFileAbsolutePath = [System.IO.Path]::Combine($inputFolderAbsolutePath, $wixInstallerFile)
+$installerObjOutput = [System.IO.Path]::Combine($outputObjFolderAbsolutePath, $installerObjectFileName)
+$installerBinOutput = [System.IO.Path]::Combine($outputBinFolderAbsolutePath, $msiFileName)
+$wixBootstrapperFileAbsolutePath = [System.IO.Path]::Combine($inputFolderAbsolutePath, $wixBootstrapperFile)
+$bootstrapperObjOutput = [System.IO.Path]::Combine($outputObjFolderAbsolutePath, $bootstrapperObjectFileName)
+$bootstrapperBinOutput = [System.IO.Path]::Combine($outputBinFolderAbsolutePath, "setup.exe")
 
 cd ".\MultipleClipboards\bin\$mode"
 Write-Host ""
-Write-Host "Compiling Installer..." -ForegroundColor Cyan
 
 if (Get-Command "candle.exe")
 {
-    $output = (candle.exe -o $outputObjPath $inputFilePath) -join "`r`n"
+    # Copy the WIX include file into the correct path
+    $includeSource = [System.IO.Path]::Combine($inputFolderAbsolutePath, $wixIncludeFile)
+    Copy-Item $includeSource $wixIncludeFile
+    
+    # Compile the insaller
+    Write-Host "Compiling Installer..." -ForegroundColor Cyan
+    $output = (candle.exe -o $installerObjOutput $wixInstallerFileAbsolutePath) -join "`r`n"
     WriteProcessOutput $output
+
+    if ($buildBootstrapper)
+    {
+        # Compile the bootstrapper
+        Write-Host "Compiling Bootstrapper..." -ForegroundColor Cyan
+        $output = (candle.exe -ext WixBalExtension -o $bootstrapperObjOutput $wixBootstrapperFileAbsolutePath) -join "`r`n"
+        WriteProcessOutput $output
+    }
 }
 else
 {
@@ -135,12 +156,25 @@ else
 }
 
 Write-Host ""
-Write-Host "Linking Installer..." -ForegroundColor Cyan
 
 if (Get-Command "light.exe")
 {
-    $output = (light.exe -ext WixUIExtension -ext WixNetFxExtension -o $outputBinPath $outputObjPath) -join "`r`n"
+    # Link the installer
+    Write-Host "Linking Installer..." -ForegroundColor Cyan
+    $output = (light.exe -ext WixUIExtension -ext WixNetFxExtension -ext WixBalExtension -o $installerBinOutput $installerObjOutput) -join "`r`n"
     WriteProcessOutput $output
+
+    if ($buildBootstrapper)
+    {
+        # Link the bootstrapper
+        Pop-Location
+        Push-Location
+        cd "$installerRelativePath\bin"
+        Write-Host "Linking Bootstrapper..." -ForegroundColor Cyan
+
+        $output = (light.exe -ext WixNetFxExtension -ext WixBalExtension -o $bootstrapperBinOutput $bootstrapperObjOutput) -join "`r`n"
+        WriteProcessOutput $output
+    }
 }
 else
 {

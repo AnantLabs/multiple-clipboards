@@ -6,8 +6,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultipleClipboards.Installer", "MultipleClipboards.Installer", "{B6844B34-E220-470D-B355-CCF1B572987B}"
 	ProjectSection(SolutionItems) = preProject
 		MultipleClipboards.Installer\Installer.wxs = MultipleClipboards.Installer\Installer.wxs
+		MultipleClipboards.Installer\Bootstrapper.wxs = MultipleClipboards.Installer\Bootstrapper.wxs
+		MultipleClipboards.Installer\Variables.wxi = MultipleClipboards.Installer\Variables.wxi
 		MultipleClipboards.Installer\util.xsd = MultipleClipboards.Installer\util.xsd
 		MultipleClipboards.Installer\wix.xsd = MultipleClipboards.Installer\wix.xsd
+		MultipleClipboards.Installer\bal.xsd = MultipleClipboards.Installer\bal.xsd
 		MultipleClipboards.Installer\Create-Installer.ps1 = MultipleClipboards.Installer\Create-Installer.ps1
 	EndProjectSection
 EndProject

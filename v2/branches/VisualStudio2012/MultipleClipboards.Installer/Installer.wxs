@@ -2,14 +2,15 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:Util="http://schemas.microsoft.com/wix/UtilExtension">
     
+    <?include $(sys.CURRENTDIR)\Variables.wxi?>
     <Product Id="10520295-45E5-4ACF-A755-0B04D28E0FA4"
-             Name="Multiple Clipboards"
+             Name="$(var.ProductName)"
              Language="1033"
-             Version="2.0.0"
-             Manufacturer="Eric Coonradt"
-             UpgradeCode="867A0B01-5CB2-414A-A05A-474ED838BDED">
+             Version="$(var.Version)"
+             Manufacturer="$(var.Manufacturer)"
+             UpgradeCode="$(var.UpgradeCode)">
 
-        <Package Id="*" Keywords="Installer" Description="Multiple Clipboards 2 Installer" InstallerVersion="200" Languages="1033" Compressed="yes"/>
+        <Package Id="*" Keywords="Installer" Description="Multiple Clipboards 2 Installer" InstallScope="perUser" InstallerVersion="200" Languages="1033" Compressed="yes"/>
         <Media Id="1" Cabinet="MultipleClipboards.cab" EmbedCab="yes"/>
         <Icon Id="Clipboard.ico" SourceFile="..\..\Presentation\Icons\Clipboard.ico" />
         
