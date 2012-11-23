@@ -4,15 +4,19 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using MultipleClipboards.GlobalResources;
-using MultipleClipboards.Presentation;
-using MultipleClipboards.Presentation.TrayIcon;
 using log4net;
 using log4net.Config;
+using MultipleClipboards.GlobalResources;
+using MultipleClipboards.Messaging;
+using MultipleClipboards.Persistence;
+using MultipleClipboards.Presentation;
+using MultipleClipboards.Presentation.Icons;
+using MultipleClipboards.Presentation.TrayIcon;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
@@ -25,21 +29,47 @@ namespace MultipleClipboards
 	{
 		private static readonly ILog log;
 		private static readonly ManualResetEvent staticInitializationComplete = new ManualResetEvent(false);
+        private static readonly bool errorInStaticInitializer;
 		private TrayIconManager trayIconManager;
 
 		static App()
 		{
-			// Make sure the app data directory exists.
-			if (!Directory.Exists(Constants.BaseDataPath))
-			{
-				Directory.CreateDirectory(Constants.BaseDataPath);
-			}
+            try
+            {
+                // Make sure the app data directory exists.
+                if (!Directory.Exists(Constants.BaseDataPath))
+                {
+                    Directory.CreateDirectory(Constants.BaseDataPath);
+                }
 
-			// Configure the logger.
-			GlobalContext.Properties["LogFilePath"] = Constants.LogFilePath;
-			XmlConfigurator.ConfigureAndWatch(new FileInfo(Constants.LogConfigFileName));
-			log = LogManager.GetLogger(typeof(App));
-			staticInitializationComplete.Set();
+                // Configure the logger.
+                GlobalContext.Properties["LogFilePath"] = Constants.LogFilePath;
+                XmlConfigurator.Configure();
+                LogHelper.SetLogLevel(AppController.Settings.ApplicationLogLevel);
+                log = LogManager.GetLogger(typeof(App));
+            }
+            catch (Exception e)
+            {
+                errorInStaticInitializer = true;
+                var exceptionBuilder = new StringBuilder();
+
+                while (e != null)
+                {
+                    exceptionBuilder.AppendLine(e.Message);
+                    exceptionBuilder.AppendLine(e.StackTrace);
+                    exceptionBuilder.AppendLine();
+                    e = e.InnerException;
+                }
+
+                EventLog.WriteEntry(
+                    "Multiple Clipboards",
+                    string.Format("Error initializing the logger.{0}{1}", Environment.NewLine, exceptionBuilder.ToString()),
+                    EventLogEntryType.Error);
+            }
+            finally
+            {
+                staticInitializationComplete.Set();
+            }
 		}
 
 		protected override void OnStartup(StartupEventArgs e)
@@ -47,7 +77,7 @@ namespace MultipleClipboards
 #if DEBUG
 			if (e.Args.Contains("--debug"))
 			{
-				Debugger.Launch();
+                MessageBox.Show("This is your chance to attach to the process and debug!");
 			}
 #endif
 			base.OnStartup(e);
@@ -86,6 +116,16 @@ namespace MultipleClipboards
 			{
 				AppController.ShowMainWindow();
 			}
+
+            // Show a tray notification if there was an error in the static initializer.
+            if (errorInStaticInitializer)
+            {
+                MessageBus.Instance.Publish(new TrayNotification
+                {
+                    MessageBody = "There was an error initializing the application.  Some features may be unavailable.  A detailed error report has been logged to the Windows Event Logs.",
+                    IconType = IconType.Error
+                });
+            }
 
 			log.Debug("Application initialized!");
 		}

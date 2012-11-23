@@ -1,11 +1,24 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using log4net;
+using log4net.Appender;
+using log4net.Core;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
 
 namespace MultipleClipboards.Persistence
 {
+    public enum LogLevel
+    {
+        Debug,
+        Info,
+        Warn,
+        Error,
+        Fatal
+    }
+
 	public static class LogHelper
 	{
 		private const string ErrorAccessingLogFileMessageFormat =
@@ -44,5 +57,35 @@ namespace MultipleClipboards.Persistence
 				return string.Format("{0}{1}{1}{2}", errorMessaage, Environment.NewLine, e);
 			}
 		}
+
+        public static void SetLogLevel(LogLevel level)
+        {
+            Level newLevel;
+            switch (level)
+            {
+                case LogLevel.Debug:
+                    newLevel = Level.Debug;
+                    break;
+                case LogLevel.Info:
+                    newLevel = Level.Info;
+                    break;
+                case LogLevel.Warn:
+                    newLevel = Level.Warn;
+                    break;
+                case LogLevel.Error:
+                    newLevel = Level.Error;
+                    break;
+                case LogLevel.Fatal:
+                    newLevel = Level.Fatal;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("level");
+            }
+
+            foreach (var appender in LogManager.GetAllRepositories().SelectMany(r => r.GetAppenders().OfType<AppenderSkeleton>()))
+            {
+                appender.Threshold = newLevel;
+            }
+        }
 	}
 }

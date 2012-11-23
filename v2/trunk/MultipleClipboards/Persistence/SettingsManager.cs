@@ -1,28 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading;
-using System.Xml.Linq;
 using System.Xml.Serialization;
+using log4net;
 using MultipleClipboards.Entities;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
-using log4net;
 
 namespace MultipleClipboards.Persistence
 {
-	public enum LogLevel
-	{
-		Debug,
-		Info,
-		Warn,
-		Error,
-		Fatal
-	}
-
 	/// <summary>
 	/// Class to manage the settings for the application.
 	/// </summary>
@@ -47,18 +37,13 @@ namespace MultipleClipboards.Persistence
 			{
 				{ NumberOfClipboardHistoryRecordsSettingKey, 20 },
 				{ ThreadDelayTimeSettingKey, 250 },
-				{ ApplicationLogLevelSettingKey, LogLevel.Error },
+				{ ApplicationLogLevelSettingKey, (int)LogLevel.Error },
 				{ LaunchApplicationOnSystemStartupSettingKey, true },
 				{ ShowAdvancedOptionsSettingKey, false },
 				{ ShowMessagesFromTraySettingKey, true },
 				{ ShowDetailedClipboardInformationSettingKey, false },
 				{ PersistClipboardHistorySettingKey, true }
 			};
-
-		// The in memory version of the log level.
-		// This setting gets saved to the seperate logger config file, so it works differently than the rest.
-		// Perhaps eventually I should just move the log4net config section into my own settings file.
-		private LogLevel? logLevel;
 
 		/// <summary>
 		/// Constructs a new Settings Manager object.
@@ -82,14 +67,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public int NumberOfClipboardHistoryRecords
 		{
-			get
-			{
-				return this.GetSettingSafe(NumberOfClipboardHistoryRecordsSettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(NumberOfClipboardHistoryRecordsSettingKey, value);
-			}
+			get { return this.GetSettingSafe(NumberOfClipboardHistoryRecordsSettingKey); }
+			set { this.SaveApplicationSetting(NumberOfClipboardHistoryRecordsSettingKey, value); }
 		}
 
 		/// <summary>
@@ -97,37 +76,20 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public int ThreadDelayTime
 		{
-			get
-			{
-				return this.GetSettingSafe(ThreadDelayTimeSettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(ThreadDelayTimeSettingKey, value);
-			}
+			get { return this.GetSettingSafe(ThreadDelayTimeSettingKey); }
+			set { this.SaveApplicationSetting(ThreadDelayTimeSettingKey, value); }
 		}
 
 		/// <summary>
 		/// Gets or sets the application logging level.
 		/// </summary>
-		/// <remarks>
-		/// This property is different than all the rest.  I still store it in the regular settings file because I have the framework and it's easy,
-		/// but any changes to this need to be persisted to the App.config file so log4net picks up on the change.
-		/// </remarks>
 		public LogLevel ApplicationLogLevel
 		{
-			get
-			{
-				if (!this.logLevel.HasValue)
-				{
-					this.logLevel = GetLog4NetLogLevel();
-				}
-				return this.logLevel.Value;
-			}
+			get { return (LogLevel)this.GetSettingSafe(ApplicationLogLevelSettingKey); }
 			set
 			{
-				this.logLevel = value;
-				UpdateLog4NetConfig(value);
+                this.SaveApplicationSetting(ApplicationLogLevelSettingKey, (int)value);
+                LogHelper.SetLogLevel(value);
 			}
 		}
 
@@ -136,10 +98,7 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public bool LaunchApplicationOnSystemStartup
 		{
-			get
-			{
-				return this.GetSettingSafe(LaunchApplicationOnSystemStartupSettingKey);
-			}
+			get { return this.GetSettingSafe(LaunchApplicationOnSystemStartupSettingKey); }
 			set
 			{
 				try
@@ -153,7 +112,7 @@ namespace MultipleClipboards.Persistence
 					log.Error(baseErrorMessage, e);
 					MessageBus.Instance.Publish(new MainWindowNotification
 					{
-						MessageBody = baseErrorMessage + "  A detailed error report has been saved to the log.",
+						MessageBody = string.Concat(baseErrorMessage, "  A detailed error report has been saved to the log."),
 						IconType = IconType.Error
 					});
 				}
@@ -165,14 +124,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public bool ShowAdvancedOptions
 		{
-			get
-			{
-				return this.GetSettingSafe(ShowAdvancedOptionsSettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(ShowAdvancedOptionsSettingKey, value);
-			}
+			get { return this.GetSettingSafe(ShowAdvancedOptionsSettingKey); }
+			set { this.SaveApplicationSetting(ShowAdvancedOptionsSettingKey, value); }
 		}
 
 		/// <summary>
@@ -180,14 +133,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public bool ShowMessagesFromTray
 		{
-			get
-			{
-				return this.GetSettingSafe(ShowMessagesFromTraySettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(ShowMessagesFromTraySettingKey, value);
-			}
+			get { return this.GetSettingSafe(ShowMessagesFromTraySettingKey); }
+			set { this.SaveApplicationSetting(ShowMessagesFromTraySettingKey, value); }
 		}
 
 		/// <summary>
@@ -195,14 +142,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public bool ShowDetailedClipboardInformation
 		{
-			get
-			{
-				return this.GetSettingSafe(ShowDetailedClipboardInformationSettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(ShowDetailedClipboardInformationSettingKey, value);
-			}
+			get { return this.GetSettingSafe(ShowDetailedClipboardInformationSettingKey); }
+			set { this.SaveApplicationSetting(ShowDetailedClipboardInformationSettingKey, value); }
 		}
 
 		/// <summary>
@@ -210,14 +151,8 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public bool PersistClipboardHistory
 		{
-			get
-			{
-				return this.GetSettingSafe(PersistClipboardHistorySettingKey);
-			}
-			set
-			{
-				this.SaveApplicationSetting(PersistClipboardHistorySettingKey, value);
-			}
+			get { return this.GetSettingSafe(PersistClipboardHistorySettingKey); }
+			set { this.SaveApplicationSetting(PersistClipboardHistorySettingKey, value); }
 		}
 
 		/// <summary>
@@ -225,10 +160,7 @@ namespace MultipleClipboards.Persistence
 		/// </summary>
 		public ObservableCollection<ClipboardDefinition> ClipboardDefinitions
 		{
-			get
-			{
-				return this.DataStore.ClipboardDefinitions;
-			}
+			get { return this.DataStore.ClipboardDefinitions; }
 		}
 
 		/// <summary>
@@ -392,69 +324,15 @@ namespace MultipleClipboards.Persistence
 		{
 			if (launchOnStartup)
 			{
-				// Copy the application shortucut from the working directory to the Startup folder.
-				if (File.Exists(Constants.ShortcutPath))
-				{
-					File.Copy(Constants.ShortcutPath, Constants.AutoLaunchShortcutPath, true);
-				}
+				// Copy the application shortucut from AppData to the Startup folder.
+                File.Copy(Constants.ShortcutPath, Constants.AutoLaunchShortcutPath, true);
 			}
 			else
 			{
-				// Delete the shortcut from the Startup folder.
+				// Copy the existing shortcut to AppData in case we need to put it back, then delete the shortcut from the Startup folder.
+                File.Copy(Constants.AutoLaunchShortcutPath, Constants.ShortcutPath, true);
 				File.Delete(Constants.AutoLaunchShortcutPath);
 			}
-		}
-
-		private static void UpdateLog4NetConfig(LogLevel level)
-		{
-			// Don't wait long if someone has the file.
-			if (!loggerConfigFileResetEvent.WaitOne(250))
-			{
-				return;
-			}
-
-			XDocument loggerConfigDoc = XDocument.Load(Constants.LogConfigFileName);
-			XElement logLevelElement = loggerConfigDoc.Descendants("level").FirstOrDefault();
-			
-			if (logLevelElement != null)
-			{
-				XAttribute attribute = logLevelElement.Attribute("value");
-
-				if (attribute != null)
-				{
-					attribute.Value = level.ToString().ToUpperInvariant();
-					loggerConfigDoc.Save(Constants.LogConfigFileName);
-				}
-			}
-
-			loggerConfigFileResetEvent.Set();
-		}
-
-		private static LogLevel GetLog4NetLogLevel()
-		{
-			LogLevel level = LogLevel.Error;
-
-			// Don't wait long if someone has the file.
-			if (!loggerConfigFileResetEvent.WaitOne(250))
-			{
-				return level;
-			}
-
-			XDocument loggerConfigDoc = XDocument.Load(Constants.LogConfigFileName);
-			XElement logLevelElement = loggerConfigDoc.Descendants("level").FirstOrDefault();
-
-			if (logLevelElement != null)
-			{
-				XAttribute attribute = logLevelElement.Attribute("value");
-
-				if (attribute != null)
-				{
-					Enum.TryParse(attribute.Value, true, out level);
-				}
-			}
-
-			loggerConfigFileResetEvent.Set();
-			return level;
 		}
 	}
 }

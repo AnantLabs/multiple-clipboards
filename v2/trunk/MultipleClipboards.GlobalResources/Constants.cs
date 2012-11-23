@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 
 namespace MultipleClipboards.GlobalResources
 {
@@ -16,27 +15,25 @@ namespace MultipleClipboards.GlobalResources
 		private const string ShortcutFileName = "Multiple Clipboards.lnk";
 		public const string ProcessName = "MultipleClipboards";
 		public static readonly string ApplicationExecutableName = string.Concat(ProcessName, ".exe");
-		public static readonly string LogConfigFileName = string.Concat(BaseApplicationDirectory, "log4net.config");
 
 		// File paths, which are runtime constants.
-		public static readonly string BaseDataPath = string.Concat(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"\MultipleClipboards\");
-		public static readonly string BackupDataPath = string.Concat(BaseDataPath, @"Backup\");
-		public static readonly string SettingsFilePath = GetFilePath(SettingsFileName);
-		public static readonly string PersistedHistoryFilePath = GetFilePath(PersistedHistoryFileName);
-		public static readonly string LogFilePath = GetFilePath(LogFileName);
-		public static readonly string AboutTextFilePath = GetFilePath(AboutTextFileName);
-		public static readonly string ShortcutPath = string.Concat(BaseApplicationDirectory, ShortcutFileName);
-		public static readonly string AutoLaunchShortcutPath = string.Concat(Environment.GetFolderPath(Environment.SpecialFolder.Startup), @"\", ShortcutFileName);
+		public static readonly string BaseDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MultipleClipboards");
+		public static readonly string BackupDataPath = GetDataFilePath("Backup");
+		public static readonly string SettingsFilePath = GetDataFilePath(SettingsFileName);
+		public static readonly string PersistedHistoryFilePath = GetDataFilePath(PersistedHistoryFileName);
+		public static readonly string LogFilePath = GetDataFilePath(LogFileName);
+		public static readonly string AboutTextFilePath = GetDataFilePath(AboutTextFileName);
+        public static readonly string ShortcutPath = GetDataFilePath(ShortcutFileName);
+		public static readonly string AutoLaunchShortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), ShortcutFileName);
 
-		private static string GetFilePath(string fileName)
+		private static string GetDataFilePath(string fileName)
 		{
-			return string.Concat(BaseDataPath, fileName);
+			return Path.Combine(BaseDataPath, fileName);
 		}
 
 		// Environment settings, which are runtime constants.
 		private const int MinimumOSMajorVersionForNoRepeatSupport = 6;
 		private const int MinimumOSMinorVersionForNoRepeatSupport = 1;
-		private static string _applicationDirectory;
 		private static bool? _supportsNoRepeat;
 
 		public static bool SupportsNoRepeat
@@ -50,38 +47,6 @@ namespace MultipleClipboards.GlobalResources
 				}
 
 				return _supportsNoRepeat.Value;
-			}
-		}
-
-		private static string BaseApplicationDirectory
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(_applicationDirectory))
-				{
-					try
-					{
-						var assembly = Assembly.GetEntryAssembly();
-					
-						if (assembly.ManifestModule.Name == ApplicationExecutableName)
-						{
-							FileInfo assemblyFileInfo = new FileInfo(Assembly.GetEntryAssembly().Location);
-							_applicationDirectory = string.Concat(assemblyFileInfo.DirectoryName, @"\");
-						}
-						else
-						{
-							_applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-						}
-					}
-					catch
-					{
-						// This code is used in my installer custom actions, and this property throws an exception.
-						// Maybe some day I will make this better.
-						_applicationDirectory = string.Empty;
-					}
-				}
-
-				return _applicationDirectory;
 			}
 		}
 	}
