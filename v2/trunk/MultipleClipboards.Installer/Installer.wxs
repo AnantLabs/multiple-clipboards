@@ -13,6 +13,7 @@
         <Package Id="*" Keywords="Installer" Description="Multiple Clipboards 2 Installer" InstallerVersion="200" Languages="1033" Compressed="yes"/>
         <Media Id="1" Cabinet="MultipleClipboards.cab" EmbedCab="yes"/>
         <Icon Id="Clipboard.ico" SourceFile="..\..\Presentation\Icons\Clipboard.ico" />
+        <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
         
         <!-- Setup the WIX UI libraries used -->
         <UI>

@@ -135,7 +135,9 @@ if (Get-Command "candle.exe")
 {
     # Copy the WIX include file into the correct path
     $includeSource = [System.IO.Path]::Combine($inputFolderAbsolutePath, $wixIncludeFile)
+    $licensePath = [System.IO.Path]::Combine($inputFolderAbsolutePath, 'license.rtf')
     Copy-Item $includeSource $wixIncludeFile
+    Copy-Item $licensePath 'license.rtf'
     
     # Compile the insaller
     Write-Host "Compiling Installer..." -ForegroundColor Cyan
