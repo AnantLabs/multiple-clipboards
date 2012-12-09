@@ -1,4 +1,5 @@
 using System;
+using WindowsInput;
 
 namespace MultipleClipboards.Entities
 {
@@ -38,8 +39,33 @@ namespace MultipleClipboards.Entities
 					return PasteSendKeyCode;
 
 				default:
-					throw new InvalidOperationException(string.Format("Unknown HotKeyType: '{0}'.", hotKeyType));
+					throw new ArgumentOutOfRangeException("hotKeyType", string.Format("Unknown HotKeyType: '{0}'.", hotKeyType));
 			}
 		}
+
+        /// <summary>
+        /// Simulates the key strokes for this HotKeyType instance.
+        /// </summary>
+        /// <param name="hotKeyType"></param>
+        public static void SimulateHotKeyPress(this HotKeyType hotKeyType)
+        {
+            switch (hotKeyType)
+            {
+                case HotKeyType.Cut:
+                    InputSimulator.SimulateModifiedKeyStroke(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_X);
+                    break;
+
+                case HotKeyType.Copy:
+                    InputSimulator.SimulateModifiedKeyStroke(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_C);
+                    break;
+
+                case HotKeyType.Paste:
+                    InputSimulator.SimulateModifiedKeyStroke(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_V);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException("hotKeyType", string.Format("Unknown HotKeyType: '{0}'.", hotKeyType));
+            }
+        }
 	}
 }

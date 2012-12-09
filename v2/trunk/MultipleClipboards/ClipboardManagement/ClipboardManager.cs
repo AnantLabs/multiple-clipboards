@@ -747,8 +747,11 @@ namespace MultipleClipboards.ClipboardManagement
 			this.PreserveClipboardData();
 
 			// Send the system cut or copy command to get the new data on the clipboard.
-			log.DebugFormat("CutCopy(): Sending {0} command via SendKeys.", hotKeyType);
-			SendKeys.SendWait(hotKeyType.ToSendKeysCode());
+            //log.DebugFormat("CutCopy(): Sending {0} command via SendKeys.", hotKeyType);
+            //SendKeys.SendWait(hotKeyType.ToSendKeysCode());
+
+            log.DebugFormat("CutCopy(): Sending {0} command via InputSimulator.", hotKeyType);
+            hotKeyType.SimulateHotKeyPress();
 
 			// According the MSDN (and my own experiences) all the SendKeys methods are subject to timing issues.
 			// This seems to work for me, but sometimes the SendWait function returns before the new data has actually been placed on the clipboard.
@@ -807,8 +810,10 @@ namespace MultipleClipboards.ClipboardManagement
 				// Send the system paste command.
 				if (sendPasteSignal)
 				{
-					log.Debug("Paste(): Sending paste command via SendKeys.");
-					SendKeys.SendWait(HotKeyType.Paste.ToSendKeysCode());
+                    //log.Debug("Paste(): Sending paste command via SendKeys.");
+                    //SendKeys.SendWait(HotKeyType.Paste.ToSendKeysCode());
+                    log.Debug("Paste(): Sending paste command via InputSimulator.");
+                    HotKeyType.Paste.SimulateHotKeyPress();
 				}
 
 				// A little delay for the same reason as in CutCopy.

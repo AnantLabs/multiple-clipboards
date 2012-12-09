@@ -81,6 +81,9 @@
     <StartupObject>MultipleClipboards.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="InputSimulator">
+      <HintPath>..\References\InputSimulator.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\References\log4net.dll</HintPath>
     </Reference>
