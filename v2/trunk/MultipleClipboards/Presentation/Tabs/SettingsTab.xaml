@@ -58,7 +58,7 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=NumberOfHistoricalRecordsTextBox}">
                         <AccessText>Clipboard History Size:</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="70" Name="NumberOfHistoricalRecordsTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" VerticalContentAlignment="Center" Padding="5,0,0,0"
                              Text="{Binding NumberOfClipboardHistoryRecords, Source={x:Static MultipleClipboards:AppController.Settings}}"
                              ToolTip="Sets the maximum number of items that will be stored in the clipboard history list.">
                     </TextBox>
@@ -114,7 +114,7 @@
                     <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=ThreadDelayTimeTextBox}">
                         <AccessText>Thread Delay Time (ms):</AccessText>
                     </Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3"
+                    <TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Width="70" Name="ThreadDelayTimeTextBox" Controls:Masking.Mask="[0-9]" MaxLength="3" VerticalContentAlignment="Center" Padding="5,0,0,0"
                              Text="{Binding ThreadDelayTime, Source={x:Static MultipleClipboards:AppController.Settings}}">
                         <TextBox.ToolTip>
                             <ToolTip>
@@ -132,7 +132,7 @@
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Target="{Binding ElementName=LogLevelComboBox}">
                         <AccessText>Application Log Level:</AccessText>
                     </Label>
-                    <ComboBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox"
+                    <ComboBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Width="70" Name="LogLevelComboBox" VerticalContentAlignment="Center" Padding="5,0,0,0"
                               ItemsSource="{Binding Source={StaticResource LogLevelEnumValues}}"
                               SelectedItem="{Binding ApplicationLogLevel, Source={x:Static MultipleClipboards:AppController.Settings}}">
                         <ComboBox.ToolTip>
@@ -179,11 +179,11 @@
 
                 <!-- Clipboard Definition Grid - Row 1 -->
                 <TextBlock Grid.Row="1" Grid.Column="0"></TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" ToolTip="The first modifier key. (Required)" />
-                <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ToolTip="The second modifier key. (Optional)" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" />
-                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CopyKeyTextBox" ToolTip="The key (A-Z) to use for the copy command of a new clipboard."></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="CutKeyTextBox" ToolTip="The key (A-Z) to use for the cut command of a new clipboard."></TextBox>
-                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" Name="PasteKeyTextBox" ToolTip="The key (A-Z) to use for the paste command of a new clipboard."></TextBox>
+                <ComboBox Grid.Row="1" Grid.Column="1" Name="ModifierKeyOneComboBox" ToolTip="The first modifier key. (Required)" VerticalContentAlignment="Center" Padding="5,0,0,0" />
+                <ComboBox Grid.Row="1" Grid.Column="2" Name="ModifierKeyTwoComboBox" SelectedIndex="0" ToolTip="The second modifier key. (Optional)" ItemsSource="{Binding Source={StaticResource ModifierKeysEnumValues}}" VerticalContentAlignment="Center" Padding="5,0,0,0" />
+                <TextBox Grid.Row="1" Grid.Column="3" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" VerticalContentAlignment="Center" Padding="5,0,0,0" Name="CopyKeyTextBox" ToolTip="The key (A-Z) to use for the copy command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="4" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" VerticalContentAlignment="Center" Padding="5,0,0,0" Name="CutKeyTextBox" ToolTip="The key (A-Z) to use for the cut command of a new clipboard."></TextBox>
+                <TextBox Grid.Row="1" Grid.Column="5" Controls:Masking.Mask="[a-zA-Z]" MaxLength="1" VerticalContentAlignment="Center" Padding="5,0,0,0" Name="PasteKeyTextBox" ToolTip="The key (A-Z) to use for the paste command of a new clipboard."></TextBox>
                 <Controls:IconButton Grid.Row="1" Grid.Column="6" x:Name="AddNewClipboardButton" Click="AddNewClipboardButtonClick" Icon="Add" Text="Add" ToolTip="Creates a new clipboard using the selected values." />
 
                 <!-- Clipboard Definition Grid - Row 2 -->
@@ -227,35 +227,35 @@
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding ModifierTwoKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                    <TextBlock Padding="2,0,0,0" Text="{Binding ModifierTwoKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding CopyKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                    <TextBlock Padding="8,0,0,0" Text="{Binding CopyKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding CutKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                    <TextBlock Padding="8,0,0,0" Text="{Binding CutKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="60">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding PasteKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
+                                    <TextBlock Padding="8,0,0,0" Text="{Binding PasteKey, Converter={StaticResource EnumToStringConverter}}"></TextBlock>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" CanUserSort="False" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Delete" Style="{StaticResource LinkButtonNoUnderline}" Click="DeleteButtonClick">
+                                    <Button HorizontalAlignment="Center" Content="Delete" Style="{StaticResource LinkButtonNoUnderline}" Click="DeleteButtonClick">
                                         <Button.ToolTip>
                                             <ToolTip>
                                                 <TextBlock>
