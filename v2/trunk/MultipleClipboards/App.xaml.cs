@@ -31,11 +31,14 @@ namespace MultipleClipboards
 		private static readonly ManualResetEvent staticInitializationComplete = new ManualResetEvent(false);
         private static readonly bool errorInStaticInitializer;
 		private TrayIconManager trayIconManager;
+        private ClipboardWindow clipboardWindow;
 
 		static App()
 		{
             try
             {
+                WriteInfoToEventLog("Application is starting up.");
+
                 // Make sure the app data directory exists.
                 if (!Directory.Exists(Constants.BaseDataPath))
                 {
@@ -47,24 +50,12 @@ namespace MultipleClipboards
                 XmlConfigurator.Configure();
                 LogHelper.SetLogLevel(AppController.Settings.ApplicationLogLevel);
                 log = LogManager.GetLogger(typeof(App));
+                WriteInfoToEventLog("Static initialization complete, logger configured.");
             }
             catch (Exception e)
             {
                 errorInStaticInitializer = true;
-                var exceptionBuilder = new StringBuilder();
-
-                while (e != null)
-                {
-                    exceptionBuilder.AppendLine(e.Message);
-                    exceptionBuilder.AppendLine(e.StackTrace);
-                    exceptionBuilder.AppendLine();
-                    e = e.InnerException;
-                }
-
-                EventLog.WriteEntry(
-                    "Multiple Clipboards",
-                    string.Format("Error initializing the logger.{0}{1}", Environment.NewLine, exceptionBuilder.ToString()),
-                    EventLogEntryType.Error);
+                WriteErrorToEventLog("Error initializing the logger.", e);
             }
             finally
             {
@@ -105,7 +96,7 @@ namespace MultipleClipboards
 			// Create the hidden window that will handle the message loop for this app.
 			// Because this is the first window that gets created the framework automatically makes this
 			// the MainWindow, which is not at all what we want!
-			this.ClipboardWindow = new ClipboardWindow();
+			this.clipboardWindow = new ClipboardWindow();
 			this.MainWindow = null;
 
 			// Tell the tray icon that the clipboard manager has been initialized so it can bind to the clipboard history collection.
@@ -127,15 +118,19 @@ namespace MultipleClipboards
                 });
             }
 
-			log.Debug("Application initialized!");
+            const string message = "Application fully initialized and ready to handle keyboard events.";
+            WriteInfoToEventLog(message);
+			log.Debug(message);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
             AppController.ClipboardManager.SaveClipboardHistory();
-			this.ClipboardWindow.Dispose();
+			this.clipboardWindow.Dispose();
 			this.trayIconManager.Dispose();
-			log.DebugFormat("Application exiting with exit code {0}.", e.ApplicationExitCode);
+            var message = string.Format("Application exiting with exit code {0}.", e.ApplicationExitCode);
+			log.Debug(message);
+            WriteInfoToEventLog(message);
 			base.OnExit(e);
 		}
 
@@ -153,35 +148,51 @@ namespace MultipleClipboards
             base.OnSessionEnding(e);
         }
 
+        private void InitializeTrayIcon()
+        {
+            const string trayIconResourcePath = "MultipleClipboards.Presentation.Icons.TrayContextMenu.Clipboard.ico";
+            var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream(trayIconResourcePath);
+
+            if (iconStream == null)
+            {
+                throw new NullReferenceException(string.Format("Unable to find the resource '{0}' in the executing assembly.", trayIconResourcePath));
+            }
+
+            var notifyIcon = new NotifyIcon
+            {
+                Icon = new Icon(iconStream),
+                Text = "Multiple Clipboards"
+            };
+            this.trayIconManager = new TrayIconManager(notifyIcon);
+            this.trayIconManager.ShowTrayIcon();
+        }
+
 		private static void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
-			log.Error("An unhandled expception has occured.", e.Exception);
+            const string message = "An unhandled expception has occured and the application will now terminate.";
+            WriteErrorToEventLog(message, e.Exception);
+			log.Error(message, e.Exception);
 			e.Handled = true;
 		}
 
-		private ClipboardWindow ClipboardWindow
-		{
-			get;
-			set;
-		}
+        private static void WriteInfoToEventLog(string message)
+        {
+            EventLog.WriteEntry(Constants.EventLogSource, message, EventLogEntryType.Information);
+        }
 
-		private void InitializeTrayIcon()
-		{
-			const string trayIconResourcePath = "MultipleClipboards.Presentation.Icons.TrayContextMenu.Clipboard.ico";
-			var iconStream = Assembly.GetEntryAssembly().GetManifestResourceStream(trayIconResourcePath);
+        private static void WriteErrorToEventLog(string message, Exception exception)
+        {
+            var exceptionBuilder = new StringBuilder();
 
-			if (iconStream == null)
-			{
-				throw new NullReferenceException(string.Format("Unable to find the resource '{0}' in the executing assembly.", trayIconResourcePath));
-			}
+            while (exception != null)
+            {
+                exceptionBuilder.AppendLine(exception.Message);
+                exceptionBuilder.AppendLine(exception.StackTrace);
+                exceptionBuilder.AppendLine();
+                exception = exception.InnerException;
+            }
 
-			var notifyIcon = new NotifyIcon
-			{
-				Icon = new Icon(iconStream),
-				Text = "Multiple Clipboards"
-			};
-			this.trayIconManager = new TrayIconManager(notifyIcon);
-			this.trayIconManager.ShowTrayIcon();
-		}
+            EventLog.WriteEntry(Constants.EventLogSource, string.Concat(message, Environment.NewLine, exceptionBuilder.ToString()), EventLogEntryType.Error);
+        }
 	}
 }

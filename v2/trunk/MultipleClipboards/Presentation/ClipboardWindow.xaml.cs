@@ -3,12 +3,12 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using log4net;
 using MultipleClipboards.ClipboardManagement;
 using MultipleClipboards.Entities;
 using MultipleClipboards.Interop;
 using MultipleClipboards.Messaging;
 using MultipleClipboards.Presentation.Icons;
-using log4net;
 
 namespace MultipleClipboards.Presentation
 {
@@ -23,7 +23,7 @@ namespace MultipleClipboards.Presentation
 
 		public ClipboardWindow()
 		{
-			// Must set the window style properties before we aquire the handle to the window.
+			// Must set the window style properties before we acquire the handle to the window.
 			this.WindowStyle = WindowStyle.None;
 			this.Width = 0;
 			this.Height = 0;
@@ -31,9 +31,9 @@ namespace MultipleClipboards.Presentation
 			this.ShowActivated = false;
 
 			// Get a handle to this main window and hook into the message loop.
-			WindowInteropHelper interopHelper = new WindowInteropHelper(this);
+			var interopHelper = new WindowInteropHelper(this);
 			this.Handle = interopHelper.EnsureHandle();
-			HwndSource hwndSource = HwndSource.FromHwnd(this.Handle);
+			var hwndSource = HwndSource.FromHwnd(this.Handle);
 
 			if (hwndSource != null)
 			{
@@ -43,11 +43,11 @@ namespace MultipleClipboards.Presentation
 			}
 			else
 			{
-				log.Error("Unable to aquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
+				log.Error("Unable to acquire the handle to the clipboard message window.  This means we cannot intercept the message loop and perform clipboard actions.");
 
 				MessageBus.Instance.Publish(new TrayNotification
 				{
-					MessageBody = "Unable to aquire the handle to the clipboard message window.  Additional clipboards most likely will not function correctly.",
+					MessageBody = "Unable to acquire the handle to the clipboard message window.  Additional clipboards most likely will not function correctly.",
 					IconType = IconType.Error
 				});
 			}
@@ -134,12 +134,12 @@ namespace MultipleClipboards.Presentation
 
 			if (this.CurrentMessage == currentMessage)
 			{
-				log.DebugFormat("WndProc(): New {0} message recieved, but it is the same as the last messaage of this type that was processed.  Skipping.", currentMessage.MessageType);
+				log.DebugFormat("WndProc(): New {0} message received, but it is the same as the last message of this type that was processed.  Skipping.", currentMessage.MessageType);
 				return IntPtr.Zero;
 			}
 			
 			this.CurrentMessage = currentMessage;
-			log.DebugFormat("WndProc(): New message recieved:\r\n{0}", currentMessage);
+			log.DebugFormat("WndProc(): New message received:\r\n{0}", currentMessage);
 
 			switch (msg)
 			{
@@ -166,9 +166,9 @@ namespace MultipleClipboards.Presentation
 							Callback = () => this.SetClipboardInUseFlag(false)
 						};
 
-						// Process the hot key in a seperate thread.
+						// Process the hot key in a separate thread.
 						// We are about to perform clipboard operations.  That involves opening the system clipboard and sending system
-						// keystokes (Ctrl + C, etc).  Since the system clipboard is just one big race condition between all running applications,
+						// keystrokes (Ctrl + C, etc).  Since the system clipboard is just one big race condition between all running applications,
 						// there is a lot of waiting involved.  These delays vary tremendously depending on the application that currently has focus.
 						// See comments in ClipboardManager for more info.  All that matters here is that we don't block the message loop thread.
 						var clipboardThread = new Thread(AppController.ClipboardManager.ProcessHotKeyAsync);
@@ -195,7 +195,7 @@ namespace MultipleClipboards.Presentation
 							// The data on the clipboard has changed.
 							// This means the user used the regular windows clipboard.
 							// Track the data on the clipboard for the history viewer.
-							// Data coppied using any additional clipboards will be tracked internally.
+							// Data copied using any additional clipboards will be tracked internally.
 							var arguments = new AsyncClipboardOperationArguments
 							{
 								Callback = () => this.SetClipboardInUseFlag(false)

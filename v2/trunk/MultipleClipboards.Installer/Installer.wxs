@@ -43,6 +43,9 @@
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="ProgramFilesFolder">
                 <Directory Id="INSTALLDIR" Name="Multiple Clipboards">
+                    <Component Id="EventLogSourceComponent" Guid="b7db88a9-6f81-4599-a5b8-598d5bc5432f">
+                        <Util:EventSource Log="Application" Name="Multiple Clipboards" EventMessageFile="%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" KeyPath="yes"/>
+                    </Component>
                     <Component Id="MainExecutableComponent" Guid="d3062405-d9cc-47c5-92f1-b784ff4a63dd">
                         <File Id="MultipleClipboardsEXE" Name="MultipleClipboards.exe" Source="MultipleClipboards.exe" KeyPath="yes">
                             <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuDir" Arguments="-fromShortcut" Name="Multiple Clipboards" WorkingDirectory="INSTALLDIR" Icon="Clipboard.ico" Advertise="yes" />
@@ -63,6 +66,9 @@
                     </Component>
                     <Component Id="Log4NetComponent" Guid="9aa79d20-be5d-40f2-bf9e-20fe3a840095">
                         <File Id="Log4NetDLL" Name="log4net.dll" Source="log4net.dll" KeyPath="yes" />
+                    </Component>
+                    <Component Id="InputSimulatorComponent" Guid="67d74a1b-45b9-42d4-9f03-aaaf119d0648">
+                        <File Id="InputSimulatorDLL" Name="InputSimulator.dll" Source="InputSimulator.dll" KeyPath="yes" />
                     </Component>
                 </Directory>
             </Directory>
@@ -88,12 +94,14 @@
                  Level="1"
                  AllowAdvertise="no"
                  Absent="disallow">
+            <ComponentRef Id="EventLogSourceComponent" />
             <ComponentRef Id="MainExecutableComponent" />
             <ComponentRef Id="AppConfigComponent" />
             <ComponentRef Id="GlobalResourcesComponent" />
             <ComponentRef Id="QuantumBitComponent" />
             <ComponentRef Id="VistaMenuComponent" />
             <ComponentRef Id="Log4NetComponent" />
+            <ComponentRef Id="InputSimulatorComponent" />
             <ComponentRef Id="ProgramMenuDir" />
         </Feature>
 

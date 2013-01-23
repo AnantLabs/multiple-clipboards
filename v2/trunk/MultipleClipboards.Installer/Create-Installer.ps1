@@ -141,7 +141,7 @@ if (Get-Command "candle.exe")
     
     # Compile the insaller
     Write-Host "Compiling Installer..." -ForegroundColor Cyan
-    $output = (candle.exe -o $installerObjOutput $wixInstallerFileAbsolutePath) -join "`r`n"
+    $output = (candle.exe -ext WixUtilExtension -o $installerObjOutput $wixInstallerFileAbsolutePath) -join "`r`n"
     WriteProcessOutput $output
 
     if ($buildBootstrapper)
@@ -163,7 +163,7 @@ if (Get-Command "light.exe")
 {
     # Link the installer
     Write-Host "Linking Installer..." -ForegroundColor Cyan
-    $output = (light.exe -ext WixUIExtension -ext WixNetFxExtension -ext WixBalExtension -o $installerBinOutput $installerObjOutput) -join "`r`n"
+    $output = (light.exe -ext WixUIExtension -ext WixNetFxExtension -ext WixBalExtension -ext WixUtilExtension -o $installerBinOutput $installerObjOutput) -join "`r`n"
     WriteProcessOutput $output
 
     if ($buildBootstrapper)

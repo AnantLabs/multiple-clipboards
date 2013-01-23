@@ -29,7 +29,7 @@ namespace MultipleClipboards.GlobalResources
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry("Multiple Clipboards", string.Format("Error determining whether or not multiple clipboards is running.{0}{0}{1}", Environment.NewLine, e), EventLogEntryType.Error);
+				EventLog.WriteEntry(Constants.EventLogSource, string.Format("Error determining whether or not multiple clipboards is running.{0}{0}{1}", Environment.NewLine, e), EventLogEntryType.Error);
 				return false;
 			}
 		}
@@ -53,7 +53,7 @@ namespace MultipleClipboards.GlobalResources
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry("Multiple Clipboards", string.Format("Error killing existing multiple clipboards processes.{0}{0}{1}", Environment.NewLine, e), EventLogEntryType.Error);
+                EventLog.WriteEntry(Constants.EventLogSource, string.Format("Error killing existing multiple clipboards processes.{0}{0}{1}", Environment.NewLine, e), EventLogEntryType.Error);
 			}
 		}
 	}

@@ -14,6 +14,7 @@ namespace MultipleClipboards.GlobalResources
 		private const string AboutTextFileName = "AboutText.rtf";
 		private const string ShortcutFileName = "Multiple Clipboards.lnk";
 		public const string ProcessName = "MultipleClipboards";
+        public const string EventLogSource = "Multiple Clipboards";
 		public static readonly string ApplicationExecutableName = string.Concat(ProcessName, ".exe");
 
 		// File paths, which are runtime constants.

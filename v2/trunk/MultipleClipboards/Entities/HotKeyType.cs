@@ -16,9 +16,9 @@ namespace MultipleClipboards.Entities
 
 	public static class HotKeyTypeExtensions
 	{
-		private const string CutSendKeyCode = "^(x)";
-		private const string CopySendKeyCode = "^(c)";
-		private const string PasteSendKeyCode = "^(v)";
+		private const string cutSendKeyCode = "^(x)";
+		private const string copySendKeyCode = "^(c)";
+		private const string pasteSendKeyCode = "^(v)";
 
 		/// <summary>
 		/// Converts this HotKeyType instance to the correct code used to pass into the SendKeys.Send() / SendWait() methods.
@@ -30,13 +30,13 @@ namespace MultipleClipboards.Entities
 			switch (hotKeyType)
 			{
 				case HotKeyType.Cut:
-					return CutSendKeyCode;
+					return cutSendKeyCode;
 
 				case HotKeyType.Copy:
-					return CopySendKeyCode;
+					return copySendKeyCode;
 
 				case HotKeyType.Paste:
-					return PasteSendKeyCode;
+					return pasteSendKeyCode;
 
 				default:
 					throw new ArgumentOutOfRangeException("hotKeyType", string.Format("Unknown HotKeyType: '{0}'.", hotKeyType));
