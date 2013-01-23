@@ -37,9 +37,7 @@ namespace MultipleClipboards.Presentation.Tabs
 		{
 			e.Handled = true;
 
-			if (string.IsNullOrWhiteSpace(this.CopyKeyTextBox.Text) ||
-				string.IsNullOrWhiteSpace(this.CutKeyTextBox.Text) ||
-				string.IsNullOrWhiteSpace(this.PasteKeyTextBox.Text))
+			if (string.IsNullOrWhiteSpace(this.CopyKeyTextBox.Text) || string.IsNullOrWhiteSpace(this.CutKeyTextBox.Text) || string.IsNullOrWhiteSpace(this.PasteKeyTextBox.Text))
 			{
 				MessageBus.Instance.Publish(new MainWindowNotification
 				{

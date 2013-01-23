@@ -108,7 +108,7 @@ namespace MultipleClipboards
 				AppController.ShowMainWindow();
 			}
 
-            // Show a tray notification if there was an error in the static initializer.
+            // Show a tray notification if there was an error in the static initialize.
             if (errorInStaticInitializer)
             {
                 MessageBus.Instance.Publish(new TrayNotification
@@ -169,7 +169,7 @@ namespace MultipleClipboards
 
 		private static void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
-            const string message = "An unhandled expception has occured and the application will now terminate.";
+            const string message = "An unhandled exception has occurred and the application will now terminate.";
             WriteErrorToEventLog(message, e.Exception);
 			log.Error(message, e.Exception);
 			e.Handled = true;
