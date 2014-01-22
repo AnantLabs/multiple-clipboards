@@ -229,7 +229,7 @@ namespace MultipleClipboards.ClipboardManagement
 					"Unable to get the data stored on the clipboard with ID {0} because we were not able to read from the concurrent dictionary.{1}{2}",
 					clipboardId,
 					Environment.NewLine,
-					new StackTrace());
+					new StackTrace(true));
 				clipboardData = null;
 			}
 
@@ -260,7 +260,7 @@ namespace MultipleClipboards.ClipboardManagement
 					"Unable to remove the data stored on the clipboard with ID {0} because we were not able to delete from the concurrent dictionary.{1}{2}",
 					clipboardId,
 					Environment.NewLine,
-					new StackTrace());
+					new StackTrace(true));
 			}
 		}
 
@@ -902,7 +902,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 			if (dataObject == null || !formats.Any())
 			{
-				log.Debug("RetrieveDataFromClipboard(): The clipboard is empty.  Returnning null.");
+				log.Debug("RetrieveDataFromClipboard(): The clipboard is empty.  Returning null.");
 				return null;
 			}
 

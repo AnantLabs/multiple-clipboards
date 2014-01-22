@@ -25,7 +25,7 @@ namespace MultipleClipboards.Presentation.Commands
 				log.ErrorFormat(
 					"Unable to clear the contents of a clipboard because the arguments given to the command were not of type ClearClipboardCommandArguments.{0}{1}",
 					Environment.NewLine,
-					new StackTrace());
+					new StackTrace(true));
 				return;
 			}
 

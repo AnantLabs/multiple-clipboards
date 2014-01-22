@@ -163,24 +163,23 @@ namespace MultipleClipboards.Entities
 				string data = this.DataByFormat[DataFormats.Text].ToString();
 				return data.Length > 1000 ? data.Substring(0, 1000) : data;
 			}
-			else if (this.DataByFormat.Keys.Count() > 0)
-			{
-				// There is a chance that the data we are trying to retrieve is owned by another thread (bitmaps),
-				// which means calling .ToString() will throw an exception.
-				try
-				{
-					object data = this.DataByFormat[this.DataByFormat.Keys.ElementAt(0)];
-					return data == null ? string.Empty : data.ToString();
-				}
-				catch (InvalidOperationException)
-				{
-					return string.Empty;
-				}
-			}
-			else
-			{
-				return UnableToRetrieveDataMessage;
-			}
+		    
+            if (this.DataByFormat.Keys.Any())
+		    {
+		        // There is a chance that the data we are trying to retrieve is owned by another thread (bitmaps),
+		        // which means calling .ToString() will throw an exception.
+		        try
+		        {
+		            object data = this.DataByFormat[this.DataByFormat.Keys.ElementAt(0)];
+		            return data == null ? string.Empty : data.ToString();
+		        }
+		        catch (InvalidOperationException)
+		        {
+		            return string.Empty;
+		        }
+		    }
+		    
+            return UnableToRetrieveDataMessage;
 		}
 
 		/// <summary>
@@ -229,7 +228,7 @@ namespace MultipleClipboards.Entities
 						catch (InvalidOperationException invalidOperationException)
 						{
 							// This can be thrown when the data we are trying to call ToString() on was created on a different thread.
-							// This happens when .NET reference type are coppied from other WPF applications.
+							// This happens when .NET reference typess are copied from other WPF applications.
 							log.WarnFormat("Unable to call ToString() on this data object for the format '{0}'.{1}{2}", format, Environment.NewLine, invalidOperationException);
 							dataString = UnknownDataPreviewString;
 						}
@@ -260,42 +259,46 @@ namespace MultipleClipboards.Entities
 			{
 				try
 				{
-					var data = sourceDataObject.GetData(format);
+				    var data = sourceDataObject.GetData(format);
 
-					if (data == null)
-					{
-						continue;
-					}
+				    if (data == null)
+				    {
+				        continue;
+				    }
 
-					this.DataByFormat.Add(format, data);
+				    this.DataByFormat.Add(format, data);
 				}
 				catch (SerializationException serializationException)
 				{
-					// When IDataObjects are used to set the contents of the system clipboard the data is serialized.
-					// Since other applications can implment IDataObject, the actual data type might reside in a third party dll that this application does not reference.
-					// Therefore, the clipboard will not be able to serialize it and will throw this exception.
-					// If that happens then just swallow the exception because there is nothing we can do about it.
-					// May as well log something so I have a chance at knowing what formats cause this error.
-					log.InfoFormat(
-						"PreserveDataObject(): Unable to de-serialize data from the clipboard in the format '{0}'.  The following exception was thrown:{1}{2}",
-						format,
-						Environment.NewLine,
-						serializationException);
+				    // When IDataObjects are used to set the contents of the system clipboard the data is serialized.
+				    // Since other applications can implement IDataObject, the actual data type might reside in a third party dll that this application does not reference.
+				    // Therefore, the clipboard will not be able to serialize it and will throw this exception.
+				    // If that happens then just swallow the exception because there is nothing we can do about it.
+				    // May as well log something so I have a chance at knowing what formats cause this error.
+				    log.InfoFormat(
+				        "PreserveDataObject(): Unable to de-serialize data from the clipboard in the format '{0}'.  The following exception was thrown:{1}{2}",
+				        format,
+				        Environment.NewLine,
+				        serializationException);
 				}
 				catch (COMException comException)
 				{
-					// There is a bug in the .NET framework that truncates the full type name of types on the clipboard to 127 characters.
-					// For longer type names (usually generic collections) the public key token gets truncated and the data becomes corrupt.
-					// It seems that Microsoft has fixed this in February 2012 in System.Windows.Forms.Clipboard, but not in System.Windows.Clipboard (WPF).
-					// http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why
-					// https://connect.microsoft.com/VisualStudio/feedback/details/726652/clipboard-truncates-type-name-to-127-characters
-					// Only log a warning here since there is nothing I can do about it in this app.
-					log.WarnFormat(
-						"PreserveDataObject(): Unable to preserve the data on the clipboard in the format '{0}'.  This is most likely due to the 127 character bug in the .NET frameworked discuessed here: {1}{2}The following exception was thrown:{2}{3}",
-						format,
-						"http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why",
-						Environment.NewLine,
-						comException);
+				    // There is a bug in the .NET framework that truncates the full type name of types on the clipboard to 127 characters.
+				    // For longer type names (usually generic collections) the public key token gets truncated and the data becomes corrupt.
+				    // It seems that Microsoft has fixed this in February 2012 in System.Windows.Forms.Clipboard, but not in System.Windows.Clipboard (WPF).
+				    // http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why
+				    // https://connect.microsoft.com/VisualStudio/feedback/details/726652/clipboard-truncates-type-name-to-127-characters
+				    // Only log a warning here since there is nothing I can do about it in this app.
+				    log.WarnFormat(
+				        "PreserveDataObject(): Unable to preserve the data on the clipboard in the format '{0}'.  This is most likely due to the 127 character bug in the .NET framework discussed here: {1}{2}The following exception was thrown:{2}{3}",
+				        format,
+				        "http://stackoverflow.com/questions/9452802/clipboard-behaves-differently-in-net-3-5-and-4-but-why",
+				        Environment.NewLine,
+				        comException);
+				}
+				catch (OutOfMemoryException memoryException)
+				{
+				    log.Warn("PreserveDataObject(): Ran out of memory trying to preserve the data on the clipboard.", memoryException);
 				}
 			}
 		}
