@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MultipleClipboards</RootNamespace>
     <AssemblyName>MultipleClipboards</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -81,6 +82,13 @@
     <StartupObject>MultipleClipboards.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="InputSimulator">
       <HintPath>..\References\InputSimulator.dll</HintPath>
     </Reference>
@@ -91,6 +99,7 @@
       <HintPath>..\References\QuantumBitDesigns.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -135,8 +144,8 @@
     <Compile Include="Exceptions\ClipboardInUseException.cs" />
     <Compile Include="Messaging\MessageBus.cs" />
     <Compile Include="Messaging\Notifications.cs" />
-    <Compile Include="Persistence\LogHelper.cs" />
-    <Compile Include="Persistence\SerializableDictionary.cs" />
+    <Compile Include="LegacyPersistence\LogHelper.cs" />
+    <Compile Include="LegacyPersistence\SerializableDictionary.cs" />
     <Compile Include="Presentation\ClipboardWindow.xaml.cs">
       <DependentUpon>ClipboardWindow.xaml</DependentUpon>
     </Compile>
@@ -190,14 +199,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Presentation\Tabs\ReportingTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Presentation\Tabs\SettingsTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Persistence\MultipleClipboardsDataModel.cs" />
-    <Compile Include="Persistence\SettingsManager.cs" />
+    <Compile Include="LegacyPersistence\MultipleClipboardsDataModel.cs" />
+    <Compile Include="LegacyPersistence\SettingsManager.cs" />
     <Compile Include="Interop\Win32API.cs" />
     <Compile Include="Presentation\Tabs\AboutTab.xaml.cs">
       <DependentUpon>AboutTab.xaml</DependentUpon>
@@ -210,6 +223,9 @@
     </Compile>
     <Compile Include="Presentation\Tabs\HistoryTab.xaml.cs">
       <DependentUpon>HistoryTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presentation\Tabs\ReportingTab.xaml.cs">
+      <DependentUpon>ReportingTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="Presentation\Tabs\SettingsTab.xaml.cs">
       <DependentUpon>SettingsTab.xaml</DependentUpon>
@@ -247,6 +263,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -299,6 +316,10 @@
     <ProjectReference Include="..\MultipleClipboards.GlobalResources\MultipleClipboards.GlobalResources.csproj">
       <Project>{1309D2C2-9634-40F6-9533-14F26EE99DED}</Project>
       <Name>MultipleClipboards.GlobalResources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MultipleClipboards.Persistence\MultipleClipboards.Persistence.csproj">
+      <Project>{6bd6dc99-e7ea-4274-a1c2-c1d615f1baa9}</Project>
+      <Name>MultipleClipboards.Persistence</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MultipleClipboards.Persistence;
+using MultipleClipboards.LegacyPersistence;
 
 namespace MultipleClipboards.Presentation.Tabs
 {

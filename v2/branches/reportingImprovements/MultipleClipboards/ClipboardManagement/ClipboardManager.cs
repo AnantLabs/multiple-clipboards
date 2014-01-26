@@ -230,7 +230,6 @@ namespace MultipleClipboards.ClipboardManagement
 					clipboardId,
 					Environment.NewLine,
 					new StackTrace(true));
-				clipboardData = null;
 			}
 
 			return clipboardData;

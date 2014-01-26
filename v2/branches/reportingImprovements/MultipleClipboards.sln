@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards", "MultipleClipboards\MultipleClipboards.csproj", "{B77D6BB5-59BE-4AEE-B557-7FE6196A6856}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultipleClipboards.Installer", "MultipleClipboards.Installer", "{B6844B34-E220-470D-B355-CCF1B572987B}"
 	ProjectSection(SolutionItems) = preProject
-		MultipleClipboards.Installer\Installer.wxs = MultipleClipboards.Installer\Installer.wxs
-		MultipleClipboards.Installer\Bootstrapper.wxs = MultipleClipboards.Installer\Bootstrapper.wxs
-		MultipleClipboards.Installer\Variables.wxi = MultipleClipboards.Installer\Variables.wxi
-		MultipleClipboards.Installer\util.xsd = MultipleClipboards.Installer\util.xsd
-		MultipleClipboards.Installer\wix.xsd = MultipleClipboards.Installer\wix.xsd
 		MultipleClipboards.Installer\bal.xsd = MultipleClipboards.Installer\bal.xsd
+		MultipleClipboards.Installer\Bootstrapper.wxs = MultipleClipboards.Installer\Bootstrapper.wxs
 		MultipleClipboards.Installer\Create-Installer.ps1 = MultipleClipboards.Installer\Create-Installer.ps1
+		MultipleClipboards.Installer\Installer.wxs = MultipleClipboards.Installer\Installer.wxs
+		MultipleClipboards.Installer\util.xsd = MultipleClipboards.Installer\util.xsd
+		MultipleClipboards.Installer\Variables.wxi = MultipleClipboards.Installer\Variables.wxi
+		MultipleClipboards.Installer\wix.xsd = MultipleClipboards.Installer\wix.xsd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Items", "Shared Items", "{C7866B68-0C56-4AC2-B666-4EE06F74A5FA}"
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards.GlobalResources", "MultipleClipboards.GlobalResources\MultipleClipboards.GlobalResources.csproj", "{1309D2C2-9634-40F6-9533-14F26EE99DED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards.WixCustomActions", "MultipleClipboards.WixCustomActions\MultipleClipboards.WixCustomActions.csproj", "{8D7593AC-E08E-49CE-AA50-832C1B6602FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleClipboards.Persistence", "MultipleClipboards.Persistence\MultipleClipboards.Persistence.csproj", "{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,12 @@ Global
 		{8D7593AC-E08E-49CE-AA50-832C1B6602FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D7593AC-E08E-49CE-AA50-832C1B6602FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D7593AC-E08E-49CE-AA50-832C1B6602FE}.Release|x86.ActiveCfg = Release|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BD6DC99-E7EA-4274-A1C2-C1D615F1BAA9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

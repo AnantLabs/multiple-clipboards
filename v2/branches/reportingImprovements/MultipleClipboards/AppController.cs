@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using MultipleClipboards.ClipboardManagement;
-using MultipleClipboards.Persistence;
+using MultipleClipboards.LegacyPersistence;
 using MultipleClipboards.Presentation;
 
 namespace MultipleClipboards

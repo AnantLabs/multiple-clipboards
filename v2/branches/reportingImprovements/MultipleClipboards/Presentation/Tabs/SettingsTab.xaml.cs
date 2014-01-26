@@ -49,8 +49,8 @@ namespace MultipleClipboards.Presentation.Tabs
 
 			var modifierKeysType = typeof(ModifierKeys);
 			var keysType = typeof(Key);
-			this.AddNewClipboardButton.IsEnabled = false;
-			ClipboardDefinition clipboard = new ClipboardDefinition
+			AddNewClipboardButton.IsEnabled = false;
+			var clipboard = new ClipboardDefinition
 			{
 				ModifierOneKey = (ModifierKeys)Enum.Parse(modifierKeysType, this.ModifierKeyOneComboBox.SelectedValue.ToString(), true),
 				ModifierTwoKey = (ModifierKeys)Enum.Parse(modifierKeysType, this.ModifierKeyTwoComboBox.SelectedValue.ToString(), true),
@@ -66,7 +66,7 @@ namespace MultipleClipboards.Presentation.Tabs
 		private void DeleteButtonClick(object sender, RoutedEventArgs e)
 		{
 			e.Handled = true;
-			ClipboardDefinition clipboard = ((FrameworkElement)sender).DataContext as ClipboardDefinition;
+			var clipboard = ((FrameworkElement)sender).DataContext as ClipboardDefinition;
 
 			if (clipboard != null)
 			{

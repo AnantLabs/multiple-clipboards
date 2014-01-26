@@ -9,7 +9,7 @@
              xmlns:Converters="clr-namespace:MultipleClipboards.Presentation.Converters"
              xmlns:Controls="clr-namespace:MultipleClipboards.Presentation.Controls"
              xmlns:MultipleClipboards="clr-namespace:MultipleClipboards"
-             xmlns:Persistence="clr-namespace:MultipleClipboards.Persistence"
+             xmlns:legacyPersistence="clr-namespace:MultipleClipboards.LegacyPersistence"
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -20,7 +20,7 @@
         </ObjectDataProvider>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type System:Enum}" x:Key="LogLevelEnumValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="Persistence:LogLevel" />
+                <x:Type TypeName="legacyPersistence:LogLevel" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <Converters:EnumToStringConverter x:Key="EnumToStringConverter" />
