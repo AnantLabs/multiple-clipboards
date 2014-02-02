@@ -7,16 +7,13 @@ namespace MultipleClipboards.Messaging
 {
 	public class MessageBus
 	{
-		private static MessageBus _messageBus;
+		private static MessageBus messageBusInstance;
 		private static readonly ILog log = LogManager.GetLogger(typeof(MessageBus));
 		private readonly ConcurrentDictionary<string, IList<Action<object>>> listenersByType;
 
 		public static MessageBus Instance
 		{
-			get
-			{
-				return _messageBus ?? (_messageBus = new MessageBus());
-			}
+			get { return messageBusInstance ?? (messageBusInstance = new MessageBus()); }
 		}
 
 		public MessageBus()
@@ -27,7 +24,7 @@ namespace MultipleClipboards.Messaging
 		public void Subscribe<TMessage>(Action<TMessage> listener)
 			where TMessage : class
 		{
-			string listenerTypeName = typeof(TMessage).FullName ?? "unknown";
+			var listenerTypeName = typeof(TMessage).FullName;
 			var originalCollection = this.listenersByType.GetOrAdd(listenerTypeName, new List<Action<object>>());
 
 			IList<Action<object>> messageActions;
@@ -48,7 +45,7 @@ namespace MultipleClipboards.Messaging
 		public void Publish<TMessage>(TMessage message)
 			where TMessage : class
 		{
-			string listenerTypeName = typeof(TMessage).FullName ?? "unknown";
+			var listenerTypeName = typeof(TMessage).FullName;
 
 			IList<Action<object>> listeners;
 			if (!this.listenersByType.TryGetValue(listenerTypeName, out listeners))
@@ -64,7 +61,7 @@ namespace MultipleClipboards.Messaging
 
 			foreach (var action in listeners)
 			{
-				action(message);
+                action(message);
 			}
 		}
 	}

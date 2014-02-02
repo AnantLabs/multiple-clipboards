@@ -875,7 +875,7 @@ namespace MultipleClipboards.ClipboardManagement
 
 					// Although I have never seen this error personally, it has been reported.
 					// My theory is that you can only reliably call GetFormats() on an IDataObject once,
-					// especially when the data is failarly large, like an image.
+					// especially when the data is fairly large, like an image.
 					// That's why I am now reading the formats once here, instead of once here to check
 					// to see if it's empty and then again in the constructor of ClipboardData.
 					// Even so, if this exception occurs then try to look for a few known types

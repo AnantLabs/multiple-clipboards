@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Configuration;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace MultipleClipboards.Persistence
@@ -7,7 +9,12 @@ namespace MultipleClipboards.Persistence
     {
         static MultipleClipboardsDataContext()
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<MultipleClipboardsDataContext>());
+            DatabaseInitializationStrategy strategy;
+            if (!Enum.TryParse(ConfigurationManager.AppSettings["databaseInitializationStrategy"], true, out strategy))
+            {
+                strategy = DatabaseInitializationStrategy.DropAndCreateIfModelChanges;
+            }
+            Database.SetInitializer(new MultipleClipboardsDatabaseInitializer(strategy));
         }
 
         public MultipleClipboardsDataContext()
@@ -22,6 +29,7 @@ namespace MultipleClipboards.Persistence
         public DbSet<DataFormat> DataFormats { get; set; }
         public DbSet<FailedDataFormat> FailedDataFormats { get; set; }
         public DbSet<DataObject> DataObjects { get; set; }
+        public DbSet<DataFormatBlacklist> BlacklistedFormats { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

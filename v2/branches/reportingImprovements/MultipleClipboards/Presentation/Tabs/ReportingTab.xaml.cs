@@ -35,43 +35,81 @@ namespace MultipleClipboards.Presentation.Tabs
                 });
                 return;
             }
-            Task.Run(() => GenerateReport(type));
+
+            Task.Run(
+                () =>
+                {
+                    var message = new MainWindowNotification();
+
+                    try
+                    {
+                        string reportPath;
+                        using (new DbContextScope<MultipleClipboardsDataContext>())
+                        {
+                            var repo = new MultipleClipboardsDataRepository();
+                            reportPath = repo.GenerateReport(type);
+                        }
+
+                        if (string.IsNullOrWhiteSpace(reportPath) || !File.Exists(reportPath))
+                        {
+                            message.IconType = IconType.Warning;
+                            message.MessageBody = "No exception was thrown, but there was an error generating a data report.";
+                        }
+                        else
+                        {
+                            message.IconType = IconType.Success;
+                            message.MessageBody = string.Format("Report saved to: {0}", reportPath);
+                            Process.Start(reportPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        const string errorMessage = "There was an error generating a data report.";
+                        log.Error(errorMessage, ex);
+                        message.IconType = IconType.Error;
+                        message.MessageBody = errorMessage;
+                    }
+
+                    MessageBus.Instance.Publish(message);
+                });
         }
 
-        private static void GenerateReport(ReportType type)
+        private void PurgeHistoricalDataButtonClick(object sender, RoutedEventArgs e)
         {
-            try
+            var result = MessageBox.Show("Are you sure you want to purge ALL historical data gathered by this application?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
             {
-                var reportPath = new DataObjectRepository().GenerateReport(type);
+                return;
+            }
 
-                if (string.IsNullOrWhiteSpace(reportPath) || !File.Exists(reportPath))
+            Task.Run(
+                () =>
                 {
-                    MessageBus.Instance.Publish(new MainWindowNotification
+                    try
                     {
-                        IconType = IconType.Warning,
-                        MessageBody = "No exception was thrown, but there was an error generating a data report."
-                    });
-                    return;
-                }
-
-                MessageBus.Instance.Publish(new MainWindowNotification
-                {
-                    IconType = IconType.Success,
-                    MessageBody = string.Format("Report saved to: {0}", reportPath)
+                        using (new DbContextScope<MultipleClipboardsDataContext>())
+                        {
+                            var repo = new MultipleClipboardsDataRepository();
+                            repo.PurgeData();
+                        }
+                        
+                        MessageBus.Instance.Publish(new MainWindowNotification
+                        {
+                            IconType = IconType.Success,
+                            MessageBody = "Historical data purged successfully."
+                        });
+                    }
+                    catch (Exception exception)
+                    {
+                        const string errorMessage = "There was an error purging historical data.";
+                        log.Error(errorMessage, exception);
+                        MessageBus.Instance.Publish(new MainWindowNotification
+                        {
+                            IconType = IconType.Error,
+                            MessageBody = errorMessage
+                        });
+                    }
                 });
-
-                Process.Start(reportPath);
-            }
-            catch (Exception ex)
-            {
-                const string message = "There was an error generating a data report.";
-                log.Error(message, ex);
-                MessageBus.Instance.Publish(new MainWindowNotification
-                {
-                    IconType = IconType.Error,
-                    MessageBody = message
-                });
-            }
         }
     }
 }

@@ -20,27 +20,29 @@ namespace MultipleClipboards.LegacyPersistence
 		private static readonly ILog log = LogManager.GetLogger(typeof(SettingsManager));
 
 		// Application Setting Keys.
-		private const string NumberOfClipboardHistoryRecordsSettingKey = "NumberOfClipboardHistoryRecords";
-		private const string ThreadDelayTimeSettingKey = "ThreadDelayTime";
-		private const string ApplicationLogLevelSettingKey = "LogLevel";
-		private const string LaunchApplicationOnSystemStartupSettingKey = "LaunchApplicationOnSystemStartup";
-		private const string ShowAdvancedOptionsSettingKey = "ShowAdvancedOptions";
-		private const string ShowMessagesFromTraySettingKey = "ShowMessagesFromTray";
-		private const string ShowDetailedClipboardInformationSettingKey = "ShowDetailClipboardInformation";
-		private const string PersistClipboardHistorySettingKey = "PersistClipboardHistory";
+		private const string numberOfClipboardHistoryRecordsSettingKey = "NumberOfClipboardHistoryRecords";
+		private const string threadDelayTimeSettingKey = "ThreadDelayTime";
+		private const string applicationLogLevelSettingKey = "LogLevel";
+		private const string launchApplicationOnSystemStartupSettingKey = "LaunchApplicationOnSystemStartup";
+		private const string showAdvancedOptionsSettingKey = "ShowAdvancedOptions";
+		private const string showMessagesFromTraySettingKey = "ShowMessagesFromTray";
+		private const string showDetailedClipboardInformationSettingKey = "ShowDetailClipboardInformation";
+		private const string persistClipboardHistorySettingKey = "PersistClipboardHistory";
+        private const string failureThresholdForBlacklist = "failureThresholdForBlacklist";
 
 		// Application Settings Default Values.
 		private static readonly IDictionary<string, object> defaultSettings =
 			new Dictionary<string, object>
 			{
-				{ NumberOfClipboardHistoryRecordsSettingKey, 20 },
-				{ ThreadDelayTimeSettingKey, 250 },
-				{ ApplicationLogLevelSettingKey, (int)LogLevel.Error },
-				{ LaunchApplicationOnSystemStartupSettingKey, true },
-				{ ShowAdvancedOptionsSettingKey, false },
-				{ ShowMessagesFromTraySettingKey, true },
-				{ ShowDetailedClipboardInformationSettingKey, false },
-				{ PersistClipboardHistorySettingKey, true }
+				{ numberOfClipboardHistoryRecordsSettingKey, 20 },
+				{ threadDelayTimeSettingKey, 250 },
+				{ applicationLogLevelSettingKey, (int)LogLevel.Error },
+				{ launchApplicationOnSystemStartupSettingKey, true },
+				{ showAdvancedOptionsSettingKey, false },
+				{ showMessagesFromTraySettingKey, true },
+				{ showDetailedClipboardInformationSettingKey, false },
+				{ persistClipboardHistorySettingKey, true },
+                { failureThresholdForBlacklist, 3 }
 			};
 
 		/// <summary>
@@ -65,8 +67,8 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public int NumberOfClipboardHistoryRecords
 		{
-			get { return this.GetSettingSafe(NumberOfClipboardHistoryRecordsSettingKey); }
-			set { this.SaveApplicationSetting(NumberOfClipboardHistoryRecordsSettingKey, value); }
+			get { return this.GetSettingSafe(numberOfClipboardHistoryRecordsSettingKey); }
+			set { this.SaveApplicationSetting(numberOfClipboardHistoryRecordsSettingKey, value); }
 		}
 
 		/// <summary>
@@ -74,19 +76,28 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public int ThreadDelayTime
 		{
-			get { return this.GetSettingSafe(ThreadDelayTimeSettingKey); }
-			set { this.SaveApplicationSetting(ThreadDelayTimeSettingKey, value); }
+			get { return this.GetSettingSafe(threadDelayTimeSettingKey); }
+			set { this.SaveApplicationSetting(threadDelayTimeSettingKey, value); }
 		}
+
+        /// <summary>
+        /// Gets or sets the number of times a particular data format can fail before it is placed on the format blacklist.
+        /// </summary>
+	    public int FailureThresholdForBlacklist
+	    {
+	        get { return GetSettingSafe(failureThresholdForBlacklist); }
+            set { SaveApplicationSetting(failureThresholdForBlacklist, value); }
+	    }
 
 		/// <summary>
 		/// Gets or sets the application logging level.
 		/// </summary>
 		public LogLevel ApplicationLogLevel
 		{
-			get { return (LogLevel)this.GetSettingSafe(ApplicationLogLevelSettingKey); }
+			get { return (LogLevel)this.GetSettingSafe(applicationLogLevelSettingKey); }
 			set
 			{
-                this.SaveApplicationSetting(ApplicationLogLevelSettingKey, (int)value);
+                this.SaveApplicationSetting(applicationLogLevelSettingKey, (int)value);
                 LogHelper.SetLogLevel(value);
 			}
 		}
@@ -96,13 +107,13 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public bool LaunchApplicationOnSystemStartup
 		{
-			get { return this.GetSettingSafe(LaunchApplicationOnSystemStartupSettingKey); }
+			get { return this.GetSettingSafe(launchApplicationOnSystemStartupSettingKey); }
 			set
 			{
 				try
 				{
 					ToggleAutoLaunchShortcut(value);
-					this.SaveApplicationSetting(LaunchApplicationOnSystemStartupSettingKey, value);
+					this.SaveApplicationSetting(launchApplicationOnSystemStartupSettingKey, value);
 				}
 				catch (Exception e)
 				{
@@ -122,8 +133,8 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public bool ShowAdvancedOptions
 		{
-			get { return this.GetSettingSafe(ShowAdvancedOptionsSettingKey); }
-			set { this.SaveApplicationSetting(ShowAdvancedOptionsSettingKey, value); }
+			get { return this.GetSettingSafe(showAdvancedOptionsSettingKey); }
+			set { this.SaveApplicationSetting(showAdvancedOptionsSettingKey, value); }
 		}
 
 		/// <summary>
@@ -131,8 +142,8 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public bool ShowMessagesFromTray
 		{
-			get { return this.GetSettingSafe(ShowMessagesFromTraySettingKey); }
-			set { this.SaveApplicationSetting(ShowMessagesFromTraySettingKey, value); }
+			get { return this.GetSettingSafe(showMessagesFromTraySettingKey); }
+			set { this.SaveApplicationSetting(showMessagesFromTraySettingKey, value); }
 		}
 
 		/// <summary>
@@ -140,8 +151,8 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public bool ShowDetailedClipboardInformation
 		{
-			get { return this.GetSettingSafe(ShowDetailedClipboardInformationSettingKey); }
-			set { this.SaveApplicationSetting(ShowDetailedClipboardInformationSettingKey, value); }
+			get { return this.GetSettingSafe(showDetailedClipboardInformationSettingKey); }
+			set { this.SaveApplicationSetting(showDetailedClipboardInformationSettingKey, value); }
 		}
 
 		/// <summary>
@@ -149,8 +160,8 @@ namespace MultipleClipboards.LegacyPersistence
 		/// </summary>
 		public bool PersistClipboardHistory
 		{
-			get { return this.GetSettingSafe(PersistClipboardHistorySettingKey); }
-			set { this.SaveApplicationSetting(PersistClipboardHistorySettingKey, value); }
+			get { return this.GetSettingSafe(persistClipboardHistorySettingKey); }
+			set { this.SaveApplicationSetting(persistClipboardHistorySettingKey, value); }
 		}
 
 		/// <summary>

@@ -16,16 +16,23 @@
         </ObjectDataProvider>
     </UserControl.Resources>
     
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+    <StackPanel>
+        <TextBlock HorizontalAlignment="Center" FontSize="12pt" Margin="5" Padding="5" TextWrapping="Wrap">
+            Generates reports of the data and data formats collected by this application, as well as any errors that occurred while storing the data.
+            <LineBreak/>
+            <LineBreak/>
+            NOTE: The application only collects data when the "Persist Clipboard History" setting is enabled.
+        </TextBlock>
 
-        <ComboBox Grid.Row="0" Grid.Column="0" Name="ReportTypeDropDown" HorizontalAlignment="Center" MinWidth="300" VerticalContentAlignment="Center" Padding="5,0,0,0" ItemsSource="{Binding Source={StaticResource ReportTypeValues}}"></ComboBox>
-        <Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Content="Generate Report" Click="GenerateReportButtonClick"></Button>
-    </Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Text="Report Type:" Margin="5" Padding="5"></TextBlock>
+            <ComboBox Name="ReportTypeDropDown" MinWidth="150" VerticalContentAlignment="Center" Margin="5" Padding="5"
+                      ItemsSource="{Binding Source={StaticResource ReportTypeValues}}">
+            </ComboBox>
+        </StackPanel>
+        
+        <Button Margin="5" Padding="5" HorizontalAlignment="Center" Content="Generate Report" Click="GenerateReportButtonClick"></Button>
+        
+        <Button Margin="5" Padding="5" HorizontalAlignment="Center" Content="Purge Historical Data" Click="PurgeHistoricalDataButtonClick"></Button>
+    </StackPanel>
 </UserControl>

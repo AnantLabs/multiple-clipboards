@@ -33,6 +33,9 @@
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework.Extended">
+      <HintPath>..\packages\EntityFramework.Extended.6.0.0.86\lib\net45\EntityFramework.Extended.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
@@ -47,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -56,9 +60,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataFormat.cs" />
+    <Compile Include="DataFormatBlacklist.cs" />
     <Compile Include="DataObject.cs" />
-    <Compile Include="DataObjectRepository.cs" />
+    <Compile Include="MultipleClipboardsDataRepository.cs" />
+    <Compile Include="DbContextScope.cs" />
+    <Compile Include="DbContextStacks.cs" />
     <Compile Include="FailedDataFormat.cs" />
+    <Compile Include="MultipleClipboardsDatabaseInitializer.cs" />
     <Compile Include="MultipleClipboardsDataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

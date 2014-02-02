@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Timers;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -22,7 +21,7 @@ namespace MultipleClipboards.Presentation
 		{
 			InitializeComponent();
 			Loaded += this.MainWindowLoaded;
-			MessageBus.Instance.Subscribe<MainWindowNotification>(NotificationRecieved);
+		    MessageBus.Instance.Subscribe<MainWindowNotification>(message => AppController.ExecuteOnUiThread(() => NotificationRecieved(message)));
 			notificationPopupTimer = new Timer(5000);
 			notificationPopupTimer.Elapsed += (sender, args) => AppController.ExecuteOnUiThread(OnNotificationTimerStop);
 		}
@@ -35,21 +34,10 @@ namespace MultipleClipboards.Presentation
 			Win32API.SetWindowLong(wndHelper.Handle, Win32API.GWL_EXSTYLE, (IntPtr)exStyle);
 		}
 
-		private void CloseButtonClick(object sender, RoutedEventArgs e)
-		{
-			WindowState = WindowState.Minimized;
-		}
-
 		protected override void OnStateChanged(EventArgs e)
 		{
 			base.OnStateChanged(e);
 			this.ShowInTaskbar = this.WindowState != WindowState.Minimized;
-		}
-
-		private void DragStart(object sender, MouseButtonEventArgs e)
-		{
-			DragMove();
-			e.Handled = true;
 		}
 
 		private void NotificationRecieved(MainWindowNotification mainWindowNotification)

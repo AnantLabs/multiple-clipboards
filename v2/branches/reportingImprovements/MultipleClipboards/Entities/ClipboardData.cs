@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,9 +10,11 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
+using MultipleClipboards.Persistence;
 using log4net;
 using MultipleClipboards.GlobalResources;
 using MultipleClipboards.Presentation.Icons;
+using DataObject = System.Windows.DataObject;
 
 namespace MultipleClipboards.Entities
 {
@@ -22,19 +25,30 @@ namespace MultipleClipboards.Entities
         private const string unknownDataPreviewString = "Unknown";
         private const string unableToRetrieveDataMessage = "Unable to retrieve data in this format.";
         private static readonly ILog log = LogManager.GetLogger(typeof(ClipboardData));
-        private static readonly object idLock = new object();
         private static readonly string alternateBitmapFormat = typeof(Bitmap).ToString();
         private static readonly Type dataByFormatType = typeof(Dictionary<string, object>);
+        private static readonly ConcurrentDictionary<string, int> failureCountByFormat = new ConcurrentDictionary<string, int>();
+        private static readonly object blacklistLock = new object();
+        
+        // TODO: Deprecate this
+        private static readonly object idLock = new object();
         private static ulong idCounter;
+
+        private readonly MultipleClipboardsDataRepository repository;
         private string iconPath;
         private string iconToolTip;
         private Func<string> singleFormatDetailedDataStringProducer;
 
-        private readonly Persistence.DataObject persistedDataObject = new Persistence.DataObject
-        {
-            AllFormats = new List<Persistence.DataFormat>(),
-            FailedDataFormats = new List<Persistence.FailedDataFormat>()
-        };
+        private static readonly Lazy<List<string>> blacklist = new Lazy<List<string>>(
+            () =>
+            {
+                using (var scope = new DbContextScope<MultipleClipboardsDataContext>())
+                {
+                    var repo = new MultipleClipboardsDataRepository(scope.DbContext);
+                    var blacklistData = repo.GetDataFormatBlacklist();
+                    return blacklistData.ToList();
+                }
+            });
 
         public ClipboardData(ClipboardData clipboardData)
         {
@@ -44,9 +58,16 @@ namespace MultipleClipboards.Entities
 
         public ClipboardData(IDataObject dataObject, IEnumerable<string> formats)
         {
-            this.PreserveDataObject(dataObject, formats);
-            this.Initialize(DateTime.Now);
-            PersistDataObject();
+            using (var scope = new DbContextScope<MultipleClipboardsDataContext>())
+            {
+                repository = new MultipleClipboardsDataRepository(scope.DbContext);
+                
+                var persistedDataObject = PreserveDataObject(dataObject, formats);
+                Initialize(DateTime.Now);
+
+                PersistDataObject(persistedDataObject);
+                scope.SaveChanges();
+            }
         }
 
         private ClipboardData(SerializationInfo info, StreamingContext context)
@@ -71,11 +92,16 @@ namespace MultipleClipboards.Entities
             }
         }
 
-        private void PersistDataObject()
+        private void PersistDataObject(Persistence.DataObject persistedDataObject)
         {
+            if (!AppController.Settings.PersistClipboardHistory)
+            {
+                return;
+            }
+
             persistedDataObject.Timestamp = TimeStamp;
             persistedDataObject.DescriptionText = singleFormatDetailedDataStringProducer();
-            new Persistence.DataObjectRepository().StoreDataObjectAsync(persistedDataObject);
+            repository.StoreDataObject(persistedDataObject);
         }
 
         public ulong Id { get; private set; }
@@ -231,17 +257,18 @@ namespace MultipleClipboards.Entities
         /// </summary>
         /// <param name="sourceDataObject">The source data object.</param>
         /// <param name="formats">The collection of formats for the source data object.</param>
-        private void PreserveDataObject(IDataObject sourceDataObject, IEnumerable<string> formats)
+        private Persistence.DataObject PreserveDataObject(IDataObject sourceDataObject, IEnumerable<string> formats)
         {
-            this.DataByFormat = new Dictionary<string, object>();
+            DataByFormat = new Dictionary<string, object>();
+            var persistedDataObject = new Persistence.DataObject();
 
             if (sourceDataObject == null)
             {
-                return;
+                return null;
             }
 
             var ableToSaveData = false;
-            var formatsList = formats.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
+            var formatsList = formats.Where(f => !string.IsNullOrWhiteSpace(f) && !blacklist.Value.Contains(f)).ToList();
 
             foreach (string format in formatsList)
             {
@@ -298,7 +325,14 @@ namespace MultipleClipboards.Entities
                     }
 
                     logMethod(messageBuilder.ToString(), exception);
-                    persistedDataObject.FailedDataFormats.Add(new Persistence.FailedDataFormat(persistedFormat, exception));
+                    persistedDataObject.FailedDataFormats.Add(new FailedDataFormat(persistedFormat, exception));
+
+                    var failureCount = failureCountByFormat.AddOrUpdate(format, 1, (f, count) => count + 1);
+                    if (failureCount >= AppController.Settings.FailureThresholdForBlacklist)
+                    {
+                        AddToBlacklist(format);
+                        log.WarnFormat("The format '{0}' has failed {1} times and has been added to the blacklist.", format, failureCount);
+                    }
                 }
             }
 
@@ -309,6 +343,18 @@ namespace MultipleClipboards.Entities
                     Environment.NewLine,
                     string.Join(", ", formatsList));
             }
+
+            return persistedDataObject;
+        }
+
+        private void AddToBlacklist(string format)
+        {
+            lock (blacklistLock)
+            {
+                blacklist.Value.Add(format);
+            }
+
+            repository.AddFormatToBlacklist(format);
         }
 
         public void SetDescriptionData()
