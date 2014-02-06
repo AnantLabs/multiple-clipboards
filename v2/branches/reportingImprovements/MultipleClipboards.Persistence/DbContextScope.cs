@@ -13,8 +13,8 @@ namespace MultipleClipboards.Persistence
         {
             if (requiresNew || AmbientDbContext == null)
             {
-                var sesssion = new T();
-                DbContextStacks.Push(sesssion);
+                dbContext = new T();
+                DbContextStacks.Push(dbContext);
                 shouldDispose = true;
             }
             else
@@ -41,7 +41,7 @@ namespace MultipleClipboards.Persistence
 
         public void Dispose()
         {
-            if (!Equals(AmbientDbContext, DbContext))
+            if (!Equals(AmbientDbContext, dbContext))
             {
                 throw new InvalidOperationException("Attempted to dispose a DbContextScope but it is not the current ambient DbContext");
             }
@@ -52,7 +52,7 @@ namespace MultipleClipboards.Persistence
             }
 
             DbContextStacks.Pop<T>();
-            DbContext.Dispose();
+            dbContext.Dispose();
         }
     }
 }
